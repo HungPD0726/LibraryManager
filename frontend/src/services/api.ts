@@ -128,6 +128,16 @@ export const createOrder = (data: {
     body: JSON.stringify(data),
   });
 
+// === Authentication ===
+export const login = (email: string) =>
+  request<{ success: boolean; user: any; role: string; message?: string }>(
+    "/students/login",
+    {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }
+  );
+
 // === Dashboard ===
 export const fetchDashboardStats = () =>
   request<DashboardStats>("/dashboard/stats");

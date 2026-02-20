@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Library } from "lucide-react";
+import { login } from "@/services/api";
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,9 +14,22 @@ const Login = () => {
   const [name, setName] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    if (isLogin) {
+      try {
+        const res = await login(email);
+        if (res.success) {
+          navigate("/dashboard");
+        } else {
+          alert(res.message || "Đăng nhập thất bại");
+        }
+      } catch (err) {
+        alert("Email không chính xác hoặc lỗi hệ thống");
+      }
+    } else {
+      navigate("/dashboard");
+    }
   };
 
   return (
