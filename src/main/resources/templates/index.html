@@ -1,0 +1,175 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${title}">Library Manager</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #333;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 50px;
+        max-width: 800px;
+        text-align: center;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      h1 {
+        color: #667eea;
+        font-size: 3em;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .icon {
+        font-size: 5em;
+        margin-bottom: 20px;
+      }
+
+      p {
+        font-size: 1.3em;
+        color: #555;
+        margin-bottom: 30px;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin: 40px 0;
+      }
+
+      .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 20px;
+        border-radius: 15px;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+      }
+
+      .feature-card h3 {
+        margin-bottom: 10px;
+        font-size: 1.2em;
+      }
+
+      .api-links {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 30px;
+      }
+
+      .api-links h3 {
+        color: #667eea;
+        margin-bottom: 15px;
+      }
+
+      .api-link {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 10px 20px;
+        margin: 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+      }
+
+      .api-link:hover {
+        background: #764ba2;
+      }
+
+      .status {
+        background: #d4edda;
+        color: #155724;
+        padding: 15px;
+        border-radius: 10px;
+        margin-top: 20px;
+        border-left: 4px solid #28a745;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon">📚</div>
+      <h1 th:text="${title}">Library Manager System</h1>
+      <p th:text="${message}">Chào mừng đến với hệ thống quản lý thư viện!</p>
+
+      <div class="features">
+        <div class="feature-card">
+          <h3>📖 Quản lý sách</h3>
+          <p>Thêm, sửa, xóa thông tin sách</p>
+        </div>
+        <div class="feature-card">
+          <h3>👥 Quản lý sinh viên</h3>
+          <p>Quản lý thông tin người mượn</p>
+        </div>
+        <div class="feature-card">
+          <h3>📋 Mượn/Trả sách</h3>
+          <p>Theo dõi phiếu mượn trả</p>
+        </div>
+        <div class="feature-card">
+          <h3>💰 Bán sách</h3>
+          <p>Quản lý đơn hàng bán sách</p>
+        </div>
+      </div>
+
+      <div class="api-links">
+        <h3>🧪 API Test Endpoints</h3>
+        <a href="/api/test/connection" class="api-link" target="_blank"
+          >Test Connection</a
+        >
+        <a href="/api/test/students" class="api-link" target="_blank"
+          >Students</a
+        >
+        <a href="/api/test/roles" class="api-link" target="_blank">Roles</a>
+        <a href="/api/test/categories" class="api-link" target="_blank"
+          >Categories</a
+        >
+        <a href="/api/test/staff" class="api-link" target="_blank">Staff</a>
+      </div>
+
+      <div class="status">
+        <strong>✅ Kết nối Database:</strong> Thành công!<br />
+        <strong>🚀 Server:</strong> http://localhost:8080<br />
+        <strong>💾 Database:</strong> LibraryManager_V2
+      </div>
+    </div>
+  </body>
+</html>
