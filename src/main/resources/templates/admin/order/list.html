@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Đơn mua</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Đơn mua</p>
+            <h2>Điều phối đơn mua sách của sinh viên</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel narrow-panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Tra cứu</p>
+                    <h3>Tìm theo mã đơn</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/orders}" method="get" class="stack-form">
+                <label class="field">
+                    <span>Mã đơn</span>
+                    <input type="number" name="orderId" th:value="${searchOrderId}" min="1" placeholder="Ví dụ: 105">
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm đơn
+                </button>
+            </form>
+
+            <div th:if="${searchOrder != null}" class="result-card">
+                <p class="eyebrow">Kết quả</p>
+                <h4 th:text="${'Đơn #' + searchOrder.orderId()}">Đơn #1</h4>
+                <p th:text="${searchOrder.studentName()}">Sinh viên</p>
+                <p th:text="${'Trạng thái: ' + searchOrder.status()}">Trạng thái</p>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Đơn mua gần đây</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <details class="expand-card" th:each="order : ${orders}">
+                    <summary>
+                        <div>
+                            <strong th:text="${'Đơn #' + order.orderId()}">Đơn #1</strong>
+                            <small th:text="${order.studentName() + ' • ' + order.orderDate()}">Sinh viên</small>
+                        </div>
+                        <span class="status-pill"
+                              th:classappend="${order.status() == 'Pending' ? ' warning' : (#strings.contains(order.status(), 'Đã giao') ? ' success' : (#strings.contains(order.status(), 'Đã hủy') or order.status() == 'Rejected' ? ' danger' : ' info'))}"
+                              th:text="${order.status()}">Sẵn sàng</span>
+                    </summary>
+
+                    <div class="details-body">
+                        <div class="detail-grid">
+                            <div>
+                                <p><strong>Sinh viên:</strong> <span th:text="${order.studentName()}">Sinh viên</span></p>
+                                <p><strong>Nhân viên xử lý:</strong> <span th:text="${order.staffName() != null ? order.staffName() : '-'}">-</span></p>
+                            </div>
+                            <div>
+                                <p><strong>Ngày tạo:</strong> <span th:text="${order.orderDate()}">2026-03-28</span></p>
+                                <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(order.totalAmount(), 1, 'COMMA', 2, 'POINT')} + ' VND'">0 VND</span></p>
+                            </div>
+                        </div>
+
+                        <div class="table-wrap">
+                            <table class="data-table compact-table">
+                                <thead>
+                                <tr>
+                                    <th>Sách</th>
+                                    <th>SL</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="item : ${order.items()}">
+                                    <td th:text="${item.bookName()}">Tên sách</td>
+                                    <td th:text="${item.quantity()}">1</td>
+                                    <td th:text="${#numbers.formatDecimal(item.unitPrice(), 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
+                                    <td th:text="${#numbers.formatDecimal(item.lineTotal(), 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="action-row">
+                            <form th:if="${order.status() == 'Pending'}" th:action="@{/admin/orders/approve/{id}(id=${order.orderId()})}" method="post">
+                                <button type="submit" class="btn btn-outline">
+                                    <i class="fa-solid fa-check"></i>
+                                    Duyệt Pending
+                                </button>
+                            </form>
+                            <form th:if="${order.status() == 'Pending'}" th:action="@{/admin/orders/reject/{id}(id=${order.orderId()})}" method="post">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa-solid fa-ban"></i>
+                                    Từ chối
+                                </button>
+                            </form>
+                            <form th:if="${order.status() != 'Đã giao' and order.status() != 'Đã hủy' and order.status() != 'Approved' and order.status() != 'Rejected'}"
+                                  th:action="@{/admin/orders/complete/{id}(id=${order.orderId()})}" method="post">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                    Hoàn tất giao
+                                </button>
+                            </form>
+                            <form th:if="${order.status() != 'Đã giao' and order.status() != 'Đã hủy' and order.status() != 'Approved' and order.status() != 'Rejected'}"
+                                  th:action="@{/admin/orders/cancel/{id}(id=${order.orderId()})}" method="post">
+                                <button type="submit" class="btn btn-ghost">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Hủy đơn
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </details>
+                <div class="empty-state" th:if="${#lists.isEmpty(orders)}">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <p>Chưa có đơn mua nào.</p>
+                </div>
+            </div>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+                   th:href="@{/admin/orders(page=${idx}, orderId=${searchOrderId})}"
+                   th:classappend="${idx == currentPage ? ' is-active' : ''}"
+                   th:text="${idx + 1}">1</a>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

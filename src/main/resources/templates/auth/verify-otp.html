@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/auth}">
+<head>
+    <title>Xác minh OTP</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="section-heading">
+        <p class="eyebrow">Bước 2</p>
+        <h2>Xác minh mã OTP</h2>
+        <p>Mã đã được gửi tới tài khoản <strong th:text="${pendingUsername}">student01</strong>.</p>
+    </div>
+
+    <form th:action="@{/verify-otp}" th:object="${form}" method="post" class="stack-form">
+        <label class="field">
+            <span>Mã OTP</span>
+            <input type="text" th:field="*{otp}" placeholder="Nhập 6 chữ số" maxlength="6">
+            <small class="field-error" th:if="${#fields.hasErrors('otp')}" th:errors="*{otp}"></small>
+        </label>
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-shield-heart"></i>
+            Xác minh
+        </button>
+    </form>
+
+    <div class="inline-links">
+        <a th:href="@{/forgot-password}">Bắt đầu lại</a>
+    </div>
+</section>
+</body>
+</html>

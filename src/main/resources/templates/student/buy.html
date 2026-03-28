@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/student}">
+<head>
+    <title>Mua sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Mua sách</p>
+            <h2>Danh sách chờ mua và lịch sử đơn hàng</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Catalog</p>
+                    <h3>Thêm sách vào danh sách chờ mua</h3>
+                </div>
+            </div>
+            <div class="card-grid">
+                <article class="mini-card" th:each="price : ${bookPrices}">
+                    <div>
+                        <strong th:text="${price.bookName()}">Tên sách</strong>
+                        <p class="muted-text" th:text="${price.available() > 0 ? 'Còn ' + price.available() + ' cuốn' : 'Tạm hết hàng'}">Còn hàng</p>
+                        <p class="price-text" th:text="${#numbers.formatDecimal(price.amount(), 1, 'COMMA', 2, 'POINT')} + ' ' + price.currency()">0</p>
+                    </div>
+                    <form th:action="@{/buy/waitlist/add}" method="post" class="inline-form">
+                        <input type="hidden" name="bookId" th:value="${price.bookId()}">
+                        <input type="number" name="quantity" value="1" min="1">
+                        <button type="submit" class="btn btn-outline btn-sm">Thêm</button>
+                    </form>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách chờ</p>
+                    <h3>Chọn sách để đặt đơn</h3>
+                </div>
+            </div>
+            <div th:if="${!#lists.isEmpty(waitlistItems)}" class="stack-form">
+                <div class="table-wrap">
+                    <table class="data-table compact-table">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Sách</th>
+                            <th>SL</th>
+                            <th>Giá</th>
+                            <th>Tổng</th>
+                            <th class="text-right">Cập nhật</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${waitlistItems}">
+                            <td><input type="checkbox" form="checkoutForm" name="selectedBookIds" th:value="${item['bookId']}" checked></td>
+                            <td th:text="${item['bookName']}">Tên sách</td>
+                            <td>
+                                <form th:action="@{/buy/waitlist/update/{bookId}(bookId=${item['bookId']})}" method="post" class="inline-form">
+                                    <input type="number" name="quantity" min="1" th:value="${item['quantity']}">
+                                    <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
+                                </form>
+                            </td>
+                            <td th:text="${#numbers.formatDecimal(item['amount'], 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
+                            <td th:text="${#numbers.formatDecimal(item['lineTotal'], 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
+                            <td class="text-right">
+                                <form th:action="@{/buy/waitlist/remove/{bookId}(bookId=${item['bookId']})}" method="post">
+                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form id="checkoutForm" th:action="@{/buy/checkout}" method="post">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        Tạo đơn mua
+                    </button>
+                </form>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(waitlistItems)}">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <p>Danh sách chờ mua đang trống.</p>
+            </div>
+        </section>
+    </div>
+
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <p class="eyebrow">Lịch sử đơn</p>
+                <h3>Các đơn mua đã tạo</h3>
+            </div>
+        </div>
+        <div class="stack-list">
+            <details class="expand-card" th:each="order : ${orderHistory}">
+                <summary>
+                    <div>
+                        <strong th:text="${'Đơn #' + order.orderId()}">Đơn #1</strong>
+                        <small th:text="${order.orderDate()}">2026-03-28</small>
+                    </div>
+                    <span class="status-pill"
+                          th:classappend="${#strings.contains(order.status(), 'Đã giao') ? ' success' : (#strings.contains(order.status(), 'Đã hủy') ? ' danger' : ' info')}"
+                          th:text="${order.status()}">Sẵn sàng</span>
+                </summary>
+                <div class="details-body">
+                    <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(order.totalAmount(), 1, 'COMMA', 2, 'POINT')} + ' VND'">0</span></p>
+                    <ul class="bullet-list">
+                        <li th:each="item : ${order.items()}"
+                            th:text="${item.bookName() + ' • SL ' + item.quantity() + ' • ' + #numbers.formatDecimal(item.lineTotal(), 1, 'COMMA', 2, 'POINT') + ' VND'}">Mục đơn</li>
+                    </ul>
+                </div>
+            </details>
+            <div class="empty-state" th:if="${#lists.isEmpty(orderHistory)}">
+                <i class="fa-solid fa-receipt"></i>
+                <p>Bạn chưa có đơn mua nào.</p>
+            </div>
+        </div>
+    </section>
+</section>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/student}">
+<head>
+    <title>Chi tiết sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Chi tiết sách</p>
+            <h2 th:text="${bookDetail.bookName()}">Tên sách</h2>
+        </div>
+        <a th:href="@{/home}" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="detail-layout">
+        <section class="panel detail-showcase">
+            <img class="book-cover large" th:src="${bookDetail.imageUrl() != null ? bookDetail.imageUrl() : 'https://placehold.co/400x520/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
+            <div class="detail-copy">
+                <div class="book-meta-line">
+                    <span class="status-pill" th:classappend="${bookDetail.available() > 0 ? ' success' : ' danger'}"
+                          th:text="${bookDetail.available() > 0 ? 'Còn ' + bookDetail.available() + ' cuốn' : 'Tạm hết'}">Còn 1</span>
+                    <span class="muted-text" th:text="${bookDetail.categoryName()}">Danh mục</span>
+                </div>
+                <p><strong>Nhà xuất bản:</strong> <span th:text="${bookDetail.publisherName() != null ? bookDetail.publisherName() : '-'}">NXB</span></p>
+                <p><strong>Tác giả:</strong> <span th:text="${#lists.isEmpty(bookDetail.authors()) ? 'Chưa gán' : #strings.listJoin(bookDetail.authors(), ', ')}">Tác giả</span></p>
+                <p><strong>Tổng số lượng:</strong> <span th:text="${bookDetail.quantity()}">0</span></p>
+                <p><strong>Giá hiện tại:</strong>
+                    <span th:text="${bookDetail.priceAmount() != null ? #numbers.formatDecimal(bookDetail.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + bookDetail.currency() : 'Chưa có giá'}">0</span>
+                </p>
+                <p th:if="${bookDetail.priceNote() != null}"><strong>Ghi chú giá:</strong> <span th:text="${bookDetail.priceNote()}">-</span></p>
+
+                <div class="action-row">
+                    <form th:if="${bookDetail.available() > 0}" th:action="@{/borrows/cart/add}" method="post">
+                        <input type="hidden" name="bookId" th:value="${bookDetail.bookId()}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Thêm vào giỏ mượn
+                        </button>
+                    </form>
+                    <form th:action="@{/buy/waitlist/add}" method="post">
+                        <input type="hidden" name="bookId" th:value="${bookDetail.bookId()}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="btn btn-outline">
+                            <i class="fa-solid fa-basket-shopping"></i>
+                            Chờ mua
+                        </button>
+                    </form>
+                    <form th:if="${bookDetail.available() <= 0}" th:action="@{/borrows/holds}" method="post">
+                        <input type="hidden" name="bookId" th:value="${bookDetail.bookId()}">
+                        <button type="submit" class="btn btn-ghost">
+                            <i class="fa-solid fa-bell"></i>
+                            Giữ chỗ
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Tài liệu số</p>
+                    <h3>File có thể truy cập</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <article class="inline-card" th:each="file : ${bookDetail.files()}">
+                    <div>
+                        <strong th:text="${file.fileName()}">Tên file</strong>
+                        <small th:text="${file.fileType() != null ? file.fileType() : 'Không rõ loại'}">PDF</small>
+                    </div>
+                    <a class="btn btn-outline btn-sm" th:href="@{/home/book/file(id=${file.bookFileId()})}">
+                        <i class="fa-solid fa-download"></i>
+                        Mở file
+                    </a>
+                </article>
+                <div class="empty-state" th:if="${#lists.isEmpty(bookDetail.files())}">
+                    <i class="fa-solid fa-file-circle-xmark"></i>
+                    <p>Chưa có file số nào cho đầu sách này.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

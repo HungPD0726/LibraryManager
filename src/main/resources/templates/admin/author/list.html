@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Tác giả</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Tác giả</p>
+            <h2>Quản lý tác giả liên kết với sách</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Thêm mới</p>
+                    <h3>Tạo tác giả</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/authors/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Tên tác giả</span>
+                    <input type="text" th:field="*{authorName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('authorName')}" th:errors="*{authorName}"></small>
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm tác giả
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Tác giả hiện có</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <article class="inline-card" th:each="author : ${authors}">
+                    <form th:action="@{/admin/authors/edit/{id}(id=${author.authorId})}" method="post" class="inline-form grow">
+                        <input type="text" name="authorName" th:value="${author.authorName}">
+                        <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
+                    </form>
+                    <a class="btn btn-danger btn-sm" th:href="@{/admin/authors/delete/{id}(id=${author.authorId})}"
+                       onclick="return confirm('Xóa tác giả này?');">Xóa</a>
+                </article>
+                <div class="empty-state" th:if="${#lists.isEmpty(authors)}">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <p>Chưa có tác giả nào.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

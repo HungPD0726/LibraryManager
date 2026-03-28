@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Tạo phiếu mượn</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Tạo phiếu mượn</p>
+            <h2>Lập phiếu mượn trực tiếp cho sinh viên</h2>
+        </div>
+        <a th:href="@{/admin/borrows}" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/admin/borrows/create}" th:object="${form}" method="post" class="stack-form">
+            <div class="field-row">
+                <label class="field grow">
+                    <span>Sinh viên</span>
+                    <select th:field="*{studentId}">
+                        <option value="">Chọn sinh viên</option>
+                        <option th:each="student : ${students}" th:value="${student.studentId}"
+                                th:text="${student.studentName + ' - ' + (student.email != null ? student.email : 'Không có email')}"></option>
+                    </select>
+                    <small class="field-error" th:if="${#fields.hasErrors('studentId')}" th:errors="*{studentId}"></small>
+                </label>
+                <label class="field">
+                    <span>Hạn trả</span>
+                    <input type="date" th:field="*{dueDate}">
+                    <small class="field-error" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></small>
+                </label>
+            </div>
+
+            <div class="panel-soft">
+                <div class="panel-head compact">
+                    <div>
+                        <p class="eyebrow">Danh sách sách</p>
+                        <h3>Thêm từng đầu sách cần mượn</h3>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" data-add-borrow-line>
+                        <i class="fa-solid fa-plus"></i>
+                        Thêm dòng
+                    </button>
+                </div>
+
+                <div class="stack-list" data-borrow-lines>
+                    <div class="inline-card borrow-line" th:if="${form.bookIds == null or #lists.isEmpty(form.bookIds)}">
+                        <label class="field grow">
+                            <span>Sách</span>
+                            <select name="bookIds">
+                                <option value="">Chọn sách</option>
+                                <option th:each="book : ${books}" th:value="${book.bookId}"
+                                        th:text="${book.bookName + ' (còn ' + book.available + ')'}"></option>
+                            </select>
+                        </label>
+                        <label class="field">
+                            <span>Số lượng</span>
+                            <input type="number" name="quantities" min="1" value="1">
+                        </label>
+                        <button type="button" class="btn btn-ghost btn-sm" data-remove-borrow-line>
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="inline-card borrow-line" th:each="bookId, stat : ${form.bookIds}">
+                        <label class="field grow">
+                            <span>Sách</span>
+                            <select name="bookIds">
+                                <option value="">Chọn sách</option>
+                                <option th:each="book : ${books}" th:value="${book.bookId}"
+                                        th:selected="${bookId == book.bookId}"
+                                        th:text="${book.bookName + ' (còn ' + book.available + ')'}"></option>
+                            </select>
+                        </label>
+                        <label class="field">
+                            <span>Số lượng</span>
+                            <input type="number" name="quantities" min="1"
+                                   th:value="${form.quantities != null and stat.index < form.quantities.size() ? form.quantities[stat.index] : 1}">
+                        </label>
+                        <button type="button" class="btn btn-ghost btn-sm" data-remove-borrow-line>
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Tạo phiếu
+                </button>
+                <a th:href="@{/admin/borrows}" class="btn btn-ghost">Hủy</a>
+            </div>
+        </form>
+    </section>
+
+    <template id="borrowLineTemplate">
+        <div class="inline-card borrow-line">
+            <label class="field grow">
+                <span>Sách</span>
+                <select name="bookIds">
+                    <option value="">Chọn sách</option>
+                    <option th:each="book : ${books}" th:value="${book.bookId}"
+                            th:text="${book.bookName + ' (còn ' + book.available + ')'}"></option>
+                </select>
+            </label>
+            <label class="field">
+                <span>Số lượng</span>
+                <input type="number" name="quantities" min="1" value="1">
+            </label>
+            <button type="button" class="btn btn-ghost btn-sm" data-remove-borrow-line>
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>
+    </template>
+</section>
+</body>
+</html>

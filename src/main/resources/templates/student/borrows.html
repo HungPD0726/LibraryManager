@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/student}">
+<head>
+    <title>Mượn sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Mượn sách</p>
+            <h2>Giỏ mượn, lịch sử và giữ chỗ</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Giỏ mượn</p>
+                    <h3>Gửi yêu cầu mượn</h3>
+                </div>
+            </div>
+            <div class="table-wrap" th:if="${!#lists.isEmpty(cartItems)}">
+                <table class="data-table compact-table">
+                    <thead>
+                    <tr>
+                        <th>Sách</th>
+                        <th>Số lượng</th>
+                        <th class="text-right">Xử lý</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${cartItems}">
+                        <td th:text="${item.bookName()}">Tên sách</td>
+                        <td th:text="${item.quantity()}">1</td>
+                        <td class="text-right">
+                            <form th:action="@{/borrows/cart/remove/{bookId}(bookId=${item.bookId()})}" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${#lists.isEmpty(cartItems)}">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <p>Giỏ mượn đang trống. Hãy thêm sách từ trang chủ hoặc trang chi tiết.</p>
+            </div>
+
+            <form th:if="${!#lists.isEmpty(cartItems)}" th:action="@{/borrows/request}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Hạn trả mong muốn</span>
+                    <input type="date" name="dueDate" th:value="${defaultDueDate}">
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Gửi yêu cầu mượn
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Giữ chỗ</p>
+                    <h3>Yêu cầu đang hoạt động</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <article class="inline-card" th:each="hold : ${activeHolds}">
+                    <div>
+                        <strong th:text="${hold.bookName()}">Tên sách</strong>
+                        <small th:text="${hold.status() + ' • ' + hold.holdDate()}">Waiting</small>
+                    </div>
+                    <form th:action="@{/borrows/holds/{holdId}/cancel(holdId=${hold.holdId()})}" method="post">
+                        <button type="submit" class="btn btn-ghost btn-sm">Hủy giữ chỗ</button>
+                    </form>
+                </article>
+                <div class="empty-state" th:if="${#lists.isEmpty(activeHolds)}">
+                    <i class="fa-solid fa-bell-slash"></i>
+                    <p>Chưa có yêu cầu giữ chỗ nào.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <p class="eyebrow">Lịch sử</p>
+                <h3>Các phiếu mượn đã gửi</h3>
+            </div>
+        </div>
+        <div class="table-wrap" th:if="${!#lists.isEmpty(borrowHistory)}">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Ngày trả</th>
+                    <th>Trạng thái</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="borrow : ${borrowHistory}">
+                    <td th:text="${borrow.borrowId}">1</td>
+                    <td th:text="${borrow.borrowDate}">2026-03-28</td>
+                    <td th:text="${borrow.dueDate}">2026-04-11</td>
+                    <td th:text="${borrow.returnDate != null ? borrow.returnDate : '-'}">-</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${borrow.status == 'Returned' ? ' success' : (borrow.status == 'Pending' ? ' warning' : (borrow.status == 'Borrowing' ? ' info' : ' danger'))}"
+                              th:text="${borrow.status}">Pending</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" th:if="${#lists.isEmpty(borrowHistory)}">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <p>Bạn chưa có lịch sử mượn nào.</p>
+        </div>
+    </section>
+</section>
+</body>
+</html>

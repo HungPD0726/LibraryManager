@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Tổng quan</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="hero hero-admin">
+        <div>
+            <p class="eyebrow">Tổng quan vận hành</p>
+            <h2>Điều phối sách, yêu cầu mượn và đơn mua trên một bảng điều khiển</h2>
+            <p>Kho dữ liệu đang bám schema `LibraryManager_V2` và rule tồn kho mới cho mượn, duyệt, trả và giao đơn mua.</p>
+        </div>
+        <div class="hero-actions">
+            <a th:href="@{/admin/borrows/create}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                Tạo phiếu mượn
+            </a>
+            <a th:href="@{/admin/books/create}" class="btn btn-outline">
+                <i class="fa-solid fa-book-medical"></i>
+                Thêm sách
+            </a>
+        </div>
+    </div>
+
+    <div class="metric-grid">
+        <article class="metric-card">
+            <span class="metric-icon soft-teal"><i class="fa-solid fa-book"></i></span>
+            <div>
+                <strong th:text="${totalBooks}">0</strong>
+                <p>Tổng đầu sách</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-green"><i class="fa-solid fa-box-open"></i></span>
+            <div>
+                <strong th:text="${totalAvailable}">0</strong>
+                <p>Sách sẵn sàng</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-gold"><i class="fa-solid fa-user-graduate"></i></span>
+            <div>
+                <strong th:text="${totalStudents}">0</strong>
+                <p>Sinh viên</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-ink"><i class="fa-solid fa-user-gear"></i></span>
+            <div>
+                <strong th:text="${totalStaff}">0</strong>
+                <p>Nhân viên</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-rose"><i class="fa-solid fa-hourglass-half"></i></span>
+            <div>
+                <strong th:text="${pendingBorrows}">0</strong>
+                <p>Yêu cầu mượn chờ</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-sea"><i class="fa-solid fa-arrows-rotate"></i></span>
+            <div>
+                <strong th:text="${activeBorrows}">0</strong>
+                <p>Đang mượn</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-warn"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+                <strong th:text="${overdueBorrows}">0</strong>
+                <p>Quá hạn</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-lime"><i class="fa-solid fa-layer-group"></i></span>
+            <div>
+                <strong th:text="${totalCategories}">0</strong>
+                <p>Danh mục</p>
+            </div>
+        </article>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Lối tắt</p>
+                    <h3>Thao tác nhanh</h3>
+                </div>
+            </div>
+            <div class="quick-grid">
+                <a th:href="@{/admin/orders}" class="quick-link">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <span>Quản lý đơn mua</span>
+                </a>
+                <a th:href="@{/admin/bookfiles}" class="quick-link">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <span>Quản lý file sách</span>
+                </a>
+                <a th:href="@{/admin/authors}" class="quick-link">
+                    <i class="fa-solid fa-pen-nib"></i>
+                    <span>Quản lý tác giả</span>
+                </a>
+                <a th:href="@{/admin/students}" class="quick-link">
+                    <i class="fa-solid fa-address-card"></i>
+                    <span>Hồ sơ sinh viên</span>
+                </a>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Rule nghiệp vụ</p>
+                    <h3>Điểm kiểm soát tồn kho</h3>
+                </div>
+            </div>
+            <ul class="bullet-list">
+                <li>Admin tạo phiếu mượn trực tiếp: chuyển `Borrowing` và trừ `Available` ngay.</li>
+                <li>Sinh viên gửi yêu cầu: chỉ tạo `Pending`, chưa trừ tồn kho cho tới khi duyệt.</li>
+                <li>Đơn mua sinh viên: tạo `Sẵn sàng` nếu đủ hàng, `Hàng chờ` nếu thiếu hàng.</li>
+                <li>Luồng giao đơn đảm bảo không trừ tồn hai lần cho cùng một đơn.</li>
+            </ul>
+        </section>
+    </div>
+</section>
+</body>
+</html>

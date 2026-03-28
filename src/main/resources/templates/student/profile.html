@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/student}">
+<head>
+    <title>Hồ sơ</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Hồ sơ</p>
+            <h2>Thông tin cá nhân và bảo mật</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Thông tin cá nhân</p>
+                    <h3>Cập nhật hồ sơ sinh viên</h3>
+                </div>
+            </div>
+            <form th:action="@{/profile}" th:object="${profileForm}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Họ và tên</span>
+                    <input type="text" th:field="*{studentName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></small>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" th:field="*{email}">
+                </label>
+                <label class="field">
+                    <span>Số điện thoại</span>
+                    <input type="text" th:field="*{phone}">
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Lưu hồ sơ
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Bảo mật</p>
+                    <h3>Đổi mật khẩu đăng nhập</h3>
+                </div>
+            </div>
+            <form th:action="@{/profile/change-password}" th:object="${passwordForm}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Mật khẩu hiện tại</span>
+                    <input type="password" th:field="*{currentPassword}">
+                    <small class="field-error" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></small>
+                </label>
+                <label class="field">
+                    <span>Mật khẩu mới</span>
+                    <input type="password" th:field="*{newPassword}">
+                    <small class="field-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
+                </label>
+                <label class="field">
+                    <span>Xác nhận mật khẩu mới</span>
+                    <input type="password" th:field="*{confirmPassword}">
+                    <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+                </label>
+                <button type="submit" class="btn btn-outline">
+                    <i class="fa-solid fa-key"></i>
+                    Cập nhật mật khẩu
+                </button>
+            </form>
+        </section>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE | Library Manager">Library Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="student-shell">
+<header class="student-topbar">
+    <a class="brand-mark" th:href="@{/home}">
+        <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
+        <span>
+            <strong>Library Manager</strong>
+            <small>Student Portal</small>
+        </span>
+    </a>
+
+    <nav class="student-nav">
+        <a th:href="@{/home}" th:classappend="${requestPath == '/home' ? ' is-active' : ''}">Trang chủ</a>
+        <a th:href="@{/borrows}" th:classappend="${#strings.startsWith(requestPath, '/borrows') ? ' is-active' : ''}">Mượn sách</a>
+        <a th:href="@{/buy}" th:classappend="${#strings.startsWith(requestPath, '/buy') ? ' is-active' : ''}">Mua sách</a>
+        <a th:href="@{/profile}" th:classappend="${#strings.startsWith(requestPath, '/profile') ? ' is-active' : ''}">Hồ sơ</a>
+        <a th:href="@{/chatbot}" th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">Chatbot</a>
+        <a th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">Admin</a>
+    </nav>
+
+    <div class="student-profile-bar">
+        <span class="profile-avatar" th:text="${#strings.substring((currentStudent != null ? currentStudent.studentName : (currentUsername != null ? currentUsername : 'S')), 0, 1).toUpperCase()}">S</span>
+        <div>
+            <strong th:text="${currentStudent != null ? currentStudent.studentName : currentUsername}">Sinh viên</strong>
+            <small th:text="${currentStudent != null ? currentStudent.email : currentUsername}">student@example.com</small>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-ghost">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Đăng xuất
+            </button>
+        </form>
+    </div>
+</header>
+
+<main class="student-main">
+    <div th:if="${msg}" class="alert alert-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span th:text="${msg}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert>
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div th:if="${message}" class="alert alert-success">
+        <i class="fa-solid fa-circle-check"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert>
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert>
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
+    <div layout:fragment="content"></div>
+</main>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE | Library Manager">Library Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="shell admin-shell">
+<div class="shell-sidebar-backdrop" data-sidebar-toggle></div>
+<aside class="shell-sidebar" id="sidebar">
+    <div class="shell-brand">
+        <a class="brand-mark" th:href="@{/admin/dashboard}">
+            <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
+            <span>
+                <strong>Library Manager</strong>
+                <small>Admin Console</small>
+            </span>
+        </a>
+    </div>
+
+    <nav class="shell-nav">
+        <a th:href="@{/admin/dashboard}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/dashboard') ? ' is-active' : ''}">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Tổng quan</span>
+        </a>
+        <a th:href="@{/admin/books}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/books') ? ' is-active' : ''}">
+            <i class="fa-solid fa-book"></i>
+            <span>Sách</span>
+        </a>
+        <a th:href="@{/admin/borrows}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/borrows') ? ' is-active' : ''}">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            <span>Mượn trả</span>
+        </a>
+        <a th:href="@{/admin/orders}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/orders') ? ' is-active' : ''}">
+            <i class="fa-solid fa-basket-shopping"></i>
+            <span>Đơn mua</span>
+        </a>
+        <a th:href="@{/admin/authors}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/authors') ? ' is-active' : ''}">
+            <i class="fa-solid fa-pen-nib"></i>
+            <span>Tác giả</span>
+        </a>
+        <a th:href="@{/admin/bookfiles}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/bookfiles') ? ' is-active' : ''}">
+            <i class="fa-solid fa-file-arrow-down"></i>
+            <span>File sách</span>
+        </a>
+        <a th:href="@{/admin/categories}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/categories') ? ' is-active' : ''}">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Danh mục</span>
+        </a>
+        <a th:href="@{/admin/publishers}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/publishers') ? ' is-active' : ''}">
+            <i class="fa-solid fa-building"></i>
+            <span>Nhà xuất bản</span>
+        </a>
+        <a th:href="@{/admin/students}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/students') ? ' is-active' : ''}">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Sinh viên</span>
+        </a>
+        <a th:href="@{/admin/staff}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/staff') ? ' is-active' : ''}">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>Nhân viên</span>
+        </a>
+        <a th:if="${isStudent}" th:href="@{/home}" class="nav-link">
+            <i class="fa-solid fa-house"></i>
+            <span>Cổng sinh viên</span>
+        </a>
+    </nav>
+
+    <div class="shell-sidebar-footer">
+        <div class="profile-chip">
+                <span class="profile-avatar" th:text="${#strings.substring((currentUsername != null ? currentUsername : 'U'), 0, 1).toUpperCase()}">U</span>
+            <div>
+                <strong th:text="${currentUsername}">user</strong>
+                <small sec:authorize="hasRole('ADMIN')">Quản trị / nhân viên</small>
+                <small sec:authorize="!hasRole('ADMIN')">Nhân viên thư viện</small>
+            </div>
+        </div>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-ghost btn-block">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Đăng xuất
+            </button>
+        </form>
+    </div>
+</aside>
+
+<main class="shell-main">
+    <header class="topbar">
+        <div class="topbar-left">
+            <button type="button" class="icon-button" data-sidebar-toggle>
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div>
+                <p class="eyebrow">Bảng điều hành</p>
+                <h1 class="topbar-title">Theo dõi thư viện theo thời gian thực</h1>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <div class="metric-pill">
+                <span class="metric-pill-label">Yêu cầu mượn chờ</span>
+                <strong th:text="${pendingBorrowCount ?: 0}">0</strong>
+            </div>
+            <a th:if="${isStudent}" th:href="@{/chatbot}" class="btn btn-outline">
+                <i class="fa-solid fa-robot"></i>
+                Chatbot
+            </a>
+        </div>
+    </header>
+
+    <section class="page-shell">
+        <div th:if="${msg}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <span th:text="${msg}"></span>
+            <button type="button" class="alert-close" data-dismiss-alert>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div th:if="${message}" class="alert alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="alert-close" data-dismiss-alert>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="alert-close" data-dismiss-alert>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div layout:fragment="content"></div>
+    </section>
+</main>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

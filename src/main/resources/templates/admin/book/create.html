@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Thêm sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Thêm sách</p>
+            <h2>Tạo bản ghi sách mới</h2>
+        </div>
+        <a th:href="@{/admin/books}" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/admin/books/create}" th:object="${form}" method="post" class="stack-form">
+            <div class="field-row">
+                <label class="field grow">
+                    <span>Tên sách</span>
+                    <input type="text" th:field="*{bookName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('bookName')}" th:errors="*{bookName}"></small>
+                </label>
+                <label class="field">
+                    <span>Ảnh bìa (URL)</span>
+                    <input type="text" th:field="*{imageUrl}" placeholder="https://...">
+                </label>
+            </div>
+
+            <div class="field-row field-row-3">
+                <label class="field">
+                    <span>Tổng số lượng</span>
+                    <input type="number" th:field="*{quantity}" min="0">
+                    <small class="field-error" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></small>
+                </label>
+                <label class="field">
+                    <span>Có sẵn</span>
+                    <input type="number" th:field="*{available}" min="0">
+                    <small class="field-error" th:if="${#fields.hasErrors('available')}" th:errors="*{available}"></small>
+                </label>
+                <label class="field">
+                    <span>Tiền tệ</span>
+                    <input type="text" th:field="*{currency}">
+                </label>
+            </div>
+
+            <div class="field-row">
+                <label class="field grow">
+                    <span>Danh mục</span>
+                    <select th:field="*{categoryId}">
+                        <option value="">Chọn danh mục</option>
+                        <option th:each="category : ${categories}" th:value="${category.categoryId}" th:text="${category.categoryName}"></option>
+                    </select>
+                    <small class="field-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}"></small>
+                </label>
+                <label class="field grow">
+                    <span>Nhà xuất bản</span>
+                    <select th:field="*{publisherId}">
+                        <option value="">Chọn nhà xuất bản</option>
+                        <option th:each="publisher : ${publishers}" th:value="${publisher.publisherId}" th:text="${publisher.publisherName}"></option>
+                    </select>
+                    <small class="field-error" th:if="${#fields.hasErrors('publisherId')}" th:errors="*{publisherId}"></small>
+                </label>
+            </div>
+
+            <label class="field">
+                <span>Tác giả</span>
+                <select th:field="*{authorIds}" multiple class="multiselect">
+                    <option th:each="author : ${authors}" th:value="${author.authorId}" th:text="${author.authorName}"></option>
+                </select>
+                <small>Giữ Ctrl hoặc Command để chọn nhiều tác giả.</small>
+            </label>
+
+            <div class="field-row">
+                <label class="field grow">
+                    <span>Giá bán</span>
+                    <input type="number" th:field="*{priceAmount}" min="0" step="0.01">
+                    <small class="field-error" th:if="${#fields.hasErrors('priceAmount')}" th:errors="*{priceAmount}"></small>
+                </label>
+                <label class="field grow">
+                    <span>Ghi chú giá</span>
+                    <input type="text" th:field="*{priceNote}" placeholder="Ví dụ: Giá ưu đãi tuần này">
+                </label>
+            </div>
+
+            <div class="action-row">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Lưu sách
+                </button>
+                <a th:href="@{/admin/books}" class="btn btn-ghost">Hủy</a>
+            </div>
+        </form>
+    </section>
+</section>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Sinh viên</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Sinh viên</p>
+            <h2>Quản lý hồ sơ sinh viên</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Tạo hồ sơ</p>
+                    <h3>Thêm sinh viên</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/students/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Họ và tên</span>
+                    <input type="text" th:field="*{studentName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></small>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" th:field="*{email}">
+                </label>
+                <label class="field">
+                    <span>Số điện thoại</span>
+                    <input type="text" th:field="*{phone}">
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm sinh viên
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Tra cứu sinh viên</h3>
+                </div>
+            </div>
+
+            <form th:action="@{/admin/students}" method="get" class="toolbar">
+                <label class="field grow">
+                    <span>Tìm kiếm</span>
+                    <input type="search" name="search" th:value="${search}" placeholder="Tên hoặc email">
+                </label>
+                <button type="submit" class="btn btn-outline">Tìm</button>
+            </form>
+
+            <div class="stack-list">
+                <details class="expand-card" th:each="student : ${students}">
+                    <summary>
+                        <div>
+                            <strong th:text="${student.studentName}">Sinh viên</strong>
+                            <small th:text="${student.email != null ? student.email : 'Chưa có email'}">email</small>
+                        </div>
+                        <span class="status-pill secondary" th:text="${student.phone != null ? student.phone : 'Chưa có SĐT'}">phone</span>
+                    </summary>
+                    <form th:action="@{/admin/students/edit/{id}(id=${student.studentId})}" method="post" class="stack-form details-body">
+                        <label class="field">
+                            <span>Họ và tên</span>
+                            <input type="text" name="studentName" th:value="${student.studentName}">
+                        </label>
+                        <div class="field-row">
+                            <label class="field grow">
+                                <span>Email</span>
+                                <input type="email" name="email" th:value="${student.email}">
+                            </label>
+                            <label class="field grow">
+                                <span>Số điện thoại</span>
+                                <input type="text" name="phone" th:value="${student.phone}">
+                            </label>
+                        </div>
+                        <div class="action-row">
+                            <button type="submit" class="btn btn-outline">Cập nhật</button>
+                            <a class="btn btn-danger" th:href="@{/admin/students/delete/{id}(id=${student.studentId})}"
+                               onclick="return confirm('Xóa sinh viên này?');">Xóa</a>
+                        </div>
+                    </form>
+                </details>
+                <div class="empty-state" th:if="${#lists.isEmpty(students)}">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <p>Chưa có hồ sơ sinh viên phù hợp.</p>
+                </div>
+            </div>
+
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+                   th:href="@{/admin/students(page=${idx}, search=${search})}"
+                   th:classappend="${idx == currentPage ? ' is-active' : ''}"
+                   th:text="${idx + 1}">1</a>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

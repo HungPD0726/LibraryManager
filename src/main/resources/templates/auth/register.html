@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/auth}">
+<head>
+    <title>Đăng ký</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="section-heading">
+        <p class="eyebrow">Đăng ký</p>
+        <h2>Tạo tài khoản sinh viên</h2>
+        <p>Tài khoản mới sẽ tự đồng bộ hồ sơ sinh viên để dùng portal ngay sau khi đăng nhập.</p>
+    </div>
+
+    <form th:action="@{/register}" th:object="${form}" method="post" class="stack-form">
+        <label class="field">
+            <span>Họ và tên</span>
+            <input type="text" th:field="*{staffName}" placeholder="Nguyễn Văn A">
+            <small class="field-error" th:if="${#fields.hasErrors('staffName')}" th:errors="*{staffName}"></small>
+        </label>
+
+        <div class="field-row">
+            <label class="field">
+                <span>Tên đăng nhập</span>
+                <input type="text" th:field="*{username}" placeholder="student01">
+                <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+            </label>
+            <label class="field">
+                <span>Email</span>
+                <input type="email" th:field="*{email}" placeholder="student01@example.com">
+                <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </label>
+        </div>
+
+        <div class="field-row">
+            <label class="field">
+                <span>Mật khẩu</span>
+                <input type="password" th:field="*{password}">
+                <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+            </label>
+            <label class="field">
+                <span>Xác nhận mật khẩu</span>
+                <input type="password" th:field="*{confirmPassword}">
+                <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fa-solid fa-user-plus"></i>
+            Tạo tài khoản
+        </button>
+    </form>
+
+    <div class="inline-links">
+        <a th:href="@{/login}">Quay lại đăng nhập</a>
+    </div>
+</section>
+</body>
+</html>

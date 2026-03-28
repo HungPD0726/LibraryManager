@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Mượn trả</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Mượn trả</p>
+            <h2>Điều phối phiếu mượn và yêu cầu chờ duyệt</h2>
+        </div>
+        <a th:href="@{/admin/borrows/create}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Tạo phiếu mượn
+        </a>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/admin/borrows}" method="get" class="toolbar">
+            <label class="field">
+                <span>Trạng thái</span>
+                <select name="status">
+                    <option value="">Tất cả</option>
+                    <option value="Pending" th:selected="${filterStatus == 'Pending'}">Pending</option>
+                    <option value="Borrowing" th:selected="${filterStatus == 'Borrowing'}">Borrowing</option>
+                    <option value="Returned" th:selected="${filterStatus == 'Returned'}">Returned</option>
+                    <option value="Overdue" th:selected="${filterStatus == 'Overdue'}">Overdue</option>
+                    <option value="Rejected" th:selected="${filterStatus == 'Rejected'}">Rejected</option>
+                </select>
+            </label>
+            <button type="submit" class="btn btn-outline">
+                <i class="fa-solid fa-filter"></i>
+                Lọc
+            </button>
+        </form>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sinh viên</th>
+                    <th>Nhân viên</th>
+                    <th>Ngày mượn</th>
+                    <th>Hạn trả</th>
+                    <th>Trạng thái</th>
+                    <th class="text-right">Xử lý</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="borrow : ${borrows}">
+                    <td th:text="${borrow.borrowId}">1</td>
+                    <td th:text="${borrow.student != null ? borrow.student.studentName : '-'}">Sinh viên</td>
+                    <td th:text="${borrow.staff != null ? borrow.staff.staffName : '-'}">Nhân viên</td>
+                    <td th:text="${borrow.borrowDate}">2026-03-28</td>
+                    <td th:text="${borrow.dueDate}">2026-04-11</td>
+                    <td>
+                        <span class="status-pill"
+                              th:classappend="${borrow.status == 'Pending' ? ' warning' : (borrow.status == 'Borrowing' ? ' info' : (borrow.status == 'Returned' ? ' success' : ' danger'))}"
+                              th:text="${borrow.status}">Pending</span>
+                    </td>
+                    <td class="text-right">
+                        <div class="action-row justify-end">
+                            <form th:if="${borrow.status == 'Pending'}" th:action="@{/admin/borrows/approve/{id}(id=${borrow.borrowId})}" method="post">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    <i class="fa-solid fa-check"></i>
+                                    Duyệt
+                                </button>
+                            </form>
+                            <form th:if="${borrow.status == 'Pending'}" th:action="@{/admin/borrows/reject/{id}(id=${borrow.borrowId})}" method="post">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fa-solid fa-ban"></i>
+                                    Từ chối
+                                </button>
+                            </form>
+                            <form th:if="${borrow.status == 'Borrowing' or borrow.status == 'Overdue'}" th:action="@{/admin/borrows/return/{id}(id=${borrow.borrowId})}" method="post">
+                                <button type="submit" class="btn btn-outline btn-sm">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    Xác nhận trả
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(borrows)}">
+                    <td colspan="7">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <p>Chưa có phiếu mượn phù hợp.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/admin/borrows(page=${idx}, status=${filterStatus})}"
+               th:classappend="${idx == currentPage ? ' is-active' : ''}"
+               th:text="${idx + 1}">1</a>
+        </div>
+    </section>
+</section>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Quản lý sách</p>
+            <h2>Danh mục sách và tồn kho hiện tại</h2>
+        </div>
+        <a th:href="@{/admin/books/create}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i>
+            Thêm sách
+        </a>
+    </div>
+
+    <section class="panel">
+        <form th:action="@{/admin/books}" method="get" class="toolbar">
+            <label class="field grow">
+                <span>Tìm theo tên sách</span>
+                <input type="search" name="search" th:value="${search}" placeholder="Nhập tên sách">
+            </label>
+            <button type="submit" class="btn btn-outline">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Tìm kiếm
+            </button>
+        </form>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sách</th>
+                    <th>Danh mục</th>
+                    <th>Nhà xuất bản</th>
+                    <th>Tác giả</th>
+                    <th>Tồn</th>
+                    <th>Có sẵn</th>
+                    <th class="text-right">Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.bookId}">1</td>
+                    <td>
+                        <div class="entity-cell">
+                            <img class="thumb" th:src="${book.imageUrl != null ? book.imageUrl : 'https://placehold.co/64x88/e2f3f2/0f3d3b?text=Book'}" alt="Book cover">
+                            <div>
+                                <strong th:text="${book.bookName}">Tên sách</strong>
+                                <small th:text="${book.imageUrl != null ? 'Có ảnh bìa' : 'Chưa có ảnh bìa'}">meta</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td th:text="${book.category != null ? book.category.categoryName : '-'}">Danh mục</td>
+                    <td th:text="${book.publisher != null ? book.publisher.publisherName : '-'}">NXB</td>
+                    <td>
+                        <span th:if="${#lists.isEmpty(book.authors)}">-</span>
+                        <span th:each="author, stat : ${book.authors}">
+                            <span th:text="${author.authorName}">Tác giả</span><span th:if="${!stat.last}">, </span>
+                        </span>
+                    </td>
+                    <td th:text="${book.quantity}">0</td>
+                    <td>
+                        <span class="status-pill success" th:if="${book.available > 0}" th:text="${book.available}">0</span>
+                        <span class="status-pill danger" th:if="${book.available <= 0}">Hết</span>
+                    </td>
+                    <td class="text-right">
+                        <div class="action-row">
+                            <a class="btn btn-outline btn-sm" th:href="@{/admin/books/edit/{id}(id=${book.bookId})}">
+                                <i class="fa-solid fa-pen"></i>
+                                Sửa
+                            </a>
+                            <a class="btn btn-danger btn-sm" th:href="@{/admin/books/delete/{id}(id=${book.bookId})}"
+                               onclick="return confirm('Xóa sách này?');">
+                                <i class="fa-solid fa-trash"></i>
+                                Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(books)}">
+                    <td colspan="8">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-box-open"></i>
+                            <p>Chưa có sách phù hợp với bộ lọc hiện tại.</p>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+               th:href="@{/admin/books(page=${idx}, search=${search})}"
+               th:classappend="${idx == currentPage ? ' is-active' : ''}"
+               th:text="${idx + 1}">1</a>
+        </div>
+    </section>
+</section>
+</body>
+</html>

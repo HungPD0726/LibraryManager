@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Nhà xuất bản</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Nhà xuất bản</p>
+            <h2>Quản lý đối tác xuất bản</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Thêm mới</p>
+                    <h3>Tạo nhà xuất bản</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/publishers/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Tên nhà xuất bản</span>
+                    <input type="text" th:field="*{publisherName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('publisherName')}" th:errors="*{publisherName}"></small>
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm nhà xuất bản
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Nhà xuất bản hiện có</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <article class="inline-card" th:each="publisher : ${publishers}">
+                    <form th:action="@{/admin/publishers/edit/{id}(id=${publisher.publisherId})}" method="post" class="inline-form grow">
+                        <input type="text" name="publisherName" th:value="${publisher.publisherName}">
+                        <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
+                    </form>
+                    <a class="btn btn-danger btn-sm" th:href="@{/admin/publishers/delete/{id}(id=${publisher.publisherId})}"
+                       onclick="return confirm('Xóa nhà xuất bản này?');">Xóa</a>
+                </article>
+                <div class="empty-state" th:if="${#lists.isEmpty(publishers)}">
+                    <i class="fa-solid fa-building"></i>
+                    <p>Chưa có nhà xuất bản nào.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

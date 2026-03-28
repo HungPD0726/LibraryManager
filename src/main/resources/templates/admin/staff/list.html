@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Nhân viên</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Nhân viên</p>
+            <h2>Quản lý tài khoản nội bộ</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Tạo tài khoản</p>
+                    <h3>Thêm nhân viên</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/staff/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Tên nhân viên</span>
+                    <input type="text" th:field="*{staffName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('staffName')}" th:errors="*{staffName}"></small>
+                </label>
+                <div class="field-row">
+                    <label class="field grow">
+                        <span>Tên đăng nhập</span>
+                        <input type="text" th:field="*{username}">
+                        <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+                    </label>
+                    <label class="field grow">
+                        <span>Email</span>
+                        <input type="email" th:field="*{email}">
+                    </label>
+                </div>
+                <label class="field">
+                    <span>Mật khẩu</span>
+                    <input type="password" th:field="*{password}">
+                    <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                </label>
+                <label class="field">
+                    <span>Vai trò</span>
+                    <div class="check-grid">
+                        <label class="check-item" th:each="role : ${roles}">
+                            <input type="checkbox" th:field="*{roleIds}" th:value="${role.roleId}">
+                            <span th:text="${role.roleName}">ROLE_ADMIN</span>
+                        </label>
+                    </div>
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-user-plus"></i>
+                    Thêm nhân viên
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Tài khoản hiện có</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <details class="expand-card" th:each="staff : ${staffList}">
+                    <summary>
+                        <div>
+                            <strong th:text="${staff.staffName}">Nhân viên</strong>
+                            <small th:text="${staff.username}">username</small>
+                        </div>
+                        <span class="status-pill secondary">
+                            <span th:each="role, stat : ${staff.roles}">
+                                <span th:text="${role.roleName}">ROLE</span><span th:if="${!stat.last}">, </span>
+                            </span>
+                        </span>
+                    </summary>
+                    <form th:action="@{/admin/staff/edit/{id}(id=${staff.staffId})}" method="post" class="stack-form details-body">
+                        <label class="field">
+                            <span>Tên nhân viên</span>
+                            <input type="text" name="staffName" th:value="${staff.staffName}">
+                        </label>
+                        <div class="field-row">
+                            <label class="field grow">
+                                <span>Tên đăng nhập</span>
+                                <input type="text" name="username" th:value="${staff.username}">
+                            </label>
+                            <label class="field grow">
+                                <span>Email</span>
+                                <input type="email" name="email" th:value="${staff.email}">
+                            </label>
+                        </div>
+                        <label class="field">
+                            <span>Mật khẩu mới (để trống nếu giữ nguyên)</span>
+                            <input type="password" name="password">
+                        </label>
+                        <label class="field">
+                            <span>Vai trò</span>
+                            <div class="check-grid">
+                                <label class="check-item" th:each="role : ${roles}">
+                                    <input type="checkbox" name="roleIds" th:value="${role.roleId}"
+                                           th:checked="${#lists.contains(staff.roles.![roleId], role.roleId)}">
+                                    <span th:text="${role.roleName}">ROLE</span>
+                                </label>
+                            </div>
+                        </label>
+                        <div class="action-row">
+                            <button type="submit" class="btn btn-outline">Cập nhật</button>
+                            <a class="btn btn-danger" th:href="@{/admin/staff/delete/{id}(id=${staff.staffId})}"
+                               onclick="return confirm('Xóa nhân viên này?');">Xóa</a>
+                        </div>
+                    </form>
+                </details>
+                <div class="empty-state" th:if="${#lists.isEmpty(staffList)}">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <p>Chưa có tài khoản nhân viên nào.</p>
+                </div>
+            </div>
+            <div class="pagination" th:if="${totalPages > 1}">
+                <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+                   th:href="@{/admin/staff(page=${idx})}"
+                   th:classappend="${idx == currentPage ? ' is-active' : ''}"
+                   th:text="${idx + 1}">1</a>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

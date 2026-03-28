@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Danh mục</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Danh mục</p>
+            <h2>Quản lý nhóm sách</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Thêm mới</p>
+                    <h3>Tạo danh mục</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/categories/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Tên danh mục</span>
+                    <input type="text" th:field="*{categoryName}">
+                    <small class="field-error" th:if="${#fields.hasErrors('categoryName')}" th:errors="*{categoryName}"></small>
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm danh mục
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>Danh mục hiện có</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <article class="inline-card" th:each="category : ${categories}">
+                    <form th:action="@{/admin/categories/edit/{id}(id=${category.categoryId})}" method="post" class="inline-form grow">
+                        <input type="text" name="categoryName" th:value="${category.categoryName}">
+                        <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
+                    </form>
+                    <a class="btn btn-danger btn-sm" th:href="@{/admin/categories/delete/{id}(id=${category.categoryId})}"
+                       onclick="return confirm('Xóa danh mục này?');">Xóa</a>
+                </article>
+                <div class="empty-state" th:if="${#lists.isEmpty(categories)}">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <p>Chưa có danh mục nào.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

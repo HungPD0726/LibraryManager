@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>File sách</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">File sách</p>
+            <h2>Quản lý file đọc trực tuyến và tài liệu đính kèm</h2>
+        </div>
+    </div>
+
+    <div class="split-grid">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Thêm file</p>
+                    <h3>Liên kết file với sách</h3>
+                </div>
+            </div>
+            <form th:action="@{/admin/bookfiles/create}" th:object="${form}" method="post" class="stack-form">
+                <label class="field">
+                    <span>Sách</span>
+                    <select th:field="*{bookId}">
+                        <option value="">Chọn sách</option>
+                        <option th:each="book : ${books}" th:value="${book.bookId}" th:text="${book.bookName}"></option>
+                    </select>
+                    <small class="field-error" th:if="${#fields.hasErrors('bookId')}" th:errors="*{bookId}"></small>
+                </label>
+                <div class="field-row">
+                    <label class="field grow">
+                        <span>Tên file</span>
+                        <input type="text" th:field="*{fileName}">
+                        <small class="field-error" th:if="${#fields.hasErrors('fileName')}" th:errors="*{fileName}"></small>
+                    </label>
+                    <label class="field grow">
+                        <span>Loại file</span>
+                        <input type="text" th:field="*{fileType}" placeholder="PDF, EPUB...">
+                    </label>
+                </div>
+                <label class="field">
+                    <span>URL file</span>
+                    <input type="text" th:field="*{fileUrl}" placeholder="https://...">
+                    <small class="field-error" th:if="${#fields.hasErrors('fileUrl')}" th:errors="*{fileUrl}"></small>
+                </label>
+                <div class="field-row">
+                    <label class="field grow">
+                        <span>Kích thước (bytes)</span>
+                        <input type="number" th:field="*{fileSize}" min="0">
+                    </label>
+                    <label class="field checkbox-line">
+                        <input type="checkbox" th:field="*{active}">
+                        <span>Đang hoạt động</span>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                    Thêm file
+                </button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Danh sách</p>
+                    <h3>File đã liên kết</h3>
+                </div>
+            </div>
+            <div class="stack-list">
+                <details class="expand-card" th:each="file : ${bookFiles}">
+                    <summary>
+                        <div>
+                            <strong th:text="${file.fileName()}">Tệp</strong>
+                            <small th:text="${file.bookName()}">Tên sách</small>
+                        </div>
+                        <span class="status-pill" th:classappend="${file.active() ? ' success' : ' danger'}"
+                              th:text="${file.active() ? 'Hoạt động' : 'Tắt'}">Hoạt động</span>
+                    </summary>
+                    <form th:action="@{/admin/bookfiles/edit/{id}(id=${file.bookFileId()})}" method="post" class="stack-form details-body">
+                        <label class="field">
+                            <span>Sách</span>
+                            <select name="bookId">
+                                <option th:each="book : ${books}" th:value="${book.bookId}"
+                                        th:selected="${book.bookId == file.bookId()}" th:text="${book.bookName}"></option>
+                            </select>
+                        </label>
+                        <div class="field-row">
+                            <label class="field grow">
+                                <span>Tên file</span>
+                                <input type="text" name="fileName" th:value="${file.fileName()}">
+                            </label>
+                            <label class="field grow">
+                                <span>Loại file</span>
+                                <input type="text" name="fileType" th:value="${file.fileType()}">
+                            </label>
+                        </div>
+                        <label class="field">
+                            <span>URL file</span>
+                            <input type="text" name="fileUrl" th:value="${file.fileUrl()}">
+                        </label>
+                        <div class="field-row">
+                            <label class="field grow">
+                                <span>Kích thước</span>
+                                <input type="number" name="fileSize" min="0" th:value="${file.fileSize()}">
+                            </label>
+                            <label class="field checkbox-line">
+                                <input type="hidden" name="active" value="false">
+                                <input type="checkbox" name="active" value="true" th:checked="${file.active()}">
+                                <span>Đang hoạt động</span>
+                            </label>
+                        </div>
+                        <div class="action-row">
+                            <button type="submit" class="btn btn-outline">Cập nhật</button>
+                            <a class="btn btn-danger" th:href="@{/admin/bookfiles/delete/{id}(id=${file.bookFileId()})}"
+                               onclick="return confirm('Xóa file này?');">Xóa</a>
+                        </div>
+                    </form>
+                </details>
+                <div class="empty-state" th:if="${#lists.isEmpty(bookFiles)}">
+                    <i class="fa-solid fa-file-arrow-down"></i>
+                    <p>Chưa có file sách nào.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>
