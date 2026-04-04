@@ -39,14 +39,14 @@
         <article class="metric-card">
             <span class="metric-icon soft-rose"><i class="fa-solid fa-coins"></i></span>
             <div>
-                <strong th:text="${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
+                <strong th:text="|${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
                 <p>Tổng phạt chưa thu</p>
             </div>
         </article>
         <article class="metric-card">
             <span class="metric-icon soft-green"><i class="fa-solid fa-check-circle"></i></span>
             <div>
-                <strong th:text="${#numbers.formatDecimal(paidTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
+                <strong th:text="|${#numbers.formatDecimal(paidTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
                 <p>Tổng phạt đã thu</p>
             </div>
         </article>
@@ -81,9 +81,9 @@
             <tbody>
             <tr th:each="fine : ${fines}">
                 <td th:text="${fine.fineId}">1</td>
-                <td th:text="'#' + ${fine.borrow.borrowId}">Borrow</td>
+                <td th:text="|#${fine.borrow.borrowId}|">Borrow</td>
                 <td th:text="${fine.borrow.student != null ? fine.borrow.student.studentName : '-'}">SV</td>
-                <td th:text="${#numbers.formatDecimal(fine.amount, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                <td th:text="|${#numbers.formatDecimal(fine.amount, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</td>
                 <td th:text="${fine.reason}">-</td>
                 <td th:text="${fine.createdDate}">-</td>
                 <td th:text="${fine.paidDate != null ? fine.paidDate : '-'}">-</td>
@@ -93,7 +93,7 @@
                           th:text="${fine.status == 'Paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}">Status</span>
                 </td>
                 <td>
-                    <form th:if="${fine.status != 'Paid'}" th:action="@{'/admin/fines/' + ${fine.fineId} + '/pay'}" method="post" style="display:inline">
+                    <form th:if="${fine.status != 'Paid'}" th:action="@{/admin/fines/{id}/pay(id=${fine.fineId})}" method="post" style="display:inline">
                         <button type="submit" class="btn btn-sm btn-primary">
                             <i class="fa-solid fa-money-bill-wave"></i> Thanh toán
                         </button>
@@ -112,7 +112,7 @@
     <!-- Pagination -->
     <nav th:if="${totalPages > 1}" class="pagination-bar">
         <a th:if="${currentPage > 0}" th:href="@{/admin/fines(page=${currentPage - 1}, status=${statusFilter})}" class="btn btn-ghost btn-sm">← Trước</a>
-        <span class="muted-text" th:text="'Trang ' + ${currentPage + 1} + ' / ' + ${totalPages}">1/1</span>
+        <span class="muted-text" th:text="|Trang ${currentPage + 1} / ${totalPages}|">1/1</span>
         <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/fines(page=${currentPage + 1}, status=${statusFilter})}" class="btn btn-ghost btn-sm">Sau →</a>
     </nav>
 </section>

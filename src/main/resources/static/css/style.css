@@ -18,6 +18,13 @@
     --lime-100: #ecfccb;
     --sea-700: #0f5f89;
     --sea-100: #dff3ff;
+    --gray-soft: #f4f7fb;
+    --border-color: rgba(16, 42, 67, 0.08);
+    --green-soft: #16a34a;
+    --rose-soft: #e11d48;
+    --warn-soft: #d97706;
+    --teal-soft: #0f766e;
+    --gold-soft: #d97706;
     --shadow-sm: 0 8px 18px rgba(16, 42, 67, 0.06);
     --shadow-md: 0 18px 42px rgba(16, 42, 67, 0.12);
     --shadow-lg: 0 32px 60px rgba(16, 42, 67, 0.18);
@@ -247,24 +254,32 @@ textarea {
     top: 0;
     z-index: 15;
     padding: 18px 28px;
-    background: rgba(255, 255, 255, 0.88);
-    border-bottom: 1px solid rgba(16, 42, 67, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 10px 28px rgba(16, 42, 67, 0.08);
+    backdrop-filter: blur(14px);
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(280px, auto);
     gap: 22px;
     align-items: center;
 }
 
 .student-nav {
     display: flex;
-    gap: 18px;
+    gap: 10px;
     flex-wrap: wrap;
+    min-width: 0;
+    justify-content: center;
 }
 
 .student-nav a {
     padding: 10px 14px;
     border-radius: 999px;
     color: var(--ink-700);
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    font-weight: 700;
     transition: var(--transition);
 }
 
@@ -272,6 +287,33 @@ textarea {
 .student-nav a.is-active {
     background: var(--ink-100);
     color: var(--ink-950);
+    box-shadow: inset 0 0 0 1px rgba(16, 42, 67, 0.06);
+}
+
+.student-profile-bar {
+    justify-content: flex-end;
+    padding: 12px 14px;
+    border-radius: 22px;
+    background:
+        linear-gradient(135deg, rgba(236, 242, 248, 0.92), rgba(255, 255, 255, 0.92)),
+        white;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    min-width: 0;
+}
+
+.student-profile-bar > div {
+    min-width: 0;
+}
+
+.student-profile-bar strong,
+.student-profile-bar small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.student-profile-bar small {
+    color: var(--ink-500);
 }
 
 .hero {
@@ -416,8 +458,68 @@ textarea {
     margin-bottom: 14px;
 }
 
+.page-head {
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
 .split-grid {
     grid-template-columns: 1fr 1fr;
+}
+
+.catalog-shell {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.catalog-filter-panel {
+    position: sticky;
+    top: 108px;
+}
+
+.catalog-filter-panel,
+.catalog-results-head {
+    margin-bottom: 0;
+}
+
+.catalog-filter-form .action-row,
+.catalog-results-head,
+.book-card-actions,
+.filter-bar,
+.pagination-bar,
+.quick-grid,
+.detail-grid {
+    display: flex;
+}
+
+.catalog-results {
+    min-width: 0;
+    display: grid;
+    gap: 18px;
+}
+
+.catalog-results-head {
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 18px;
+    background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(255, 255, 255, 0.95)),
+        white;
+}
+
+.catalog-results-copy p {
+    margin-bottom: 0;
+    max-width: 720px;
+}
+
+.catalog-empty-state {
+    min-height: 260px;
+    align-content: center;
 }
 
 .narrow-panel {
@@ -444,6 +546,14 @@ textarea {
 
 .detail-copy {
     flex: 1;
+}
+
+.detail-copy-stack {
+    gap: 14px;
+}
+
+.detail-copy-stack p {
+    margin: 0;
 }
 
 .stack-form,
@@ -635,6 +745,11 @@ textarea:focus {
 
 .book-card {
     overflow: hidden;
+    display: grid;
+    grid-template-rows: 280px 1fr;
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 249, 252, 0.92)),
+        white;
 }
 
 .book-cover {
@@ -649,16 +764,45 @@ textarea:focus {
 
 .book-card-body {
     padding: 20px;
+    gap: 12px;
 }
 
 .book-card h3 {
     margin: 0;
     font-size: 1.1rem;
+    line-height: 1.35;
+    min-height: 2.9rem;
+}
+
+.book-meta-line {
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .price-text {
     color: var(--gold-700);
     font-weight: 800;
+    font-size: 1rem;
+}
+
+.book-card-actions {
+    margin-top: auto;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.book-card-actions > * {
+    flex: 1 1 140px;
+}
+
+.book-card-actions form {
+    display: flex;
+}
+
+.book-card-actions .btn {
+    width: 100%;
 }
 
 .inline-card,
@@ -676,6 +820,57 @@ textarea:focus {
     align-items: center;
     justify-content: space-between;
     gap: 14px;
+}
+
+.buy-summary-grid .metric-card {
+    min-height: 112px;
+}
+
+.buy-catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.price-card {
+    align-items: flex-start;
+    gap: 18px;
+    padding: 20px;
+}
+
+.price-card > div {
+    display: grid;
+    gap: 8px;
+}
+
+.price-card .inline-form {
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.price-card input[type="number"],
+.waitlist-panel input[type="number"] {
+    max-width: 86px;
+}
+
+.checkout-form {
+    justify-self: end;
+}
+
+.order-history-stack {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.notification-feed {
+    gap: 14px;
+}
+
+.notification-card {
+    align-items: flex-start;
+    border-radius: 22px;
+    padding: 18px 20px;
+}
+
+.notification-card .btn {
+    min-width: 44px;
 }
 
 .expand-card {
@@ -757,6 +952,54 @@ textarea:focus {
     margin-top: 22px;
 }
 
+.filter-bar,
+.pagination-bar {
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.pagination-bar {
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.quick-grid {
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.quick-link {
+    flex: 1 1 calc(50% - 6px);
+    min-height: 86px;
+    border-radius: 20px;
+    padding: 18px;
+    border: 1px solid var(--border-color);
+    background:
+        linear-gradient(135deg, rgba(15, 118, 110, 0.08), rgba(255, 255, 255, 0.94)),
+        white;
+    display: grid;
+    gap: 8px;
+    align-content: center;
+    justify-items: start;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.quick-link:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.detail-grid {
+    gap: 18px;
+    align-items: flex-start;
+}
+
+.detail-grid > * {
+    flex: 1 1 240px;
+}
+
 .page-link {
     min-width: 42px;
     height: 42px;
@@ -789,6 +1032,17 @@ textarea:focus {
 .empty-state i {
     font-size: 2rem;
     color: var(--ink-500);
+}
+
+.review-form-container {
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.review-card {
+    background: rgba(244, 247, 251, 0.72);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
 }
 
 .bullet-list,
@@ -1151,12 +1405,20 @@ textarea:focus {
         grid-template-columns: 1fr;
     }
 
+    .catalog-shell {
+        grid-template-columns: 1fr;
+    }
+
     .chatbot-layout {
         grid-template-columns: 1fr;
     }
 
     .detail-showcase {
         flex-direction: column;
+    }
+
+    .catalog-filter-panel {
+        position: static;
     }
 
     .narrow-panel {
@@ -1196,6 +1458,12 @@ textarea:focus {
     .student-topbar {
         grid-template-columns: 1fr;
     }
+
+    .student-nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding-bottom: 4px;
+    }
 }
 
 @media (max-width: 720px) {
@@ -1215,6 +1483,16 @@ textarea:focus {
     .inline-card,
     .mini-card,
     .student-profile-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .catalog-results-head,
+    .book-card-actions,
+    .filter-bar,
+    .pagination-bar,
+    .quick-grid,
+    .detail-grid {
         flex-direction: column;
         align-items: stretch;
     }
@@ -1244,5 +1522,11 @@ textarea:focus {
     .chatbot-action-row {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .quick-link,
+    .book-card-actions > *,
+    .student-profile-bar > * {
+        flex: 1 1 auto;
     }
 }

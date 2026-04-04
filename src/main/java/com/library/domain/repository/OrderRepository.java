@@ -24,7 +24,7 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
     long countByStatus(String status);
 
     @EntityGraph(attributePaths = {"student", "staff"})
-    @Query("SELECT o FROM Orders o ORDER BY o.orderId DESC")
+    @Query("SELECT o FROM Orders o")
     Page<Orders> findAdminPage(Pageable pageable);
 
     @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Orders o WHERE o.status = :status")

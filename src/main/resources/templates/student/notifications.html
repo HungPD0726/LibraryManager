@@ -13,7 +13,7 @@
             <p class="eyebrow">Thông báo</p>
             <h2>Hộp thông báo của bạn
                 <span th:if="${unreadCount > 0}" class="status-pill danger" style="font-size: 0.75rem; vertical-align: middle;"
-                      th:text="${unreadCount} + ' chưa đọc'">0 chưa đọc</span>
+                      th:text="|${unreadCount} chưa đọc|">0 chưa đọc</span>
             </h2>
         </div>
         <form th:if="${unreadCount > 0}" th:action="@{/notifications/read-all}" method="post">
@@ -24,8 +24,8 @@
         </form>
     </div>
 
-    <div class="stack-list">
-        <article th:each="n : ${notifications}" class="inline-card"
+    <div class="stack-list notification-feed">
+        <article th:each="n : ${notifications}" class="inline-card notification-card"
                  th:classappend="${!n.isRead ? ' notification-unread' : ''}">
             <div style="flex: 1;">
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
@@ -45,7 +45,7 @@
                 <p th:text="${n.message}" class="muted-text" style="margin: 0;">Nội dung thông báo</p>
                 <small class="muted-text" th:text="${#temporals.format(n.createdDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</small>
             </div>
-            <form th:if="${!n.isRead}" th:action="@{'/notifications/' + ${n.notificationId} + '/read'}" method="post">
+            <form th:if="${!n.isRead}" th:action="@{/notifications/{id}/read(id=${n.notificationId})}" method="post">
                 <button type="submit" class="btn btn-ghost btn-sm" title="Đánh dấu đã đọc">
                     <i class="fa-solid fa-check"></i>
                 </button>

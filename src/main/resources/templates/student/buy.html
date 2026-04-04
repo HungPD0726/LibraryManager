@@ -15,20 +15,35 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="metric-grid buy-summary-grid">
+        <article class="metric-card">
+            <span class="metric-icon soft-teal"><i class="fa-solid fa-store"></i></span>
+            <div><strong th:text="${#lists.size(bookPrices)}">0</strong><p>Đầu sách có thể đặt mua</p></div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-gold"><i class="fa-solid fa-basket-shopping"></i></span>
+            <div><strong th:text="${#lists.size(waitlistItems)}">0</strong><p>Mục đang chờ checkout</p></div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-lime"><i class="fa-solid fa-receipt"></i></span>
+            <div><strong th:text="${#lists.size(orderHistory)}">0</strong><p>Đơn mua đã tạo</p></div>
+        </article>
+    </div>
+
+    <div class="split-grid buy-shell">
+        <section class="panel buy-catalog-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Catalog</p>
                     <h3>Thêm sách vào danh sách chờ mua</h3>
                 </div>
             </div>
-            <div class="card-grid">
-                <article class="mini-card" th:each="price : ${bookPrices}">
+            <div class="card-grid buy-catalog-grid">
+                <article class="mini-card price-card" th:each="price : ${bookPrices}">
                     <div>
                         <strong th:text="${price.bookName()}">Tên sách</strong>
                         <p class="muted-text" th:text="${price.available() > 0 ? 'Còn ' + price.available() + ' cuốn' : 'Tạm hết hàng'}">Còn hàng</p>
-                        <p class="price-text" th:text="${#numbers.formatDecimal(price.amount(), 1, 'COMMA', 2, 'POINT')} + ' ' + price.currency()">0</p>
+                        <p class="price-text" th:text="|${#numbers.formatDecimal(price.amount(), 1, 'COMMA', 2, 'POINT')} ${price.currency()}|">0</p>
                     </div>
                     <form th:action="@{/buy/waitlist/add}" method="post" class="inline-form">
                         <input type="hidden" name="bookId" th:value="${price.bookId()}">
@@ -39,7 +54,7 @@
             </div>
         </section>
 
-        <section class="panel">
+        <section class="panel waitlist-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách chờ</p>
@@ -69,8 +84,8 @@
                                     <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
                                 </form>
                             </td>
-                            <td th:text="${#numbers.formatDecimal(item.amount, 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
-                            <td th:text="${#numbers.formatDecimal(item.lineTotal, 1, 'COMMA', 2, 'POINT')} + ' VND'">0</td>
+                            <td th:text="|${#numbers.formatDecimal(item.amount, 1, 'COMMA', 2, 'POINT')} VND|">0</td>
+                            <td th:text="|${#numbers.formatDecimal(item.lineTotal, 1, 'COMMA', 2, 'POINT')} VND|">0</td>
                             <td class="text-right">
                                 <form th:action="@{/buy/waitlist/remove/{bookId}(bookId=${item.bookId})}" method="post">
                                     <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
@@ -80,7 +95,7 @@
                         </tbody>
                     </table>
                 </div>
-                <form id="checkoutForm" th:action="@{/buy/checkout}" method="post">
+                <form id="checkoutForm" th:action="@{/buy/checkout}" method="post" class="checkout-form">
                     <button type="submit" class="btn btn-primary">
                         <i class="fa-solid fa-bag-shopping"></i>
                         Tạo đơn mua
@@ -101,7 +116,7 @@
                 <h3>Các đơn mua đã tạo</h3>
             </div>
         </div>
-        <div class="stack-list">
+        <div class="stack-list order-history-stack">
             <details class="expand-card" th:each="order : ${orderHistory}">
                 <summary>
                     <div>
@@ -113,7 +128,7 @@
                           th:text="${order.status()}">Sẵn sàng</span>
                 </summary>
                 <div class="details-body">
-                    <p><strong>Tổng tiền:</strong> <span th:text="${#numbers.formatDecimal(order.totalAmount(), 1, 'COMMA', 2, 'POINT')} + ' VND'">0</span></p>
+                    <p><strong>Tổng tiền:</strong> <span th:text="|${#numbers.formatDecimal(order.totalAmount(), 1, 'COMMA', 2, 'POINT')} VND|">0</span></p>
                     <ul class="bullet-list">
                         <li th:each="item : ${order.items()}"
                             th:text="${item.bookName() + ' • SL ' + item.quantity() + ' • ' + #numbers.formatDecimal(item.lineTotal(), 1, 'COMMA', 2, 'POINT') + ' VND'}">Mục đơn</li>

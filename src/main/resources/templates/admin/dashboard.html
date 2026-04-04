@@ -65,14 +65,14 @@
         <article class="metric-card">
             <span class="metric-icon soft-rose"><i class="fa-solid fa-coins"></i></span>
             <div>
-                <strong th:text="${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0</strong>
+                <strong th:text="|${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0</strong>
                 <p>Nợ phạt</p>
             </div>
         </article>
         <article class="metric-card">
             <span class="metric-icon soft-green"><i class="fa-solid fa-money-bill-trend-up"></i></span>
             <div>
-                <strong th:text="${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0</strong>
+                <strong th:text="|${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} ₫|">0</strong>
                 <p>Doanh thu sách</p>
             </div>
         </article>
@@ -121,7 +121,7 @@
             <ul class="bullet-list" style="padding-left: 0; list-style: none;">
                 <li th:each="book, stat : ${topBooks}" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
                     <span style="font-weight: 500; font-size: 0.9rem;">
-                        <span style="color: var(--gold-soft); margin-right: 0.5rem;" th:text="'#' + ${stat.count}">1</span>
+                        <span style="color: var(--gold-soft); margin-right: 0.5rem;" th:text="|#${stat.count}|">1</span>
                         <span th:text="${book.bookName}">Book</span>
                     </span>
                     <span class="status-pill success" th:text="${book.totalBorrowed}">0</span>

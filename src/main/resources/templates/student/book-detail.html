@@ -20,9 +20,9 @@
     </div>
 
     <div class="detail-layout">
-        <section class="panel detail-showcase">
+        <section class="panel detail-showcase detail-hero-panel">
             <img class="book-cover large" th:src="${bookDetail.imageUrl() != null ? bookDetail.imageUrl() : 'https://placehold.co/400x520/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
-            <div class="detail-copy">
+            <div class="detail-copy detail-copy-stack">
                 <div class="book-meta-line">
                     <span class="status-pill" th:classappend="${bookDetail.available() > 0 ? ' success' : ' danger'}"
                           th:text="${bookDetail.available() > 0 ? 'Còn ' + bookDetail.available() + ' cuốn' : 'Tạm hết'}">Còn 1</span>
@@ -64,7 +64,7 @@
             </div>
         </section>
 
-        <section class="panel">
+        <section class="panel detail-file-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Tài liệu số</p>
@@ -90,7 +90,7 @@
         </section>
 
         <!-- Reviews Section -->
-        <section class="panel" style="grid-column: 1 / -1; margin-top: 1rem;">
+        <section class="panel review-panel" style="grid-column: 1 / -1; margin-top: 1rem;">
             <div class="panel-head" style="margin-bottom: 1.5rem;">
                 <div>
                     <h3 style="display: flex; align-items: center; gap: 0.5rem;">
@@ -100,7 +100,7 @@
                             <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</span>/5.0
                         </span>
                     </h3>
-                    <p class="muted-text" th:text="${reviewCount} + ' lượt đánh giá'">0 lượt đánh giá</p>
+                    <p class="muted-text" th:text="|${reviewCount} lượt đánh giá|">0 lượt đánh giá</p>
                 </div>
             </div>
 
