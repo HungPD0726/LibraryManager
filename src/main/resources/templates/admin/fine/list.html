@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Quản lý phạt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Quản lý phạt</p>
+            <h2>Danh sách phiếu phạt</h2>
+        </div>
+        <div class="hero-actions">
+            <form th:action="@{/admin/fines/auto-generate}" method="post" style="display:inline">
+                <button type="submit" class="btn btn-outline">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Tự động tạo phạt quá hạn
+                </button>
+            </form>
+            <a th:href="@{/admin/fines/create}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                Tạo phiếu phạt
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="metric-grid" style="margin-bottom: 2rem;">
+        <article class="metric-card">
+            <span class="metric-icon soft-warn"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+                <strong th:text="${unpaidCount}">0</strong>
+                <p>Chưa thanh toán</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-rose"><i class="fa-solid fa-coins"></i></span>
+            <div>
+                <strong th:text="${#numbers.formatDecimal(unpaidTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
+                <p>Tổng phạt chưa thu</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-green"><i class="fa-solid fa-check-circle"></i></span>
+            <div>
+                <strong th:text="${#numbers.formatDecimal(paidTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</strong>
+                <p>Tổng phạt đã thu</p>
+            </div>
+        </article>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar" style="margin-bottom: 1.5rem;">
+        <a th:href="@{/admin/fines}" class="btn btn-sm"
+           th:classappend="${statusFilter == null ? ' btn-primary' : ' btn-ghost'}">Tất cả</a>
+        <a th:href="@{/admin/fines(status='Unpaid')}" class="btn btn-sm"
+           th:classappend="${statusFilter == 'Unpaid' ? ' btn-primary' : ' btn-ghost'}">Chưa thanh toán</a>
+        <a th:href="@{/admin/fines(status='Paid')}" class="btn btn-sm"
+           th:classappend="${statusFilter == 'Paid' ? ' btn-primary' : ' btn-ghost'}">Đã thanh toán</a>
+    </div>
+
+    <!-- Table -->
+    <div class="panel">
+        <table class="data-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Đơn mượn</th>
+                <th>Sinh viên</th>
+                <th>Số tiền</th>
+                <th>Lý do</th>
+                <th>Ngày tạo</th>
+                <th>Ngày thanh toán</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="fine : ${fines}">
+                <td th:text="${fine.fineId}">1</td>
+                <td th:text="'#' + ${fine.borrow.borrowId}">Borrow</td>
+                <td th:text="${fine.borrow.student != null ? fine.borrow.student.studentName : '-'}">SV</td>
+                <td th:text="${#numbers.formatDecimal(fine.amount, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0 ₫</td>
+                <td th:text="${fine.reason}">-</td>
+                <td th:text="${fine.createdDate}">-</td>
+                <td th:text="${fine.paidDate != null ? fine.paidDate : '-'}">-</td>
+                <td>
+                    <span class="status-pill"
+                          th:classappend="${fine.status == 'Paid' ? ' success' : ' danger'}"
+                          th:text="${fine.status == 'Paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}">Status</span>
+                </td>
+                <td>
+                    <form th:if="${fine.status != 'Paid'}" th:action="@{'/admin/fines/' + ${fine.fineId} + '/pay'}" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-primary">
+                            <i class="fa-solid fa-money-bill-wave"></i> Thanh toán
+                        </button>
+                    </form>
+                    <span th:if="${fine.status == 'Paid'}" class="muted-text">—</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="empty-state" th:if="${fines.totalElements == 0}">
+            <i class="fa-solid fa-gavel"></i>
+            <p>Chưa có phiếu phạt nào.</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${totalPages > 1}" class="pagination-bar">
+        <a th:if="${currentPage > 0}" th:href="@{/admin/fines(page=${currentPage - 1}, status=${statusFilter})}" class="btn btn-ghost btn-sm">← Trước</a>
+        <span class="muted-text" th:text="'Trang ' + ${currentPage + 1} + ' / ' + ${totalPages}">1/1</span>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/admin/fines(page=${currentPage + 1}, status=${statusFilter})}" class="btn btn-ghost btn-sm">Sau →</a>
+    </nav>
+</section>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Tạo phiếu phạt</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="page-head">
+        <div>
+            <p class="eyebrow">Quản lý phạt</p>
+            <h2>Tạo phiếu phạt mới</h2>
+        </div>
+        <a th:href="@{/admin/fines}" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại danh sách
+        </a>
+    </div>
+
+    <div class="panel" style="max-width: 600px;">
+        <form th:action="@{/admin/fines/create}" method="post" class="form-stack">
+            <div class="form-group">
+                <label for="borrowId">ID đơn mượn <span class="text-danger">*</span></label>
+                <input type="number" id="borrowId" name="borrowId" required min="1"
+                       th:value="${borrowId}" class="form-input" placeholder="Nhập ID đơn mượn">
+            </div>
+
+            <div th:if="${borrow != null}" class="alert alert-info" style="margin-bottom: 1rem;">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>
+                    Đơn mượn #<strong th:text="${borrow.borrowId}">0</strong>
+                    — Sinh viên: <strong th:text="${borrow.student != null ? borrow.student.studentName : 'N/A'}">SV</strong>
+                    — Trạng thái: <strong th:text="${borrow.status}">Status</strong>
+                    — Hạn trả: <strong th:text="${borrow.dueDate}">Date</strong>
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Số tiền phạt (VND) <span class="text-danger">*</span></label>
+                <input type="number" id="amount" name="amount" required min="1000" step="1000"
+                       class="form-input" placeholder="Ví dụ: 25000">
+            </div>
+
+            <div class="form-group">
+                <label for="reason">Lý do</label>
+                <textarea id="reason" name="reason" rows="3" class="form-input" placeholder="Ví dụ: Trả sách trễ 5 ngày"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-gavel"></i>
+                    Tạo phiếu phạt
+                </button>
+                <a th:href="@{/admin/fines}" class="btn btn-ghost">Hủy</a>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

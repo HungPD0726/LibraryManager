@@ -47,6 +47,11 @@
             <i class="fa-solid fa-basket-shopping"></i>
             <span>Đơn mua</span>
         </a>
+        <a th:href="@{/admin/fines}" class="nav-link"
+           th:classappend="${#strings.startsWith(requestPath, '/admin/fines') ? ' is-active' : ''}">
+            <i class="fa-solid fa-gavel"></i>
+            <span>Quản lý phạt</span>
+        </a>
         <a th:href="@{/admin/authors}" class="nav-link"
            th:classappend="${#strings.startsWith(requestPath, '/admin/authors') ? ' is-active' : ''}">
             <i class="fa-solid fa-pen-nib"></i>

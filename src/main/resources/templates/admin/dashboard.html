@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <div class="metric-grid">
+    <div class="metric-grid" style="margin-bottom: 2rem;">
         <article class="metric-card">
             <span class="metric-icon soft-teal"><i class="fa-solid fa-book"></i></span>
             <div>
@@ -38,7 +38,7 @@
             <span class="metric-icon soft-green"><i class="fa-solid fa-box-open"></i></span>
             <div>
                 <strong th:text="${totalAvailable}">0</strong>
-                <p>Sách sẵn sàng</p>
+                <p>Sẵn sàng</p>
             </div>
         </article>
         <article class="metric-card">
@@ -46,20 +46,6 @@
             <div>
                 <strong th:text="${totalStudents}">0</strong>
                 <p>Sinh viên</p>
-            </div>
-        </article>
-        <article class="metric-card">
-            <span class="metric-icon soft-ink"><i class="fa-solid fa-user-gear"></i></span>
-            <div>
-                <strong th:text="${totalStaff}">0</strong>
-                <p>Nhân viên</p>
-            </div>
-        </article>
-        <article class="metric-card">
-            <span class="metric-icon soft-rose"><i class="fa-solid fa-hourglass-half"></i></span>
-            <div>
-                <strong th:text="${pendingBorrows}">0</strong>
-                <p>Yêu cầu mượn chờ</p>
             </div>
         </article>
         <article class="metric-card">
@@ -77,57 +63,205 @@
             </div>
         </article>
         <article class="metric-card">
-            <span class="metric-icon soft-lime"><i class="fa-solid fa-layer-group"></i></span>
+            <span class="metric-icon soft-rose"><i class="fa-solid fa-coins"></i></span>
             <div>
-                <strong th:text="${totalCategories}">0</strong>
-                <p>Danh mục</p>
+                <strong th:text="${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0</strong>
+                <p>Nợ phạt</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-green"><i class="fa-solid fa-money-bill-trend-up"></i></span>
+            <div>
+                <strong th:text="${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} + ' ₫'">0</strong>
+                <p>Doanh thu sách</p>
+            </div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-ink"><i class="fa-solid fa-gavel"></i></span>
+            <div>
+                <strong th:text="${unpaidFines}">0</strong>
+                <p>Phiếu phạt treo</p>
             </div>
         </article>
     </div>
 
-    <div class="split-grid">
+    <!-- Charts Section -->
+    <div class="split-grid" style="margin-bottom: 2rem;">
         <section class="panel">
             <div class="panel-head">
                 <div>
-                    <p class="eyebrow">Lối tắt</p>
-                    <h3>Thao tác nhanh</h3>
+                    <h3 style="font-size: 1.1rem;">Lượt mượn 12 tháng qua</h3>
                 </div>
             </div>
-            <div class="quick-grid">
-                <a th:href="@{/admin/orders}" class="quick-link">
-                    <i class="fa-solid fa-basket-shopping"></i>
-                    <span>Quản lý đơn mua</span>
-                </a>
-                <a th:href="@{/admin/bookfiles}" class="quick-link">
-                    <i class="fa-solid fa-file-arrow-down"></i>
-                    <span>Quản lý file sách</span>
-                </a>
-                <a th:href="@{/admin/authors}" class="quick-link">
-                    <i class="fa-solid fa-pen-nib"></i>
-                    <span>Quản lý tác giả</span>
-                </a>
-                <a th:href="@{/admin/students}" class="quick-link">
-                    <i class="fa-solid fa-address-card"></i>
-                    <span>Hồ sơ sinh viên</span>
-                </a>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="monthlyBorrowChart"></canvas>
             </div>
         </section>
 
         <section class="panel">
             <div class="panel-head">
                 <div>
-                    <p class="eyebrow">Rule nghiệp vụ</p>
-                    <h3>Điểm kiểm soát tồn kho</h3>
+                    <h3 style="font-size: 1.1rem;">Tỷ lệ đầu sách theo danh mục</h3>
                 </div>
             </div>
-            <ul class="bullet-list">
-                <li>Admin tạo phiếu mượn trực tiếp: chuyển `Borrowing` và trừ `Available` ngay.</li>
-                <li>Sinh viên gửi yêu cầu: chỉ tạo `Pending`, chưa trừ tồn kho cho tới khi duyệt.</li>
-                <li>Đơn mua sinh viên: tạo `Sẵn sàng` nếu đủ hàng, `Hàng chờ` nếu thiếu hàng.</li>
-                <li>Luồng giao đơn đảm bảo không trừ tồn hai lần cho cùng một đơn.</li>
-            </ul>
+            <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center;">
+                <canvas id="categoryChart"></canvas>
+            </div>
         </section>
     </div>
+
+    <div class="split-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Xếp hạng</p>
+                    <h3 style="font-size: 1rem;">Top sách được mượn</h3>
+                </div>
+            </div>
+            <ul class="bullet-list" style="padding-left: 0; list-style: none;">
+                <li th:each="book, stat : ${topBooks}" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span style="font-weight: 500; font-size: 0.9rem;">
+                        <span style="color: var(--gold-soft); margin-right: 0.5rem;" th:text="'#' + ${stat.count}">1</span>
+                        <span th:text="${book.bookName}">Book</span>
+                    </span>
+                    <span class="status-pill success" th:text="${book.totalBorrowed}">0</span>
+                </li>
+                <li th:if="${#lists.isEmpty(topBooks)}" class="muted-text text-center">Chưa có dữ liệu</li>
+            </ul>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Xếp hạng</p>
+                    <h3 style="font-size: 1rem;">Sinh viên mượn nhiều nhất</h3>
+                </div>
+            </div>
+            <ul class="bullet-list" style="padding-left: 0; list-style: none;">
+                <li th:each="student, stat : ${topBorrowers}" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                    <span style="font-weight: 500; font-size: 0.9rem;">
+                        <i class="fa-solid fa-medal" th:style="${stat.index == 0 ? 'color: gold;' : (stat.index == 1 ? 'color: silver;' : 'color: #cd7f32;')}"></i>
+                        <span style="margin-left: 0.5rem;" th:text="${student.studentName}">Student</span>
+                    </span>
+                    <span class="status-pill info" th:text="${student.totalBorrowed}">0</span>
+                </li>
+                <li th:if="${#lists.isEmpty(topBorrowers)}" class="muted-text text-center">Chưa có dữ liệu</li>
+            </ul>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <div>
+                    <p class="eyebrow">Lối tắt</p>
+                    <h3 style="font-size: 1rem;">Thao tác nhanh</h3>
+                </div>
+            </div>
+            <div class="quick-grid">
+                <a th:href="@{/admin/orders}" class="quick-link">
+                    <i class="fa-solid fa-basket-shopping"></i><span>Đơn mua</span>
+                </a>
+                <a th:href="@{/admin/fines}" class="quick-link">
+                    <i class="fa-solid fa-gavel"></i><span>Thu phạt</span>
+                </a>
+                <a th:href="@{/admin/books}" class="quick-link">
+                    <i class="fa-solid fa-book"></i><span>Kho sách</span>
+                </a>
+                <a th:href="@{/admin/students}" class="quick-link">
+                    <i class="fa-solid fa-users"></i><span>Sinh viên</span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Chart.js and initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            /*<![CDATA[*/
+            const monthlyDataRaw = /*[[${monthlyBorrowJson}]]*/ '{}';
+            const categoryDataRaw = /*[[${categoryDistJson}]]*/ '{}';
+            
+            const monthlyData = JSON.parse(monthlyDataRaw || '{}');
+            const categoryData = JSON.parse(categoryDataRaw || '{}');
+            /*]]>*/
+
+            // Global Defaults
+            Chart.defaults.font.family = "'Manrope', sans-serif";
+            Chart.defaults.color = '#64748b';
+            
+            // 1. Monthly Bar Chart
+            const monthLabels = Object.keys(monthlyData).map(m => 'Tháng ' + m);
+            const monthValues = Object.values(monthlyData);
+            
+            if (monthValues.length > 0) {
+                new Chart(document.getElementById('monthlyBorrowChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: 'Lượt mượn',
+                            data: monthValues,
+                            backgroundColor: '#2e9e8f', // var(--primary)
+                            borderRadius: 4,
+                            barPercentage: 0.6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                ticks: { precision: 0 },
+                                grid: { color: '#f1f5f9' } // var(--gray-soft)
+                            },
+                            x: {
+                                grid: { display: false }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Category Doughnut Chart
+            const catLabels = Object.keys(categoryData);
+            const catValues = Object.values(categoryData);
+            
+            if (catValues.length > 0) {
+                new Chart(document.getElementById('categoryChart'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: catLabels,
+                        datasets: [{
+                            data: catValues,
+                            backgroundColor: [
+                                '#2e9e8f', '#fbbf24', '#f87171', '#38bdf8', '#818cf8', '#a78bfa', '#34d399'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    usePointStyle: true
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        });
+    </script>
 </section>
 </body>
 </html>
