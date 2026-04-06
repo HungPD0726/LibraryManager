@@ -35,3 +35,4 @@ build/
 Thumbs.db
 
 *.log
+application-local.properties

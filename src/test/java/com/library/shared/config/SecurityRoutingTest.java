@@ -6,6 +6,7 @@ import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
 import com.library.feature.auth.CustomOAuth2UserService;
 import com.library.feature.auth.CustomUserDetailsService;
+import com.library.feature.auth.GoogleOAuthFallbackController;
 import com.library.feature.student.StudentMirrorService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = TestSecurityEndpoints.class,
+@WebMvcTest(controllers = {TestSecurityEndpoints.class, GoogleOAuthFallbackController.class},
         properties = "spring.main.allow-bean-definition-overriding=true",
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = CommonModelAdvice.class))
 @Import({SecurityConfig.class, SecurityRoutingTest.TestBeans.class})
@@ -39,6 +40,12 @@ class SecurityRoutingTest {
     void loginPage_shouldBePublic() throws Exception {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void googleAuthorization_shouldBePublic() throws Exception {
+        mockMvc.perform(get("/oauth2/authorization/google"))
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test

@@ -34,7 +34,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/uploads/**", "/favicon.ico").permitAll()
-                .requestMatchers("/login", "/register", "/forgot-password", "/verify-otp", "/reset-password").permitAll()
+                .requestMatchers("/login", "/register", "/forgot-password", "/verify-otp", "/reset-password", "/oauth2/authorization/google").permitAll()
                 .requestMatchers("/admin/**", "/api/pending-count").hasAnyRole("ADMIN", "STAFF", "LIBRARIAN")
                 .requestMatchers("/home", "/home/**", "/profile", "/buy", "/borrows", "/notifications", "/notifications/**").hasRole("STUDENT")
                 .requestMatchers("/chatbot").authenticated()

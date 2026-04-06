@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@WebMvcTest(controllers = AuthController.class,
+@WebMvcTest(controllers = {AuthController.class, GoogleOAuthFallbackController.class},
         properties = "spring.main.allow-bean-definition-overriding=true",
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = CommonModelAdvice.class))
 @Import({SecurityConfig.class, AuthControllerTest.TestBeans.class})
@@ -66,6 +66,14 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/login"))
                 .andExpect(model().attributeExists("message"));
+    }
+
+    @Test
+    void googleAuthorization_shouldRedirectBackToLoginWhenOauthUnavailable() throws Exception {
+        mockMvc.perform(get("/oauth2/authorization/google"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"))
+                .andExpect(flash().attributeExists("error"));
     }
 
     @Test
