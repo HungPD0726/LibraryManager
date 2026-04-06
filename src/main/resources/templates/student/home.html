@@ -83,16 +83,20 @@
                         <span>Danh mục</span>
                         <select name="categoryId">
                             <option value="">Tất cả danh mục</option>
-                            <option th:each="category : ${categories}" th:value="${category.categoryId}"
-                                    th:selected="${categoryId == category.categoryId}" th:text="${category.categoryName}"></option>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.categoryId}"
+                                    th:selected="${categoryId == category.categoryId}"
+                                    th:text="${category.categoryName}"></option>
                         </select>
                     </label>
                     <label class="field grow">
                         <span>Nhà xuất bản</span>
                         <select name="publisherId">
                             <option value="">Tất cả nhà xuất bản</option>
-                            <option th:each="publisher : ${publishers}" th:value="${publisher.publisherId}"
-                                    th:selected="${publisherId == publisher.publisherId}" th:text="${publisher.publisherName}"></option>
+                            <option th:each="publisher : ${publishers}"
+                                    th:value="${publisher.publisherId}"
+                                    th:selected="${publisherId == publisher.publisherId}"
+                                    th:text="${publisher.publisherName}"></option>
                         </select>
                     </label>
                 </div>
@@ -124,42 +128,9 @@
             </div>
 
             <section class="card-grid book-grid catalog-book-grid">
-                <article class="book-card" th:each="book : ${books}">
-                    <img class="book-cover" th:src="${book.imageUrl() != null ? book.imageUrl() : 'https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
-                    <div class="book-card-body">
-                        <div class="book-meta-line">
-                            <span class="status-pill" th:classappend="${book.available() > 0 ? ' success' : ' danger'}"
-                                  th:text="${book.available() > 0 ? 'Còn ' + book.available() : 'Hết sách'}">Còn 2</span>
-                            <span class="muted-text" th:text="${book.categoryName()}">Danh mục</span>
-                        </div>
-                        <h3 th:text="${book.bookName()}">Tên sách</h3>
-                        <p class="muted-text" th:text="${book.publisherName() != null ? book.publisherName() : 'Chưa có nhà xuất bản'}">NXB</p>
-                        <p class="muted-text" th:text="${#lists.isEmpty(book.authors()) ? 'Chưa gán tác giả' : #strings.listJoin(book.authors(), ', ')}">Tác giả</p>
-                        <strong class="price-text" th:text="${book.priceAmount() != null ? #numbers.formatDecimal(book.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + book.currency() : 'Chưa có giá'}">0 VND</strong>
-
-                        <div class="action-row book-card-actions">
-                            <a class="btn btn-outline btn-sm" th:href="@{/home/book(id=${book.bookId()})}">
-                                <i class="fa-solid fa-eye"></i>
-                                Xem chi tiết
-                            </a>
-                            <form th:if="${book.available() > 0}" th:action="@{/borrows/cart/add}" method="post">
-                                <input type="hidden" name="bookId" th:value="${book.bookId()}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-cart-plus"></i>
-                                    Mượn
-                                </button>
-                            </form>
-                            <form th:if="${book.available() <= 0}" th:action="@{/borrows/holds}" method="post">
-                                <input type="hidden" name="bookId" th:value="${book.bookId()}">
-                                <button type="submit" class="btn btn-ghost btn-sm">
-                                    <i class="fa-solid fa-bell"></i>
-                                    Giữ chỗ
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </article>
+                <th:block th:each="book : ${books}">
+                    <th:block th:replace="~{fragments/book-card :: book-card(book=${book})}"></th:block>
+                </th:block>
 
                 <div class="empty-state catalog-empty-state" th:if="${#lists.isEmpty(books)}">
                     <i class="fa-solid fa-book-open"></i>
@@ -168,7 +139,8 @@
             </section>
 
             <div class="pagination" th:if="${totalPages > 1}">
-                <a class="page-link" th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+                <a class="page-link"
+                   th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
                    th:href="@{/home(page=${idx}, search=${search}, letter=${letter}, categoryId=${categoryId}, publisherId=${publisherId}, author=${author})}"
                    th:classappend="${idx == currentPage ? ' is-active' : ''}"
                    th:text="${idx + 1}">1</a>

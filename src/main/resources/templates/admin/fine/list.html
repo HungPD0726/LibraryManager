@@ -14,7 +14,7 @@
             <h2>Danh sách phiếu phạt</h2>
         </div>
         <div class="hero-actions">
-            <form th:action="@{/admin/fines/auto-generate}" method="post" style="display:inline">
+            <form th:action="@{/admin/fines/auto-generate}" method="post" class="inline-action-form">
                 <button type="submit" class="btn btn-outline">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                     Tự động tạo phạt quá hạn
@@ -28,7 +28,7 @@
     </div>
 
     <!-- Summary cards -->
-    <div class="metric-grid" style="margin-bottom: 2rem;">
+    <div class="metric-grid fines-summary-grid">
         <article class="metric-card">
             <span class="metric-icon soft-warn"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <div>
@@ -53,7 +53,7 @@
     </div>
 
     <!-- Filter -->
-    <div class="filter-bar" style="margin-bottom: 1.5rem;">
+    <div class="filter-bar fines-filter-bar">
         <a th:href="@{/admin/fines}" class="btn btn-sm"
            th:classappend="${statusFilter == null ? ' btn-primary' : ' btn-ghost'}">Tất cả</a>
         <a th:href="@{/admin/fines(status='Unpaid')}" class="btn btn-sm"
@@ -93,7 +93,7 @@
                           th:text="${fine.status == 'Paid' ? 'Đã thanh toán' : 'Chưa thanh toán'}">Status</span>
                 </td>
                 <td>
-                    <form th:if="${fine.status != 'Paid'}" th:action="@{/admin/fines/{id}/pay(id=${fine.fineId})}" method="post" style="display:inline">
+                    <form th:if="${fine.status != 'Paid'}" th:action="@{/admin/fines/{id}/pay(id=${fine.fineId})}" method="post" class="inline-action-form">
                         <button type="submit" class="btn btn-sm btn-primary">
                             <i class="fa-solid fa-money-bill-wave"></i> Thanh toán
                         </button>

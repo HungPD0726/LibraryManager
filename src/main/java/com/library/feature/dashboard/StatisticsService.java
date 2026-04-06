@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,6 +99,52 @@ public class StatisticsService {
     }
 
     @Transactional(readOnly = true)
+    public Map<String, Object> getMonthlyRevenueChart() {
+        YearMonth startMonth = YearMonth.now().minusMonths(11);
+        LocalDate startDate = startMonth.atDay(1);
+
+        Map<YearMonth, BigDecimal> orderRevenueByMonth = initializeMoneyTimeline(startMonth);
+        Map<YearMonth, BigDecimal> fineRevenueByMonth = initializeMoneyTimeline(startMonth);
+
+        for (Object[] row : orderRepository.sumRevenueByMonthSince(OrderStatus.DELIVERED, startDate)) {
+            YearMonth yearMonth = YearMonth.of(((Number) row[0]).intValue(), ((Number) row[1]).intValue());
+            if (orderRevenueByMonth.containsKey(yearMonth)) {
+                orderRevenueByMonth.put(yearMonth, toBigDecimal(row[2]));
+            }
+        }
+
+        for (Object[] row : fineRepository.sumPaidAmountByMonthSince(startDate)) {
+            YearMonth yearMonth = YearMonth.of(((Number) row[0]).intValue(), ((Number) row[1]).intValue());
+            if (fineRevenueByMonth.containsKey(yearMonth)) {
+                fineRevenueByMonth.put(yearMonth, toBigDecimal(row[2]));
+            }
+        }
+
+        List<String> labels = new ArrayList<>();
+        List<BigDecimal> orderRevenue = new ArrayList<>();
+        List<BigDecimal> fineRevenue = new ArrayList<>();
+        List<BigDecimal> totalRevenue = new ArrayList<>();
+
+        for (int index = 0; index < 12; index++) {
+            YearMonth yearMonth = startMonth.plusMonths(index);
+            BigDecimal orderValue = orderRevenueByMonth.getOrDefault(yearMonth, BigDecimal.ZERO);
+            BigDecimal fineValue = fineRevenueByMonth.getOrDefault(yearMonth, BigDecimal.ZERO);
+
+            labels.add("T" + yearMonth.getMonthValue() + "/" + String.format("%02d", yearMonth.getYear() % 100));
+            orderRevenue.add(orderValue);
+            fineRevenue.add(fineValue);
+            totalRevenue.add(orderValue.add(fineValue));
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("labels", labels);
+        result.put("orderRevenue", orderRevenue);
+        result.put("fineRevenue", fineRevenue);
+        result.put("totalRevenue", totalRevenue);
+        return result;
+    }
+
+    @Transactional(readOnly = true)
     public BigDecimal getTotalUnpaidFines() {
         return fineRepository.sumUnpaidAmount();
     }
@@ -105,5 +152,23 @@ public class StatisticsService {
     @Transactional(readOnly = true)
     public BigDecimal getTotalPaidFines() {
         return fineRepository.sumPaidAmount();
+    }
+
+    private Map<YearMonth, BigDecimal> initializeMoneyTimeline(YearMonth startMonth) {
+        Map<YearMonth, BigDecimal> timeline = new LinkedHashMap<>();
+        for (int index = 0; index < 12; index++) {
+            timeline.put(startMonth.plusMonths(index), BigDecimal.ZERO);
+        }
+        return timeline;
+    }
+
+    private BigDecimal toBigDecimal(Object value) {
+        if (value instanceof BigDecimal bigDecimal) {
+            return bigDecimal;
+        }
+        if (value instanceof Number number) {
+            return BigDecimal.valueOf(number.doubleValue());
+        }
+        return BigDecimal.ZERO;
     }
 }

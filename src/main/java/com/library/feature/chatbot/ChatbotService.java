@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -23,12 +24,12 @@ public class ChatbotService {
 
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
     private static final int MAX_MESSAGE_COUNT = 12;
-    private static final int MAX_MESSAGE_LENGTH = 2500;
+    public static final int MAX_MESSAGE_LENGTH = 2500;
     private static final String SYSTEM_PROMPT = """
-            BÃ¡ÂºÂ¡n lÃƒÂ  trÃ¡Â»Â£ lÃƒÂ½ AI cho hÃ¡Â»â€¡ thÃ¡Â»â€˜ng Library Manager.
-            HÃƒÂ£y trÃ¡ÂºÂ£ lÃ¡Â»Âi bÃ¡ÂºÂ±ng tiÃ¡ÂºÂ¿ng ViÃ¡Â»â€¡t, ngÃ¡ÂºÂ¯n gÃ¡Â»Ân, rÃƒÂµ rÃƒÂ ng vÃƒÂ  Ã†Â°u tiÃƒÂªn hÃ†Â°Ã¡Â»â€ºng dÃ¡ÂºÂ«n thÃ¡Â»Â±c tÃ¡ÂºÂ¿.
-            NÃ¡ÂºÂ¿u cÃƒÂ¢u hÃ¡Â»Âi liÃƒÂªn quan Ã„â€˜Ã¡ÂºÂ¿n sÃƒÂ¡ch, mÃ†Â°Ã¡Â»Â£n trÃ¡ÂºÂ£, quy trÃƒÂ¬nh thÃ†Â° viÃ¡Â»â€¡n hoÃ¡ÂºÂ·c cÃƒÂ¡ch dÃƒÂ¹ng hÃ¡Â»â€¡ thÃ¡Â»â€˜ng,
-            hÃƒÂ£y bÃƒÂ¡m Ã„â€˜ÃƒÂºng ngÃ¡Â»Â¯ cÃ¡ÂºÂ£nh quÃ¡ÂºÂ£n lÃƒÂ½ thÃ†Â° viÃ¡Â»â€¡n. NÃ¡ÂºÂ¿u thiÃ¡ÂºÂ¿u dÃ¡Â»Â¯ liÃ¡Â»â€¡u cÃ¡Â»Â¥ thÃ¡Â»Æ’, hÃƒÂ£y nÃƒÂ³i rÃƒÂµ giÃ¡Â»â€ºi hÃ¡ÂºÂ¡n.
+            Bạn là trợ lý AI cho hệ thống Library Manager.
+            Hãy trả lời bằng tiếng Việt, ngắn gọn, rõ ràng và ưu tiên hướng dẫn thực tế.
+            Nếu câu hỏi liên quan đến sách, mượn trả, quy trình thư viện hoặc cách dùng hệ thống,
+            hãy bám đúng ngữ cảnh quản lý thư viện. Nếu thiếu dữ liệu cụ thể, hãy nói rõ giới hạn.
             """;
 
     private final RestClient restClient;
@@ -72,12 +73,12 @@ public class ChatbotService {
 
     public ChatResult chat(List<ChatMessage> messages) {
         if (!isConfigured()) {
-            throw new ChatbotException("Chatbot chÃ†Â°a Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ¥u hÃƒÂ¬nh GROQ_API_KEY.");
+            throw ChatbotException.serviceUnavailable("Chatbot chưa được cấu hình GROQ_API_KEY.");
         }
 
         List<ChatMessage> sanitized = sanitize(messages);
         if (sanitized.isEmpty()) {
-            throw new ChatbotException("NÃ¡Â»â„¢i dung hÃ¡Â»â„¢i thoÃ¡ÂºÂ¡i khÃƒÂ´ng hÃ¡Â»Â£p lÃ¡Â»â€¡.");
+            throw ChatbotException.invalidRequest("Nội dung hội thoại không hợp lệ.");
         }
 
         ObjectNode payload = objectMapper.createObjectNode();
@@ -105,33 +106,35 @@ public class ChatbotService {
                     .body(String.class);
 
             if (!StringUtils.hasText(responseBody)) {
-                throw new ChatbotException("Groq khÃƒÂ´ng trÃ¡ÂºÂ£ vÃ¡Â»Â nÃ¡Â»â„¢i dung phÃ¡ÂºÂ£n hÃ¡Â»â€œi.");
+                throw ChatbotException.badGateway("Groq không trả về nội dung phản hồi.");
             }
 
             JsonNode root = objectMapper.readTree(responseBody);
             JsonNode firstChoice = root.path("choices").path(0).path("message").path("content");
             String reply = firstChoice.isMissingNode() ? "" : firstChoice.asText("");
             if (!StringUtils.hasText(reply)) {
-                throw new ChatbotException("Groq khÃƒÂ´ng trÃ¡ÂºÂ£ vÃ¡Â»Â nÃ¡Â»â„¢i dung phÃ¡ÂºÂ£n hÃ¡Â»â€œi.");
+                throw ChatbotException.badGateway("Groq không trả về nội dung phản hồi.");
             }
 
             String responseModel = root.path("model").asText(model);
             return new ChatResult(reply.trim(), responseModel);
         } catch (RestClientResponseException ex) {
-            throw new ChatbotException(buildGroqErrorMessage(ex), ex);
+            throw ChatbotException.badGateway(buildGroqErrorMessage(ex), ex);
         } catch (RestClientException ex) {
-            throw new ChatbotException("KhÃƒÂ´ng thÃ¡Â»Æ’ kÃ¡ÂºÂ¿t nÃ¡Â»â€˜i tÃ¡Â»â€ºi Groq. Vui lÃƒÂ²ng thÃ¡Â»Â­ lÃ¡ÂºÂ¡i sau ÃƒÂ­t phÃƒÂºt.", ex);
+            throw ChatbotException.badGateway("Không thể kết nối tới Groq. Vui lòng thử lại sau ít phút.", ex);
+        } catch (ChatbotException ex) {
+            throw ex;
         } catch (Exception ex) {
-            throw new ChatbotException("KhÃƒÂ´ng thÃ¡Â»Æ’ Ã„â€˜Ã¡Â»Âc phÃ¡ÂºÂ£n hÃ¡Â»â€œi tÃ¡Â»Â« Groq: " + ex.getMessage(), ex);
+            throw ChatbotException.internal("Không thể đọc phản hồi từ Groq.", ex);
         }
     }
 
     private String buildGroqErrorMessage(RestClientResponseException ex) {
         String detail = extractGroqErrorMessage(ex.getResponseBodyAsString());
         if (StringUtils.hasText(detail)) {
-            return "Groq trÃ¡ÂºÂ£ vÃ¡Â»Â lÃ¡Â»â€”i " + ex.getStatusCode().value() + ": " + detail;
+            return "Groq trả về lỗi " + ex.getStatusCode().value() + ": " + detail;
         }
-        return "Groq trÃ¡ÂºÂ£ vÃ¡Â»Â lÃ¡Â»â€”i " + ex.getStatusCode().value() + ".";
+        return "Groq trả về lỗi " + ex.getStatusCode().value() + ".";
     }
 
     private String extractGroqErrorMessage(String responseBody) {
@@ -195,12 +198,41 @@ public class ChatbotService {
     }
 
     public static class ChatbotException extends RuntimeException {
-        public ChatbotException(String message) {
-            super(message);
+        private final HttpStatus status;
+        private final String code;
+
+        private ChatbotException(HttpStatus status, String code, String message, Throwable cause) {
+            super(message, cause);
+            this.status = status;
+            this.code = code;
         }
 
-        public ChatbotException(String message, Throwable cause) {
-            super(message, cause);
+        public static ChatbotException invalidRequest(String message) {
+            return new ChatbotException(HttpStatus.BAD_REQUEST, "INVALID_REQUEST", message, null);
+        }
+
+        public static ChatbotException serviceUnavailable(String message) {
+            return new ChatbotException(HttpStatus.SERVICE_UNAVAILABLE, "CHATBOT_NOT_CONFIGURED", message, null);
+        }
+
+        public static ChatbotException badGateway(String message) {
+            return new ChatbotException(HttpStatus.BAD_GATEWAY, "GROQ_UPSTREAM_ERROR", message, null);
+        }
+
+        public static ChatbotException badGateway(String message, Throwable cause) {
+            return new ChatbotException(HttpStatus.BAD_GATEWAY, "GROQ_UPSTREAM_ERROR", message, cause);
+        }
+
+        public static ChatbotException internal(String message, Throwable cause) {
+            return new ChatbotException(HttpStatus.INTERNAL_SERVER_ERROR, "INTERNAL_ERROR", message, cause);
+        }
+
+        public HttpStatus getStatus() {
+            return status;
+        }
+
+        public String getCode() {
+            return code;
         }
     }
 }

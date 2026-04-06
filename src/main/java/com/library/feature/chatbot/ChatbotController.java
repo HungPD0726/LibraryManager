@@ -1,10 +1,14 @@
 package com.library.feature.chatbot;
 
 import com.library.shared.support.RoleSupport;
-import com.library.feature.chatbot.ChatbotService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -39,25 +43,28 @@ public class ChatbotController {
 
     @PostMapping(value = "/chatbot", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> chat(@RequestBody(required = false) ChatRequest request) {
-        try {
-            List<ChatMessagePayload> messages = request == null || request.messages() == null
-                    ? List.of()
-                    : request.messages();
-            ChatbotService.ChatResult result = chatbotService.chat(
-                    messages.stream()
-                            .map(message -> new ChatbotService.ChatMessage(message.role(), message.content()))
-                            .toList()
-            );
-            return ResponseEntity.ok(Map.of("reply", result.reply(), "model", result.model()));
-        } catch (ChatbotService.ChatbotException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
-        }
+    public ResponseEntity<Map<String, String>> chat(@Valid @RequestBody ChatRequest request) {
+        ChatbotService.ChatResult result = chatbotService.chat(
+                request.messages().stream()
+                        .map(message -> new ChatbotService.ChatMessage(message.role(), message.content()))
+                        .toList()
+        );
+        return ResponseEntity.ok(Map.of("reply", result.reply(), "model", result.model()));
     }
 
-    public record ChatRequest(List<ChatMessagePayload> messages) {
+    public record ChatRequest(
+            @NotEmpty(message = "Danh sách tin nhắn không được để trống.")
+            List<@NotNull(message = "Tin nhắn không hợp lệ.") @Valid ChatMessagePayload> messages
+    ) {
     }
 
-    public record ChatMessagePayload(String role, String content) {
+    public record ChatMessagePayload(
+            @NotBlank(message = "Vai trò tin nhắn không được để trống.")
+            @Pattern(regexp = "user|assistant", message = "Vai trò tin nhắn chỉ được là user hoặc assistant.")
+            String role,
+            @NotBlank(message = "Nội dung tin nhắn không được để trống.")
+            @Size(max = ChatbotService.MAX_MESSAGE_LENGTH, message = "Nội dung tin nhắn không được vượt quá 2500 ký tự.")
+            String content
+    ) {
     }
 }

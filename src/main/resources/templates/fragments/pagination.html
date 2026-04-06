@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="pagination(currentPage, totalPages, baseUrl, params)">
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a class="page-link" 
+           th:each="idx : ${#numbers.sequence(0, totalPages - 1)}"
+           th:href="@{${baseUrl}(page=${idx}, __${params}__)}"
+           th:classappend="${idx == currentPage ? ' is-active' : ''}"
+           th:text="${idx + 1}">1</a>
+    </div>
+</div>
+
+</body>
+</html>

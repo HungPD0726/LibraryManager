@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/parts/student.css}" rel="stylesheet">
+    <th:block layout:fragment="pageStyles"></th:block>
 </head>
 <body class="student-shell">
 <header class="student-topbar">
@@ -22,61 +24,100 @@
         </span>
     </a>
 
-    <nav class="student-nav">
-        <a th:href="@{/home}" th:classappend="${requestPath == '/home' ? ' is-active' : ''}">Trang chủ</a>
-        <a th:href="@{/borrows}" th:classappend="${#strings.startsWith(requestPath, '/borrows') ? ' is-active' : ''}">Mượn sách</a>
-        <a th:href="@{/buy}" th:classappend="${#strings.startsWith(requestPath, '/buy') ? ' is-active' : ''}">Mua sách</a>
-        <a th:href="@{/profile}" th:classappend="${#strings.startsWith(requestPath, '/profile') ? ' is-active' : ''}">Hồ sơ</a>
-        <a th:href="@{/notifications}" th:classappend="${#strings.startsWith(requestPath, '/notifications') ? ' is-active' : ''}" style="position:relative;">
-            Thông báo
-            <span th:if="${unreadNotifications != null and unreadNotifications > 0}"
-                  class="notification-badge" th:text="${unreadNotifications}">0</span>
-        </a>
-        <a th:href="@{/chatbot}" th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">Chatbot</a>
-        <a th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">Admin</a>
-    </nav>
-
-    <div class="student-profile-bar">
-        <span class="profile-avatar" th:text="${#strings.substring((currentStudent != null ? currentStudent.studentName : (currentUsername != null ? currentUsername : 'S')), 0, 1).toUpperCase()}">S</span>
-        <div>
-            <strong th:text="${currentStudent != null ? currentStudent.studentName : currentUsername}">Sinh viên</strong>
-            <small th:text="${currentStudent != null ? currentStudent.email : currentUsername}">student@example.com</small>
-        </div>
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-ghost">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Đăng xuất
-            </button>
-        </form>
+    <div class="student-nav-shell">
+        <button type="button"
+                class="icon-button student-nav-toggle"
+                data-student-nav-toggle
+                aria-expanded="false"
+                aria-controls="studentNav"
+                aria-label="Bật hoặc tắt menu điều hướng">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav id="studentNav" class="student-nav">
+            <a th:href="@{/home}" th:classappend="${requestPath == '/home' ? ' is-active' : ''}">Trang chủ</a>
+            <a th:href="@{/borrows}" th:classappend="${#strings.startsWith(requestPath, '/borrows') ? ' is-active' : ''}">Mượn sách</a>
+            <a th:href="@{/buy}" th:classappend="${#strings.startsWith(requestPath, '/buy') ? ' is-active' : ''}">Mua sách</a>
+            <a th:href="@{/notifications}" class="student-nav-link-badge" th:classappend="${#strings.startsWith(requestPath, '/notifications') ? ' is-active' : ''}">
+                Thông báo
+                <span th:if="${unreadNotifications != null and unreadNotifications > 0}"
+                      class="notification-badge"
+                      th:text="${unreadNotifications}">0</span>
+            </a>
+            <a th:href="@{/chatbot}" th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">Chatbot</a>
+            <a th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">Admin</a>
+        </nav>
     </div>
+
+    <details class="student-profile-menu" data-profile-menu>
+        <summary class="student-profile-bar student-profile-trigger">
+            <span th:if="${currentStudent != null and currentStudent.avatarUrl != null}" class="profile-avatar profile-avatar-image">
+                <img th:src="@{${currentStudent.avatarUrl}}" alt="Ảnh đại diện sinh viên">
+            </span>
+            <span th:unless="${currentStudent != null and currentStudent.avatarUrl != null}" class="profile-avatar"
+                  th:text="${#strings.substring((currentStudent != null ? currentStudent.studentName : (currentUsername != null ? currentUsername : 'S')), 0, 1).toUpperCase()}">S</span>
+            <span class="student-profile-copy">
+                <strong th:text="${currentStudent != null ? currentStudent.studentName : currentUsername}">Sinh viên</strong>
+                <small th:text="${currentStudent != null ? currentStudent.email : currentUsername}">student@example.com</small>
+            </span>
+            <span class="student-profile-chevron" aria-hidden="true">
+                <i class="fa-solid fa-chevron-down"></i>
+            </span>
+        </summary>
+
+        <div class="student-profile-dropdown">
+            <div class="student-profile-dropdown-head">
+                <span th:if="${currentStudent != null and currentStudent.avatarUrl != null}" class="profile-avatar profile-avatar-small profile-avatar-image">
+                    <img th:src="@{${currentStudent.avatarUrl}}" alt="Ảnh đại diện sinh viên">
+                </span>
+                <span th:unless="${currentStudent != null and currentStudent.avatarUrl != null}" class="profile-avatar profile-avatar-small"
+                      th:text="${#strings.substring((currentStudent != null ? currentStudent.studentName : (currentUsername != null ? currentUsername : 'S')), 0, 1).toUpperCase()}">S</span>
+                <div>
+                    <strong th:text="${currentStudent != null ? currentStudent.studentName : currentUsername}">Sinh viên</strong>
+                    <small th:text="${currentStudent != null ? currentStudent.email : currentUsername}">student@example.com</small>
+                </div>
+            </div>
+
+            <div class="student-profile-actions">
+                <a class="student-dropdown-link"
+                   th:href="@{/profile}"
+                   th:classappend="${#strings.startsWith(requestPath, '/profile') ? ' is-active' : ''}">
+                    <span><i class="fa-regular fa-user"></i> Hồ sơ cá nhân</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a class="student-dropdown-link"
+                   th:href="@{/notifications}"
+                   th:classappend="${#strings.startsWith(requestPath, '/notifications') ? ' is-active' : ''}">
+                    <span><i class="fa-regular fa-bell"></i> Thông báo</span>
+                    <strong class="student-menu-count" th:if="${unreadNotifications != null and unreadNotifications > 0}" th:text="${unreadNotifications}">0</strong>
+                </a>
+                <a class="student-dropdown-link"
+                   th:href="@{/chatbot}"
+                   th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">
+                    <span><i class="fa-solid fa-robot"></i> Library AI</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a class="student-dropdown-link" th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">
+                    <span><i class="fa-solid fa-shield-halved"></i> Khu quản trị</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <form th:action="@{/logout}" method="post" class="student-profile-logout">
+                <button type="submit" class="btn btn-ghost btn-block">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Đăng xuất
+                </button>
+            </form>
+        </div>
+    </details>
 </header>
 
 <main class="student-main">
-    <div th:if="${msg}" class="alert alert-success">
-        <i class="fa-solid fa-circle-check"></i>
-        <span th:text="${msg}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-    <div th:if="${message}" class="alert alert-success">
-        <i class="fa-solid fa-circle-check"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-    </div>
-
+    <div th:replace="~{fragments/alerts :: alerts}"></div>
     <div layout:fragment="content"></div>
 </main>
 
 <script th:src="@{/js/app.js}"></script>
+<th:block layout:fragment="pageScripts"></th:block>
 </body>
 </html>

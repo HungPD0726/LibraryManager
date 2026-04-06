@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -37,6 +38,15 @@ public interface FineRepository extends JpaRepository<Fine, Integer> {
 
     @Query("SELECT COALESCE(SUM(f.amount), 0) FROM Fine f WHERE f.status = 'Paid'")
     BigDecimal sumPaidAmount();
+
+    @Query("""
+            SELECT YEAR(f.paidDate), MONTH(f.paidDate), COALESCE(SUM(f.amount), 0)
+            FROM Fine f
+            WHERE f.status = 'Paid' AND f.paidDate IS NOT NULL AND f.paidDate >= :startDate
+            GROUP BY YEAR(f.paidDate), MONTH(f.paidDate)
+            ORDER BY YEAR(f.paidDate), MONTH(f.paidDate)
+            """)
+    List<Object[]> sumPaidAmountByMonthSince(@Param("startDate") LocalDate startDate);
 
     @Query("SELECT COALESCE(SUM(f.amount), 0) FROM Fine f WHERE f.borrow.student.studentId = :studentId AND f.status = 'Unpaid'")
     BigDecimal sumUnpaidByStudentId(@Param("studentId") Integer studentId);

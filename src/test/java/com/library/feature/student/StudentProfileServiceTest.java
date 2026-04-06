@@ -50,12 +50,13 @@ class StudentProfileServiceTest {
         when(studentRepository.save(student)).thenReturn(student);
         when(staffRepository.save(staff)).thenReturn(staff);
 
-        Student updated = studentProfileService.updateProfile(staff, form);
+        Student updated = studentProfileService.updateProfile(staff, form, "/uploads/avatars/student-5-avatar.png");
 
         assertThat(updated).isSameAs(student);
         assertThat(student.getStudentName()).isEqualTo("Nguyen Van A");
         assertThat(student.getEmail()).isEqualTo("new@example.com");
         assertThat(student.getPhone()).isEqualTo("0901234567");
+        assertThat(student.getAvatarUrl()).isEqualTo("/uploads/avatars/student-5-avatar.png");
         assertThat(staff.getEmail()).isEqualTo("new@example.com");
         verify(studentRepository).save(student);
         verify(staffRepository).save(staff);

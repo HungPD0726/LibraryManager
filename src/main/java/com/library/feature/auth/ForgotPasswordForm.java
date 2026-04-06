@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class ForgotPasswordForm {
 
-    @NotBlank(message = "Vui lÃƒÂ²ng nhÃ¡ÂºÂ­p email hoÃ¡ÂºÂ·c tÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p.")
+    @NotBlank(message = "Vui lòng nhập email hoặc tên đăng nhập.")
     private String identity;
 }

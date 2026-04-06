@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -23,7 +25,14 @@ public class CurrentStudentService {
         if (authentication == null || !authentication.isAuthenticated()) {
             return Optional.empty();
         }
-        return staffRepository.findByUsername(authentication.getName());
+
+        String identifier = normalize(authentication.getName());
+        if (!StringUtils.hasText(identifier)) {
+            return Optional.empty();
+        }
+
+        return staffRepository.findByUsername(identifier)
+                .or(() -> staffRepository.findByEmail(identifier));
     }
 
     @Transactional
@@ -34,5 +43,12 @@ public class CurrentStudentService {
 
         return findCurrentStaff(authentication)
                 .map(studentMirrorService::ensureStudentMirror);
+    }
+
+    private String normalize(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim().toLowerCase(Locale.ROOT);
     }
 }

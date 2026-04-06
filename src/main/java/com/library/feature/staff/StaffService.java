@@ -51,7 +51,7 @@ public class StaffService {
     @Transactional
     public Staff createStaff(Staff staff, String rawPassword, List<Integer> roleIds) {
         if (!StringUtils.hasText(rawPassword)) {
-            throw new IllegalArgumentException("MÃ¡ÂºÂ­t khÃ¡ÂºÂ©u khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.");
+            throw new IllegalArgumentException("Mật khẩu không được để trống.");
         }
 
         normalize(staff);
@@ -80,15 +80,15 @@ public class StaffService {
     public Staff registerStudentAccount(String fullName, String username, String email, String rawPassword) {
         String normalizedUsername = normalizeNullable(username);
         if (normalizedUsername == null) {
-            throw new IllegalArgumentException("TÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.");
+            throw new IllegalArgumentException("Tên đăng nhập không được để trống.");
         }
         if (staffRepository.existsByUsername(normalizedUsername)) {
-            throw new IllegalArgumentException("TÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p Ã„â€˜ÃƒÂ£ tÃ¡Â»â€œn tÃ¡ÂºÂ¡i.");
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
         }
 
         String normalizedEmail = normalizeNullable(email);
         if (normalizedEmail != null && staffRepository.existsByEmail(normalizedEmail)) {
-            throw new IllegalArgumentException("Email Ã„â€˜ÃƒÂ£ Ã„â€˜Ã†Â°Ã¡Â»Â£c sÃ¡Â»Â­ dÃ¡Â»Â¥ng.");
+            throw new IllegalArgumentException("Email đã được sử dụng.");
         }
 
         Staff staff = new Staff();

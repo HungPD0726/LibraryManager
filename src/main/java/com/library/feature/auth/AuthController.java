@@ -2,6 +2,7 @@ package com.library.feature.auth;
 
 import com.library.domain.model.Staff;
 import com.library.feature.staff.StaffService;
+import com.library.feature.student.CurrentStudentService;
 import com.library.feature.student.StudentMirrorService;
 import com.library.shared.support.RoleSupport;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class AuthController {
 
     private final StaffService staffService;
     private final StudentMirrorService studentMirrorService;
+    private final CurrentStudentService currentStudentService;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
@@ -45,13 +47,25 @@ public class AuthController {
     }
 
     @GetMapping("/login/success")
-    public String loginSuccess(Authentication authentication) {
+    public String loginSuccess(Authentication authentication, RedirectAttributes redirectAttributes) {
         if (RoleSupport.isAdmin(authentication) || RoleSupport.isStaff(authentication)) {
             return "redirect:/admin/dashboard";
         }
+
         if (RoleSupport.isStudent(authentication)) {
-            return "redirect:/home";
+            try {
+                boolean resolved = currentStudentService.resolveCurrentStudent(authentication).isPresent();
+                if (resolved) {
+                    return "redirect:/home";
+                }
+                redirectAttributes.addFlashAttribute("error", "Không thể khởi tạo hồ sơ sinh viên cho tài khoản này.");
+            } catch (RuntimeException ex) {
+                redirectAttributes.addFlashAttribute("error", "Đăng nhập Google thành công nhưng không thể mở hồ sơ sinh viên.");
+            }
+            return "redirect:/login";
         }
+
+        redirectAttributes.addFlashAttribute("error", "Tài khoản hiện tại không có quyền truy cập hệ thống.");
         return "redirect:/login";
     }
 
@@ -90,10 +104,10 @@ public class AuthController {
     }
 
     @GetMapping("/")
-    public String root(Authentication authentication) {
+    public String root(Authentication authentication, RedirectAttributes redirectAttributes) {
         if (authentication == null) {
             return "redirect:/login";
         }
-        return loginSuccess(authentication);
+        return loginSuccess(authentication, redirectAttributes);
     }
 }

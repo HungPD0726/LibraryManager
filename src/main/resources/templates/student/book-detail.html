@@ -89,13 +89,12 @@
             </div>
         </section>
 
-        <!-- Reviews Section -->
-        <section class="panel review-panel" style="grid-column: 1 / -1; margin-top: 1rem;">
-            <div class="panel-head" style="margin-bottom: 1.5rem;">
+        <section class="panel review-panel">
+            <div class="panel-head review-panel-head">
                 <div>
-                    <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-                        Đánh giá & Nhận xét
-                        <span th:if="${reviewCount > 0}" class="status-pill warning" style="font-size: 0.85rem;">
+                    <h3 class="review-heading">
+                        Đánh giá &amp; Nhận xét
+                        <span th:if="${reviewCount > 0}" class="status-pill warning review-rating-pill">
                             <i class="fa-solid fa-star"></i>
                             <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</span>/5.0
                         </span>
@@ -104,23 +103,22 @@
                 </div>
             </div>
 
-            <!-- Review form (only if not reviewed yet) -->
-            <div th:if="${!hasReviewed and currentStudent != null}" class="review-form-container" style="background: var(--gray-soft); padding: 1.5rem; border-radius: var(--radius-md); margin-bottom: 2rem;">
-                <h4 style="margin-bottom: 1rem;">Thêm đánh giá của bạn</h4>
+            <div th:if="${!hasReviewed and currentStudent != null}" class="review-form-container">
+                <h4 class="review-form-title">Thêm đánh giá của bạn</h4>
                 <form th:action="@{/home/book/review}" method="post" class="form-stack">
                     <input type="hidden" name="bookId" th:value="${bookDetail.bookId()}">
-                    <div class="form-group" style="flex-direction: row; align-items: center; gap: 1rem;">
+                    <div class="form-group review-rating-row">
                         <label>Đánh giá sao:</label>
                         <div class="star-rating">
-                            <input type="radio" id="star5" name="rating" value="5" required />
+                            <input type="radio" id="star5" name="rating" value="5" required>
                             <label for="star5" title="5 sao"><i class="fa-solid fa-star"></i></label>
-                            <input type="radio" id="star4" name="rating" value="4" />
+                            <input type="radio" id="star4" name="rating" value="4">
                             <label for="star4" title="4 sao"><i class="fa-solid fa-star"></i></label>
-                            <input type="radio" id="star3" name="rating" value="3" />
+                            <input type="radio" id="star3" name="rating" value="3">
                             <label for="star3" title="3 sao"><i class="fa-solid fa-star"></i></label>
-                            <input type="radio" id="star2" name="rating" value="2" />
+                            <input type="radio" id="star2" name="rating" value="2">
                             <label for="star2" title="2 sao"><i class="fa-solid fa-star"></i></label>
-                            <input type="radio" id="star1" name="rating" value="1" />
+                            <input type="radio" id="star1" name="rating" value="1">
                             <label for="star1" title="1 sao"><i class="fa-solid fa-star"></i></label>
                         </div>
                     </div>
@@ -132,26 +130,25 @@
                     </div>
                 </form>
             </div>
-            
-            <div th:if="${hasReviewed}" class="alert alert-success" style="margin-bottom: 2rem;">
+
+            <div th:if="${hasReviewed}" class="alert alert-success review-owned-alert">
                 <i class="fa-solid fa-circle-check"></i>
                 <span>Bạn đã đánh giá sách này. Cảm ơn phản hồi của bạn!</span>
             </div>
 
-            <!-- List of reviews -->
             <div class="stack-list" th:if="${!#lists.isEmpty(reviews)}">
-                <article th:each="review : ${reviews}" class="review-card" style="padding: 1rem; border-bottom: 1px solid var(--border-color);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <strong>
-                            <i class="fa-solid fa-user-circle muted-text" style="margin-right: 0.5rem;"></i>
+                <article th:each="review : ${reviews}" class="review-card">
+                    <div class="review-card-head">
+                        <strong class="review-reviewer">
+                            <i class="fa-solid fa-user-circle muted-text review-user-icon"></i>
                             <span th:text="${review.student.studentName}">Tên SV</span>
                         </strong>
-                        <div style="color: var(--gold-soft);">
+                        <div class="review-stars">
                             <i class="fa-solid fa-star" th:each="i : ${#numbers.sequence(1, review.rating)}"></i>
                             <i class="fa-regular fa-star" th:each="i : ${#numbers.sequence(review.rating + 1, 5)}" th:if="${review.rating < 5}"></i>
                         </div>
                     </div>
-                    <p th:if="${review.comment != null and !review.comment.isBlank()}" th:text="${review.comment}" style="margin-bottom: 0.5rem;">Nội dung</p>
+                    <p th:if="${review.comment != null and !review.comment.isBlank()}" th:text="${review.comment}" class="review-comment">Nội dung</p>
                     <small class="muted-text" th:text="${#temporals.format(review.createdDate, 'dd/MM/yyyy')}">Date</small>
                 </article>
             </div>

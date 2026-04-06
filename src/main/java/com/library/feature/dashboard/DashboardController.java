@@ -1,5 +1,6 @@
 package com.library.feature.dashboard;
 
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,11 +29,17 @@ public class DashboardController {
         model.addAttribute("unpaidFineTotal", dashboard.unpaidFineTotal());
         model.addAttribute("paidFineTotal", dashboard.paidFineTotal());
         model.addAttribute("totalRevenue", dashboard.totalRevenue());
+        model.addAttribute("combinedRevenue", dashboard.totalRevenue().add(nullSafe(dashboard.paidFineTotal())));
         model.addAttribute("monthlyBorrowJson", dashboard.charts().monthlyBorrowJson());
         model.addAttribute("categoryDistJson", dashboard.charts().categoryDistJson());
         model.addAttribute("borrowStatusJson", dashboard.charts().borrowStatusJson());
+        model.addAttribute("revenueChartJson", dashboard.charts().revenueChartJson());
         model.addAttribute("topBooks", dashboard.topBooks());
         model.addAttribute("topBorrowers", dashboard.topBorrowers());
         return "admin/dashboard";
+    }
+
+    private BigDecimal nullSafe(BigDecimal value) {
+        return value == null ? BigDecimal.ZERO : value;
     }
 }

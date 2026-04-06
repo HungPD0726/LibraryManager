@@ -15,64 +15,100 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid profile-layout">
+        <section class="panel profile-avatar-panel">
             <div class="panel-head">
                 <div>
-                    <p class="eyebrow">Thông tin cá nhân</p>
-                    <h3>Cập nhật hồ sơ sinh viên</h3>
+                    <p class="eyebrow">Ảnh đại diện</p>
+                    <h3>Cập nhật ảnh hiển thị trong header</h3>
                 </div>
             </div>
-            <form th:action="@{/profile}" th:object="${profileForm}" method="post" class="stack-form">
-                <label class="field">
-                    <span>Họ và tên</span>
-                    <input type="text" th:field="*{studentName}">
-                    <small class="field-error" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></small>
-                </label>
-                <label class="field">
-                    <span>Email</span>
-                    <input type="email" th:field="*{email}">
-                </label>
-                <label class="field">
-                    <span>Số điện thoại</span>
-                    <input type="text" th:field="*{phone}">
-                </label>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                    Lưu hồ sơ
-                </button>
-            </form>
+
+            <div class="profile-avatar-stage">
+                <span th:if="${studentProfile.avatarUrl != null}" class="profile-avatar profile-avatar-large profile-avatar-image">
+                    <img th:src="@{${studentProfile.avatarUrl}}" alt="Ảnh đại diện hiện tại">
+                </span>
+                <span th:unless="${studentProfile.avatarUrl != null}" class="profile-avatar profile-avatar-large"
+                      th:text="${#strings.substring(studentProfile.studentName, 0, 1).toUpperCase()}">S</span>
+
+                <div class="profile-avatar-copy">
+                    <h3 th:text="${studentProfile.studentName}">Sinh viên</h3>
+                    <p th:text="${studentProfile.email != null ? studentProfile.email : 'Chưa cập nhật email'}">student@example.com</p>
+                </div>
+            </div>
+
+            <p class="profile-avatar-hint">
+                Ảnh sau khi lưu sẽ xuất hiện ở góc phải trên header và trong menu hồ sơ. Hệ thống hỗ trợ JPG, PNG, GIF, WEBP tối đa 5MB.
+            </p>
         </section>
 
-        <section class="panel">
-            <div class="panel-head">
-                <div>
-                    <p class="eyebrow">Bảo mật</p>
-                    <h3>Đổi mật khẩu đăng nhập</h3>
+        <div class="profile-form-grid">
+            <section class="panel profile-form-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Thông tin cá nhân</p>
+                        <h3>Cập nhật hồ sơ sinh viên</h3>
+                    </div>
                 </div>
-            </div>
-            <form th:action="@{/profile/change-password}" th:object="${passwordForm}" method="post" class="stack-form">
-                <label class="field">
-                    <span>Mật khẩu hiện tại</span>
-                    <input type="password" th:field="*{currentPassword}">
-                    <small class="field-error" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></small>
-                </label>
-                <label class="field">
-                    <span>Mật khẩu mới</span>
-                    <input type="password" th:field="*{newPassword}">
-                    <small class="field-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
-                </label>
-                <label class="field">
-                    <span>Xác nhận mật khẩu mới</span>
-                    <input type="password" th:field="*{confirmPassword}">
-                    <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
-                </label>
-                <button type="submit" class="btn btn-outline">
-                    <i class="fa-solid fa-key"></i>
-                    Cập nhật mật khẩu
-                </button>
-            </form>
-        </section>
+                <form th:action="@{/profile}" th:object="${profileForm}" method="post" enctype="multipart/form-data" class="stack-form profile-identity-panel">
+                    <label class="field profile-upload-field">
+                        <span>Tải ảnh đại diện mới</span>
+                        <input type="file" name="avatarFile" accept=".jpg,.jpeg,.png,.gif,.webp,image/*">
+                        <small class="profile-upload-note">Để trống nếu bạn chỉ muốn cập nhật tên, email hoặc số điện thoại.</small>
+                    </label>
+
+                    <p th:if="${avatarError != null}" class="profile-avatar-error" th:text="${avatarError}">Lỗi ảnh đại diện</p>
+
+                    <label class="field">
+                        <span>Họ và tên</span>
+                        <input type="text" th:field="*{studentName}">
+                        <small class="field-error" th:if="${#fields.hasErrors('studentName')}" th:errors="*{studentName}"></small>
+                    </label>
+                    <label class="field">
+                        <span>Email</span>
+                        <input type="email" th:field="*{email}">
+                    </label>
+                    <label class="field">
+                        <span>Số điện thoại</span>
+                        <input type="text" th:field="*{phone}">
+                    </label>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Lưu hồ sơ
+                    </button>
+                </form>
+            </section>
+
+            <section class="panel profile-security-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">Bảo mật</p>
+                        <h3>Đổi mật khẩu đăng nhập</h3>
+                    </div>
+                </div>
+                <form th:action="@{/profile/change-password}" th:object="${passwordForm}" method="post" class="stack-form">
+                    <label class="field">
+                        <span>Mật khẩu hiện tại</span>
+                        <input type="password" th:field="*{currentPassword}">
+                        <small class="field-error" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></small>
+                    </label>
+                    <label class="field">
+                        <span>Mật khẩu mới</span>
+                        <input type="password" th:field="*{newPassword}">
+                        <small class="field-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></small>
+                    </label>
+                    <label class="field">
+                        <span>Xác nhận mật khẩu mới</span>
+                        <input type="password" th:field="*{confirmPassword}">
+                        <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+                    </label>
+                    <button type="submit" class="btn btn-outline">
+                        <i class="fa-solid fa-key"></i>
+                        Cập nhật mật khẩu
+                    </button>
+                </form>
+            </section>
+        </div>
     </div>
 </section>
 </body>

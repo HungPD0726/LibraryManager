@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -29,4 +30,13 @@ public interface OrderRepository extends JpaRepository<Orders, Integer> {
 
     @Query("SELECT COALESCE(SUM(o.totalAmount), 0) FROM Orders o WHERE o.status = :status")
     java.math.BigDecimal sumRevenueByStatus(@Param("status") String status);
+
+    @Query("""
+            SELECT YEAR(o.orderDate), MONTH(o.orderDate), COALESCE(SUM(o.totalAmount), 0)
+            FROM Orders o
+            WHERE o.status = :status AND o.orderDate >= :startDate
+            GROUP BY YEAR(o.orderDate), MONTH(o.orderDate)
+            ORDER BY YEAR(o.orderDate), MONTH(o.orderDate)
+            """)
+    List<Object[]> sumRevenueByMonthSince(@Param("status") String status, @Param("startDate") LocalDate startDate);
 }

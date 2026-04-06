@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class VerifyOtpForm {
 
-    @NotBlank(message = "Vui lÃƒÂ²ng nhÃ¡ÂºÂ­p mÃƒÂ£ OTP.")
+    @NotBlank(message = "Vui lòng nhập mã OTP.")
     private String otp;
 }

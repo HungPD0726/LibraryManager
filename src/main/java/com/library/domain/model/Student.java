@@ -24,7 +24,7 @@ public class Student {
     @Column(name = "Phone", length = 20)
     private String phone;
 
-    @Transient
+    @Column(name = "AvatarUrl", length = 500)
     private String avatarUrl;
 
     @Transient

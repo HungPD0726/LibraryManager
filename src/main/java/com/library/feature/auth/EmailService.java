@@ -36,12 +36,12 @@ public class EmailService {
     }
 
     public void sendOtpEmail(String toEmail, String otpCode) {
-        sendHtml(toEmail, "MÃƒÂ£ OTP Ã„â€˜Ã¡ÂºÂ·t lÃ¡ÂºÂ¡i mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u", templateService.buildOtpTemplate(otpCode));
+        sendHtml(toEmail, "Mã OTP đặt lại mật khẩu", templateService.buildOtpTemplate(otpCode));
     }
 
     public void sendHtml(String toEmail, String subject, String htmlContent) {
         if (!isConfigured()) {
-            throw new IllegalStateException("Email chÃ†Â°a Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ¥u hÃƒÂ¬nh Ã„â€˜Ã¡ÂºÂ§y Ã„â€˜Ã¡Â»Â§.");
+            throw new IllegalStateException("Email chưa được cấu hình đầy đủ.");
         }
 
         try {
@@ -53,7 +53,7 @@ public class EmailService {
             helper.setFrom(buildFromAddress());
             mailSender.send(message);
         } catch (MessagingException | UnsupportedEncodingException ex) {
-            throw new IllegalStateException("KhÃƒÂ´ng thÃ¡Â»Æ’ gÃ¡Â»Â­i email OTP: " + ex.getMessage(), ex);
+            throw new IllegalStateException("Không thể gửi email OTP: " + ex.getMessage(), ex);
         }
     }
 

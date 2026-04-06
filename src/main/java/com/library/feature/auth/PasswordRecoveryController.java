@@ -1,9 +1,5 @@
 package com.library.feature.auth;
 
-import com.library.feature.auth.PasswordRecoveryService;
-import com.library.feature.auth.ForgotPasswordForm;
-import com.library.feature.auth.ResetPasswordForm;
-import com.library.feature.auth.VerifyOtpForm;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +37,7 @@ public class PasswordRecoveryController {
 
         try {
             passwordRecoveryService.startReset(form.getIdentity(), session);
-            redirectAttributes.addFlashAttribute("message", "OTP Ã„â€˜ÃƒÂ£ Ã„â€˜Ã†Â°Ã¡Â»Â£c gÃ¡Â»Â­i tÃ¡Â»â€ºi email Ã„â€˜Ã„Æ’ng kÃƒÂ½.");
+            redirectAttributes.addFlashAttribute("message", "OTP đã được gửi tới email đăng ký.");
             return "redirect:/verify-otp";
         } catch (RuntimeException ex) {
             model.addAttribute("error", ex.getMessage());
@@ -77,9 +73,13 @@ public class PasswordRecoveryController {
 
         try {
             passwordRecoveryService.verifyOtp(form.getOtp(), session);
-            redirectAttributes.addFlashAttribute("message", "XÃƒÂ¡c minh OTP thÃƒÂ nh cÃƒÂ´ng. Vui lÃƒÂ²ng nhÃ¡ÂºÂ­p mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u mÃ¡Â»â€ºi.");
+            redirectAttributes.addFlashAttribute("message", "Xác minh OTP thành công. Vui lòng nhập mật khẩu mới.");
             return "redirect:/reset-password";
         } catch (RuntimeException ex) {
+            if (!passwordRecoveryService.hasPendingReset(session)) {
+                redirectAttributes.addFlashAttribute("error", ex.getMessage());
+                return "redirect:/forgot-password";
+            }
             model.addAttribute("error", ex.getMessage());
             model.addAttribute("pendingUsername", passwordRecoveryService.getPendingUsername(session));
             return "auth/verify-otp";
@@ -112,7 +112,7 @@ public class PasswordRecoveryController {
 
         try {
             passwordRecoveryService.resetPassword(form.getPassword(), form.getConfirmPassword(), session);
-            redirectAttributes.addFlashAttribute("message", "MÃ¡ÂºÂ­t khÃ¡ÂºÂ©u Ã„â€˜ÃƒÂ£ Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t.");
+            redirectAttributes.addFlashAttribute("message", "Mật khẩu đã được cập nhật.");
             return "redirect:/login?reset=true";
         } catch (RuntimeException ex) {
             model.addAttribute("error", ex.getMessage());

@@ -1,10 +1,7 @@
 package com.library.feature.student;
 
-import com.library.domain.model.Author;
 import com.library.domain.model.BookReview;
-import com.library.domain.model.Category;
 import com.library.domain.model.Notification;
-import com.library.domain.model.Publisher;
 import com.library.domain.model.Student;
 import com.library.feature.catalog.BookCardView;
 import com.library.feature.catalog.BookDetailView;
@@ -22,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,9 +62,14 @@ class StudentTemplateRenderTest {
         );
 
         assertThat(html)
+                .contains("/libraryManager/css/style.css")
+                .contains("/libraryManager/css/parts/student.css")
+                .contains("/libraryManager/js/app.js")
+                .contains("/libraryManager/uploads/avatars/minh.png")
                 .contains("Sapiens")
                 .contains("120,000.00 VND")
-                .contains("Sách có thể mượn hoặc đặt giữ chỗ ngay");
+                .contains("Sách có thể mượn hoặc đặt giữ chỗ ngay")
+                .doesNotContain("/libraryManager/css/parts/admin.css");
     }
 
     @Test
@@ -210,11 +211,35 @@ class StudentTemplateRenderTest {
                 .contains("Rất đáng đọc");
     }
 
+    @Test
+    void chatbot_shouldLoadSharedStudentAssetsAndPageScript() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("chatbotConfigured", true);
+        model.put("chatbotModel", "llama-3.1-8b-instant");
+        model.put("viewerName", "Nguyen Minh");
+
+        String html = ThymeleafRenderSupport.render(
+                "student/chatbot",
+                "/chatbot",
+                model,
+                "student01",
+                "ROLE_STUDENT"
+        );
+
+        assertThat(html)
+                .contains("/libraryManager/css/style.css")
+                .contains("/libraryManager/css/parts/student.css")
+                .contains("/libraryManager/js/app.js")
+                .contains("/libraryManager/js/pages/chatbot.js")
+                .doesNotContain("/libraryManager/js/pages/admin-dashboard.js");
+    }
+
     private static Student student() {
         Student student = new Student();
         student.setStudentId(7);
         student.setStudentName("Nguyễn Minh");
         student.setEmail("minh@example.com");
+        student.setAvatarUrl("/uploads/avatars/minh.png");
         return student;
     }
 }

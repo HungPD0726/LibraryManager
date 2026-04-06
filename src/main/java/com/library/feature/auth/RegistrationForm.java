@@ -7,19 +7,19 @@ import lombok.Data;
 @Data
 public class RegistrationForm {
 
-    @NotBlank(message = "HÃ¡Â»Â vÃƒÂ  tÃƒÂªn khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Họ và tên không được để trống.")
     private String staffName;
 
-    @NotBlank(message = "TÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Tên đăng nhập không được để trống.")
     private String username;
 
-    @Email(message = "Email khÃƒÂ´ng hÃ¡Â»Â£p lÃ¡Â»â€¡.")
-    @NotBlank(message = "Email khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @Email(message = "Email không hợp lệ.")
+    @NotBlank(message = "Email không được để trống.")
     private String email;
 
-    @NotBlank(message = "MÃ¡ÂºÂ­t khÃ¡ÂºÂ©u khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Mật khẩu không được để trống.")
     private String password;
 
-    @NotBlank(message = "Vui lÃƒÂ²ng xÃƒÂ¡c nhÃ¡ÂºÂ­n mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u.")
+    @NotBlank(message = "Vui lòng xác nhận mật khẩu.")
     private String confirmPassword;
 }

@@ -52,7 +52,12 @@ public class PasswordRecoveryService {
                 otpGeneratorHasher.sha256(otp),
                 System.currentTimeMillis() + OTP_TTL.toMillis()
         );
-        emailService.sendOtpEmail(recoveryEmail, otp);
+        try {
+            emailService.sendOtpEmail(recoveryEmail, otp);
+        } catch (RuntimeException ex) {
+            otpSessionService.clear(session);
+            throw ex;
+        }
     }
 
     public void verifyOtp(String otp, HttpSession session) {

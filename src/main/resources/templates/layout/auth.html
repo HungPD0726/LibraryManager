@@ -10,49 +10,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link th:href="@{/css/parts/auth.css}" rel="stylesheet">
+    <th:block layout:fragment="pageStyles"></th:block>
 </head>
-<body class="auth-shell">
+<body class="auth-shell"
+      th:attr="data-flash-msg=${msg},data-flash-message=${message},data-flash-error=${error}">
+<div class="auth-orb auth-orb-one" aria-hidden="true"></div>
+<div class="auth-orb auth-orb-two" aria-hidden="true"></div>
 <main class="auth-stage">
     <section class="auth-panel">
         <div class="auth-brand">
             <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
             <div>
                 <p class="eyebrow">Library Manager</p>
-                <h1>Không gian học tập và mượn sách số</h1>
+                <h1>Cổng thông tin Thư viện</h1>
             </div>
-        </div>
-
-        <div th:if="${msg}" class="alert alert-success">
-            <i class="fa-solid fa-circle-check"></i>
-            <span th:text="${msg}"></span>
-        </div>
-        <div th:if="${message}" class="alert alert-success">
-            <i class="fa-solid fa-circle-check"></i>
-            <span th:text="${message}"></span>
-        </div>
-        <div th:if="${error}" class="alert alert-danger">
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span th:text="${error}"></span>
         </div>
 
         <div layout:fragment="content"></div>
     </section>
 
     <aside class="auth-aside">
-        <div class="hero-card">
-            <span class="hero-chip">LibraryManagerSpringBoot</span>
-            <h2>Đồng bộ luồng cũ, vận hành trên Spring Boot mới.</h2>
-            <p>Đăng nhập để quản trị kho sách, xử lý mượn trả, theo dõi đơn mua và hỗ trợ sinh viên qua chatbot.</p>
+        <div class="hero-card auth-showcase">
+            <span class="hero-chip">Chào mừng trở lại</span>
+            <h2>Không gian số hỗ trợ học tập và quản lý sách.</h2>
+            <p>Đăng nhập để bắt đầu khám phá kho sách, quản lý mượn trả, theo dõi đơn mua và tương tác với chatbot hỗ trợ trong cùng một trải nghiệm.</p>
+
             <ul class="hero-points">
-                <li><i class="fa-solid fa-check"></i> Mượn trả đúng rule tồn kho</li>
-                <li><i class="fa-solid fa-check"></i> Portal sinh viên có giỏ mượn và chờ mua</li>
-                <li><i class="fa-solid fa-check"></i> Khôi phục mật khẩu qua OTP email</li>
+                <li><i class="fa-solid fa-check"></i> Tra cứu và mượn sách trực tuyến</li>
+                <li><i class="fa-solid fa-check"></i> Theo dõi đơn hàng và thông báo</li>
+                <li><i class="fa-solid fa-check"></i> Hỗ trợ giải đáp qua Library AI</li>
             </ul>
         </div>
     </aside>
 </main>
 
-<script th:src="@{/js/app.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script th:src="@{/js/auth.js}"></script>
+<th:block layout:fragment="pageScripts"></th:block>
 </body>
 </html>

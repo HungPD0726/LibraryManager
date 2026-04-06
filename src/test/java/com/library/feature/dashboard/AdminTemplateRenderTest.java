@@ -30,11 +30,14 @@ class AdminTemplateRenderTest {
         model.put("overdueBorrows", 2L);
         model.put("unpaidFines", 5L);
         model.put("unpaidFineTotal", new BigDecimal("2500000"));
+        model.put("paidFineTotal", new BigDecimal("700000"));
         model.put("totalRevenue", new BigDecimal("5800000"));
+        model.put("combinedRevenue", new BigDecimal("6500000"));
         model.put("monthlyBorrowJson", "{\"1\":4}");
-        model.put("categoryDistJson", "{\"Kỹ năng\":10}");
+        model.put("categoryDistJson", "{\"Ky nang\":10}");
+        model.put("revenueChartJson", "{\"labels\":[\"T3/26\",\"T4/26\"],\"orderRevenue\":[120000,140000],\"fineRevenue\":[10000,20000],\"totalRevenue\":[130000,160000]}");
         model.put("topBooks", List.of(new TopBorrowedBookView(1, "Dune", 19)));
-        model.put("topBorrowers", List.of(new TopBorrowerView(2, "Nguyễn An", 12)));
+        model.put("topBorrowers", List.of(new TopBorrowerView(2, "Nguyen An", 12)));
 
         String html = ThymeleafRenderSupport.render(
                 "admin/dashboard",
@@ -45,17 +48,25 @@ class AdminTemplateRenderTest {
         );
 
         assertThat(html)
+                .contains("/libraryManager/css/style.css")
+                .contains("/libraryManager/css/parts/admin.css")
+                .contains("/libraryManager/js/app.js")
+                .contains("/libraryManager/js/pages/admin-dashboard.js")
+                .contains("id=\"dashboardRevenueData\"")
                 .contains("2,500,000")
                 .contains("5,800,000")
+                .contains("6,500,000")
+                .contains("doanh thu 12 th")
                 .contains("#1")
-                .contains("Dune");
+                .contains("Dune")
+                .doesNotContain("/libraryManager/css/parts/student.css");
     }
 
     @Test
     void fineList_shouldRenderAmountsAndPayAction() {
         Student student = new Student();
         student.setStudentId(9);
-        student.setStudentName("Lê Huy");
+        student.setStudentName("Le Huy");
 
         Borrow borrow = new Borrow();
         borrow.setBorrowId(73);
@@ -65,7 +76,7 @@ class AdminTemplateRenderTest {
         fine.setFineId(41);
         fine.setBorrow(borrow);
         fine.setAmount(new BigDecimal("45000"));
-        fine.setReason("Trả trễ");
+        fine.setReason("Tra tre");
         fine.setCreatedDate(LocalDate.of(2026, 4, 2));
         fine.setStatus("Unpaid");
 
@@ -97,8 +108,8 @@ class AdminTemplateRenderTest {
     void orderList_shouldRenderOrderTotalsAndItems() {
         OrderRowView order = new OrderRowView(
                 15,
-                "Trần Hà",
-                "Thủ thư B",
+                "Tran Ha",
+                "Thu thu B",
                 LocalDate.of(2026, 4, 4),
                 new BigDecimal("199000"),
                 "Đã giao",

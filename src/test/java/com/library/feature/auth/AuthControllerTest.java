@@ -1,13 +1,14 @@
 package com.library.feature.auth;
 
-import com.library.shared.config.CommonModelAdvice;
-import com.library.shared.config.SecurityConfig;
 import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
+import com.library.domain.repository.RoleRepository;
 import com.library.domain.repository.StaffRepository;
-import com.library.feature.auth.CustomUserDetailsService;
 import com.library.feature.staff.StaffService;
+import com.library.feature.student.CurrentStudentService;
 import com.library.feature.student.StudentMirrorService;
+import com.library.shared.config.CommonModelAdvice;
+import com.library.shared.config.SecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,8 +19,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -46,10 +50,14 @@ class AuthControllerTest {
     @Autowired
     private TestBeans.FakeStudentMirrorService studentMirrorService;
 
+    @Autowired
+    private TestBeans.FakeCurrentStudentService currentStudentService;
+
     @BeforeEach
     void setUp() {
         staffService.reset();
         studentMirrorService.reset();
+        currentStudentService.reset();
     }
 
     @Test
@@ -70,10 +78,23 @@ class AuthControllerTest {
 
     @Test
     void loginSuccess_shouldRedirectStudentToHome() throws Exception {
+        currentStudentService.willResolve(new Student());
+
         mockMvc.perform(get("/login/success")
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
+    }
+
+    @Test
+    void loginSuccess_shouldRedirectStudentBackToLoginWhenProfileCannotBeResolved() throws Exception {
+        currentStudentService.willResolve(null);
+
+        mockMvc.perform(get("/login/success")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT")))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"))
+                .andExpect(flash().attributeExists("error"));
     }
 
     @Test
@@ -149,6 +170,15 @@ class AuthControllerTest {
         }
 
         @Bean
+        CustomOAuth2UserService customOAuth2UserService() {
+            return new CustomOAuth2UserService(
+                    Mockito.mock(StaffRepository.class),
+                    Mockito.mock(RoleRepository.class),
+                    new FakeStudentMirrorService()
+            );
+        }
+
+        @Bean
         FakeStaffService staffService() {
             return new FakeStaffService();
         }
@@ -156,6 +186,11 @@ class AuthControllerTest {
         @Bean
         FakeStudentMirrorService studentMirrorService() {
             return new FakeStudentMirrorService();
+        }
+
+        @Bean
+        FakeCurrentStudentService currentStudentService() {
+            return new FakeCurrentStudentService();
         }
 
         static class FakeStaffService extends StaffService {
@@ -229,7 +264,7 @@ class AuthControllerTest {
             public Student ensureStudentMirror(Staff staff) {
                 ensureMirrorCalls++;
                 lastStaff = staff;
-                return nextStudent;
+                return nextStudent != null ? nextStudent : new Student();
             }
 
             void willReturn(Student student) {
@@ -248,6 +283,28 @@ class AuthControllerTest {
 
             Staff getLastStaff() {
                 return lastStaff;
+            }
+        }
+
+        static class FakeCurrentStudentService extends CurrentStudentService {
+
+            private Student nextStudent;
+
+            FakeCurrentStudentService() {
+                super(null, null);
+            }
+
+            @Override
+            public Optional<Student> resolveCurrentStudent(Authentication authentication) {
+                return Optional.ofNullable(nextStudent);
+            }
+
+            void willResolve(Student student) {
+                this.nextStudent = student;
+            }
+
+            void reset() {
+                this.nextStudent = null;
             }
         }
     }

@@ -20,14 +20,15 @@ public class StudentProfileService {
     private final StudentMirrorService studentMirrorService;
 
     @Transactional
-    public Student updateProfile(Staff staff, ProfileForm form) {
+    public Student updateProfile(Staff staff, ProfileForm form, String avatarUrl) {
         Student student = studentMirrorService.ensureStudentMirror(staff);
         student.setStudentName(form.getStudentName().trim());
-        student.setEmail(normalizeNullable(form.getEmail()));
-        student.setPhone(normalizeNullable(form.getPhone()));
+        student.setEmail(normalizeEmail(form.getEmail()));
+        student.setPhone(normalizePlainText(form.getPhone()));
+        student.setAvatarUrl(normalizePlainText(avatarUrl != null ? avatarUrl : form.getAvatarUrl()));
         Student savedStudent = studentRepository.save(student);
 
-        String normalizedEmail = normalizeNullable(form.getEmail());
+        String normalizedEmail = normalizeEmail(form.getEmail());
         if (normalizedEmail != null && !normalizedEmail.equalsIgnoreCase(staff.getEmail())) {
             staff.setEmail(normalizedEmail);
             staffRepository.save(staff);
@@ -49,10 +50,17 @@ public class StudentProfileService {
         return "Sinh viên thư viện";
     }
 
-    private String normalizeNullable(String value) {
+    private String normalizeEmail(String value) {
         if (!StringUtils.hasText(value)) {
             return null;
         }
         return value.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private String normalizePlainText(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        return value.trim();
     }
 }

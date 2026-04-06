@@ -1,11 +1,16 @@
 package com.library.feature.chatbot;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.library.domain.model.Staff;
+import com.library.domain.model.Student;
+import com.library.domain.repository.RoleRepository;
+import com.library.domain.repository.StaffRepository;
+import com.library.feature.auth.CustomOAuth2UserService;
+import com.library.feature.auth.CustomUserDetailsService;
+import com.library.feature.student.StudentMirrorService;
+import com.library.shared.config.ApiExceptionHandler;
 import com.library.shared.config.CommonModelAdvice;
 import com.library.shared.config.SecurityConfig;
-import com.library.domain.repository.StaffRepository;
-import com.library.feature.chatbot.ChatbotService;
-import com.library.feature.auth.CustomUserDetailsService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -22,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ChatbotController.class,
         properties = "spring.main.allow-bean-definition-overriding=true",
         excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = CommonModelAdvice.class))
-@Import({SecurityConfig.class, ChatbotControllerTest.TestBeans.class})
+@Import({SecurityConfig.class, ApiExceptionHandler.class, ChatbotControllerTest.TestBeans.class})
 class ChatbotControllerTest {
 
     @Autowired
@@ -49,8 +55,6 @@ class ChatbotControllerTest {
 
     @Test
     void page_shouldExposeChatbotConfiguration() throws Exception {
-        chatbotService.configure(true, "llama-3.1-8b-instant");
-
         mockMvc.perform(get("/chatbot")
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT")))
                 .andExpect(status().isOk())
@@ -63,7 +67,7 @@ class ChatbotControllerTest {
     @Test
     void postChat_shouldReturnReplyPayload() throws Exception {
         chatbotService.willReturn(new ChatbotService.ChatResult(
-                "BÃ¡ÂºÂ¡n cÃƒÂ³ thÃ¡Â»Æ’ mÃ¡Â»Å¸ mÃ¡Â»Â¥c MÃ†Â°Ã¡Â»Â£n sÃƒÂ¡ch Ã„â€˜Ã¡Â»Æ’ bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u.",
+                "Bạn có thể mở mục Mượn sách để bắt đầu.",
                 "llama-3.1-8b-instant"
         ));
 
@@ -71,34 +75,121 @@ class ChatbotControllerTest {
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"messages":[{"role":"user","content":"TÃƒÂ´i muÃ¡Â»â€˜n mÃ†Â°Ã¡Â»Â£n sÃƒÂ¡ch"}]}
+                                {"messages":[{"role":"user","content":"Tôi muốn mượn sách"}]}
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.reply").value("BÃ¡ÂºÂ¡n cÃƒÂ³ thÃ¡Â»Æ’ mÃ¡Â»Å¸ mÃ¡Â»Â¥c MÃ†Â°Ã¡Â»Â£n sÃƒÂ¡ch Ã„â€˜Ã¡Â»Æ’ bÃ¡ÂºÂ¯t Ã„â€˜Ã¡ÂºÂ§u."))
+                .andExpect(jsonPath("$.reply").value("Bạn có thể mở mục Mượn sách để bắt đầu."))
                 .andExpect(jsonPath("$.model").value("llama-3.1-8b-instant"));
 
         List<ChatbotService.ChatMessage> messages = chatbotService.getLastMessages();
-        org.assertj.core.api.Assertions.assertThat(messages)
+        assertThat(messages)
                 .hasSize(1)
                 .first()
                 .satisfies(message -> {
-                    org.assertj.core.api.Assertions.assertThat(message.role()).isEqualTo("user");
-                    org.assertj.core.api.Assertions.assertThat(message.content()).isEqualTo("TÃƒÂ´i muÃ¡Â»â€˜n mÃ†Â°Ã¡Â»Â£n sÃƒÂ¡ch");
+                    assertThat(message.role()).isEqualTo("user");
+                    assertThat(message.content()).isEqualTo("Tôi muốn mượn sách");
                 });
     }
 
     @Test
-    void postChat_shouldReturnBadRequestWhenServiceFails() throws Exception {
-        chatbotService.willThrow(new ChatbotService.ChatbotException("Chatbot chÃ†Â°a Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ¥u hÃƒÂ¬nh GROQ_API_KEY."));
+    void postChat_shouldReturnServiceUnavailableWhenChatbotIsNotConfigured() throws Exception {
+        chatbotService.willThrow(ChatbotService.ChatbotException.serviceUnavailable(
+                "Chatbot chưa được cấu hình GROQ_API_KEY."
+        ));
 
         mockMvc.perform(post("/chatbot")
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
-                                {"messages":[{"role":"user","content":"Xin chÃƒÂ o"}]}
+                                {"messages":[{"role":"user","content":"Xin chào"}]}
+                                """))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error").value("Chatbot chưa được cấu hình GROQ_API_KEY."))
+                .andExpect(jsonPath("$.code").value("CHATBOT_NOT_CONFIGURED"))
+                .andExpect(jsonPath("$.path").value("/chatbot"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
+
+    @Test
+    void postChat_shouldReturnBadRequestWhenBodyIsEmpty() throws Exception {
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Nội dung JSON không hợp lệ."))
+                .andExpect(jsonPath("$.code").value("INVALID_JSON"))
+                .andExpect(jsonPath("$.path").value("/chatbot"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
+    }
+
+    @Test
+    void postChat_shouldReturnBadRequestWhenJsonIsMalformed() throws Exception {
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Nội dung JSON không hợp lệ."))
+                .andExpect(jsonPath("$.code").value("INVALID_JSON"));
+    }
+
+    @Test
+    void postChat_shouldReturnBadRequestWhenMessagesAreEmpty() throws Exception {
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"messages":[]}
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.error").value("Chatbot chÃ†Â°a Ã„â€˜Ã†Â°Ã¡Â»Â£c cÃ¡ÂºÂ¥u hÃƒÂ¬nh GROQ_API_KEY."));
+                .andExpect(jsonPath("$.error").value("Danh sách tin nhắn không được để trống."))
+                .andExpect(jsonPath("$.code").value("INVALID_REQUEST"));
+    }
+
+    @Test
+    void postChat_shouldReturnBadRequestWhenRoleIsInvalid() throws Exception {
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"messages":[{"role":"system","content":"Xin chào"}]}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Vai trò tin nhắn chỉ được là user hoặc assistant."))
+                .andExpect(jsonPath("$.code").value("INVALID_REQUEST"));
+    }
+
+    @Test
+    void postChat_shouldReturnBadRequestWhenContentIsBlank() throws Exception {
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"messages":[{"role":"user","content":"   "}]}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Nội dung tin nhắn không được để trống."))
+                .andExpect(jsonPath("$.code").value("INVALID_REQUEST"));
+    }
+
+    @Test
+    void postChat_shouldReturnBadGatewayWhenGroqFails() throws Exception {
+        chatbotService.willThrow(ChatbotService.ChatbotException.badGateway(
+                "Groq trả về lỗi 429: rate limit."
+        ));
+
+        mockMvc.perform(post("/chatbot")
+                        .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"messages":[{"role":"user","content":"Xin chào"}]}
+                                """))
+                .andExpect(status().isBadGateway())
+                .andExpect(jsonPath("$.error").value("Groq trả về lỗi 429: rate limit."))
+                .andExpect(jsonPath("$.code").value("GROQ_UPSTREAM_ERROR"))
+                .andExpect(jsonPath("$.path").value("/chatbot"))
+                .andExpect(jsonPath("$.timestamp").isNotEmpty());
     }
 
     @TestConfiguration
@@ -111,10 +202,19 @@ class ChatbotControllerTest {
         }
 
         @Bean
+        CustomOAuth2UserService customOAuth2UserService() {
+            return new CustomOAuth2UserService(
+                    Mockito.mock(StaffRepository.class),
+                    Mockito.mock(RoleRepository.class),
+                    new NoOpStudentMirrorService()
+            );
+        }
+
+        @Bean
         FakeChatbotService chatbotService() {
             return new FakeChatbotService();
         }
-        
+
         static class FakeChatbotService extends ChatbotService {
 
             private boolean configured = true;
@@ -162,6 +262,18 @@ class ChatbotControllerTest {
 
             List<ChatMessage> getLastMessages() {
                 return lastMessages;
+            }
+        }
+
+        static class NoOpStudentMirrorService extends StudentMirrorService {
+
+            NoOpStudentMirrorService() {
+                super(null, null);
+            }
+
+            @Override
+            public Student ensureStudentMirror(Staff staff) {
+                return new Student();
             }
         }
     }

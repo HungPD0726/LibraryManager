@@ -51,10 +51,11 @@ public class DashboardReadService {
             return new DashboardChartsView(
                     objectMapper.writeValueAsString(statisticsService.getMonthlyBorrowStats()),
                     objectMapper.writeValueAsString(statisticsService.getCategoryDistribution()),
-                    objectMapper.writeValueAsString(statisticsService.getBorrowStatusDistribution())
+                    objectMapper.writeValueAsString(statisticsService.getBorrowStatusDistribution()),
+                    objectMapper.writeValueAsString(statisticsService.getMonthlyRevenueChart())
             );
         } catch (Exception ex) {
-            return new DashboardChartsView("{}", "{}", "{}");
+            return new DashboardChartsView("{}", "{}", "{}", "{}");
         }
     }
 }

@@ -29,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         String normalized = username == null ? "" : username.trim().toLowerCase(Locale.ROOT);
         Staff staff = staffRepository.findByUsername(normalized)
                 .or(() -> staffRepository.findByEmail(normalized))
-                .orElseThrow(() -> new UsernameNotFoundException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y tÃƒÂ i khoÃ¡ÂºÂ£n: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
         staff.getRoles().forEach(role -> {

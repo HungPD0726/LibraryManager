@@ -2,98 +2,184 @@
 <html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/main}">
 <head>
     <title>Tổng quan</title>
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="hero hero-admin">
-        <div>
-            <p class="eyebrow">Tổng quan vận hành</p>
+    <div class="hero-grid">
+        <article class="hero-card hero-card-main">
+            <span class="hero-kicker">Điểm điều phối trung tâm</span>
             <h2>Điều phối sách, yêu cầu mượn và đơn mua trên một bảng điều khiển</h2>
             <p>Kho dữ liệu đang bám schema `LibraryManager_V2` và rule tồn kho mới cho mượn, duyệt, trả và giao đơn mua.</p>
-        </div>
-        <div class="hero-actions">
-            <a th:href="@{/admin/borrows/create}" class="btn btn-primary">
-                <i class="fa-solid fa-plus"></i>
-                Tạo phiếu mượn
-            </a>
-            <a th:href="@{/admin/books/create}" class="btn btn-outline">
-                <i class="fa-solid fa-book-medical"></i>
-                Thêm sách
-            </a>
-        </div>
+
+            <div class="hero-stat-strip">
+                <div class="hero-stat">
+                    <span>Hôm nay</span>
+                    <strong th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}">05/04/2026</strong>
+                </div>
+                <div class="hero-stat">
+                    <span>Vai trò</span>
+                    <strong sec:authorize="hasRole('ADMIN')">Quản trị hệ thống</strong>
+                    <strong sec:authorize="!hasRole('ADMIN')">Nhân viên vận hành</strong>
+                </div>
+                <div class="hero-stat">
+                    <span>Trạng thái</span>
+                    <strong class="hero-status-live">● Đang hoạt động</strong>
+                </div>
+            </div>
+
+            <div class="hero-cta-row">
+                <a th:href="@{/admin/orders}" class="btn btn-primary">Mở hàng đợi đơn</a>
+                <a th:href="@{/admin/books}" class="btn btn-outline">Vào kho sách</a>
+            </div>
+        </article>
+
+        <article class="hero-card hero-card-side">
+            <div class="hero-side-head">
+                <span class="hero-kicker">Người vận hành</span>
+                <h3 th:text="${currentUsername}">Admin</h3>
+                <p class="hero-side-note">Giao diện đồng bộ từ dự án LibraryManager gốc.</p>
+            </div>
+
+            <div class="hero-side-grid">
+                <div class="hero-mini-card">
+                    <span>Chờ duyệt</span>
+                    <strong th:text="${pendingBorrows}">0</strong>
+                </div>
+                <div class="hero-mini-card">
+                    <span>Tổng phạt</span>
+                    <strong th:text="${unpaidFines}">0</strong>
+                </div>
+            </div>
+
+            <div class="hero-summary-list">
+                <div class="hero-summary-row">
+                    <span>Phiếu quá hạn</span>
+                    <strong th:text="${overdueBorrows}">0</strong>
+                </div>
+                <div class="hero-summary-row">
+                    <span>Đang mượn</span>
+                    <strong th:text="${activeBorrows}">0</strong>
+                </div>
+                <div class="hero-summary-row">
+                    <span>Nợ phạt treo</span>
+                    <strong th:text="|${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
+                </div>
+            </div>
+        </article>
     </div>
 
-    <div class="metric-grid" style="margin-bottom: 2rem;">
-        <article class="metric-card">
+    <div class="metric-grid dashboard-metric-grid">
+        <article class="metric-card tone-blue">
             <span class="metric-icon soft-teal"><i class="fa-solid fa-book"></i></span>
             <div>
                 <strong th:text="${totalBooks}">0</strong>
                 <p>Tổng đầu sách</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-green">
             <span class="metric-icon soft-green"><i class="fa-solid fa-box-open"></i></span>
             <div>
                 <strong th:text="${totalAvailable}">0</strong>
-                <p>Sẵn sàng</p>
+                <p>Bản sao sẵn sàng</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-slate">
             <span class="metric-icon soft-gold"><i class="fa-solid fa-user-graduate"></i></span>
             <div>
                 <strong th:text="${totalStudents}">0</strong>
-                <p>Sinh viên</p>
+                <p>Sinh viên phục vụ</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-orange">
             <span class="metric-icon soft-sea"><i class="fa-solid fa-arrows-rotate"></i></span>
             <div>
                 <strong th:text="${activeBorrows}">0</strong>
-                <p>Đang mượn</p>
+                <p>Lượt mượn đang mở</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-red">
             <span class="metric-icon soft-warn"><i class="fa-solid fa-triangle-exclamation"></i></span>
             <div>
                 <strong th:text="${overdueBorrows}">0</strong>
-                <p>Quá hạn</p>
+                <p>Phiếu quá hạn</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-amber">
             <span class="metric-icon soft-rose"><i class="fa-solid fa-coins"></i></span>
             <div>
                 <strong th:text="|${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0</strong>
-                <p>Nợ phạt</p>
+                <p>Nợ phạt tồn đọng</p>
             </div>
         </article>
-        <article class="metric-card">
+        <article class="metric-card tone-green">
             <span class="metric-icon soft-green"><i class="fa-solid fa-money-bill-trend-up"></i></span>
             <div>
                 <strong th:text="|${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} ₫|">0</strong>
-                <p>Doanh thu sách</p>
+                <p>Doanh thu tổng</p>
             </div>
         </article>
-        <article class="metric-card">
-            <span class="metric-icon soft-ink"><i class="fa-solid fa-gavel"></i></span>
+        <article class="metric-card tone-violet">
+            <span class="metric-icon soft-ink"><i class="fa-solid fa-user-gear"></i></span>
             <div>
-                <strong th:text="${unpaidFines}">0</strong>
-                <p>Phiếu phạt treo</p>
+                <strong th:text="${totalStaff}">0</strong>
+                <p>Nhân sự thư viện</p>
             </div>
         </article>
     </div>
 
-    <!-- Charts Section -->
-    <div class="split-grid" style="margin-bottom: 2rem;">
+    <section class="panel revenue-panel dashboard-revenue-panel">
+        <div class="panel-head revenue-panel-head">
+            <div>
+                <p class="eyebrow">Doanh thu</p>
+                <h3 class="dashboard-panel-title">Sơ đồ doanh thu 12 tháng gần nhất</h3>
+                <p class="muted-text">Tổng hợp từ đơn mua đã giao và các khoản phí/phạt đã thanh toán.</p>
+            </div>
+            <span class="status-pill success">
+                <i class="fa-solid fa-chart-line"></i>
+                Cập nhật theo dữ liệu thật
+            </span>
+        </div>
+
+        <div class="revenue-summary-strip">
+            <article class="revenue-summary-card">
+                <span>Tổng ghi nhận</span>
+                <strong th:text="|${#numbers.formatDecimal(combinedRevenue, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
+                <p>Doanh thu mua sách cộng với phí/phạt đã thu.</p>
+            </article>
+            <article class="revenue-summary-card">
+                <span>Từ đơn mua đã giao</span>
+                <strong th:text="|${#numbers.formatDecimal(totalRevenue, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
+                <p>Dữ liệu từ các đơn ở trạng thái hoàn tất giao.</p>
+            </article>
+            <article class="revenue-summary-card">
+                <span>Từ phí/phạt đã thu</span>
+                <strong th:text="|${#numbers.formatDecimal(paidFineTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
+                <p>Các khoản phạt đã thanh toán trong hệ thống.</p>
+            </article>
+            <article class="revenue-summary-card">
+                <span>Nợ chưa thu</span>
+                <strong th:text="|${#numbers.formatDecimal(unpaidFineTotal, 1, 'COMMA', 0, 'POINT')} ₫|">0 ₫</strong>
+                <p>Khoản tồn đọng cần tiếp tục theo dõi và thu hồi.</p>
+            </article>
+        </div>
+
+        <div class="revenue-chart-shell">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </section>
+
+    <div class="split-grid dashboard-chart-grid">
         <section class="panel">
             <div class="panel-head">
                 <div>
-                    <h3 style="font-size: 1.1rem;">Lượt mượn 12 tháng qua</h3>
+                    <h3 class="dashboard-panel-title">Lượt mượn 12 tháng qua</h3>
                 </div>
             </div>
-            <div style="position: relative; height: 300px; width: 100%;">
+            <div class="dashboard-chart-box">
                 <canvas id="monthlyBorrowChart"></canvas>
             </div>
         </section>
@@ -101,27 +187,27 @@
         <section class="panel">
             <div class="panel-head">
                 <div>
-                    <h3 style="font-size: 1.1rem;">Tỷ lệ đầu sách theo danh mục</h3>
+                    <h3 class="dashboard-panel-title">Tỷ lệ đầu sách theo danh mục</h3>
                 </div>
             </div>
-            <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center;">
+            <div class="dashboard-chart-box is-centered">
                 <canvas id="categoryChart"></canvas>
             </div>
         </section>
     </div>
 
-    <div class="split-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+    <div class="split-grid dashboard-ranking-grid">
         <section class="panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Xếp hạng</p>
-                    <h3 style="font-size: 1rem;">Top sách được mượn</h3>
+                    <h3 class="dashboard-panel-title-sm">Top sách được mượn</h3>
                 </div>
             </div>
-            <ul class="bullet-list" style="padding-left: 0; list-style: none;">
-                <li th:each="book, stat : ${topBooks}" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-                    <span style="font-weight: 500; font-size: 0.9rem;">
-                        <span style="color: var(--gold-soft); margin-right: 0.5rem;" th:text="|#${stat.count}|">1</span>
+            <ul class="bullet-list dashboard-ranking-list">
+                <li th:each="book, stat : ${topBooks}" class="dashboard-ranking-item">
+                    <span class="dashboard-ranking-label">
+                        <span class="dashboard-ranking-order" th:text="|#${stat.count}|">1</span>
                         <span th:text="${book.bookName}">Book</span>
                     </span>
                     <span class="status-pill success" th:text="${book.totalBorrowed}">0</span>
@@ -134,14 +220,15 @@
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Xếp hạng</p>
-                    <h3 style="font-size: 1rem;">Sinh viên mượn nhiều nhất</h3>
+                    <h3 class="dashboard-panel-title-sm">Sinh viên mượn nhiều nhất</h3>
                 </div>
             </div>
-            <ul class="bullet-list" style="padding-left: 0; list-style: none;">
-                <li th:each="student, stat : ${topBorrowers}" style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
-                    <span style="font-weight: 500; font-size: 0.9rem;">
-                        <i class="fa-solid fa-medal" th:style="${stat.index == 0 ? 'color: gold;' : (stat.index == 1 ? 'color: silver;' : 'color: #cd7f32;')}"></i>
-                        <span style="margin-left: 0.5rem;" th:text="${student.studentName}">Student</span>
+            <ul class="bullet-list dashboard-ranking-list">
+                <li th:each="student, stat : ${topBorrowers}" class="dashboard-ranking-item">
+                    <span class="dashboard-ranking-label">
+                        <i class="fa-solid fa-medal dashboard-medal"
+                           th:classappend="${stat.index == 0 ? ' is-first' : (stat.index == 1 ? ' is-second' : ' is-third')}"></i>
+                        <span class="dashboard-borrower-name" th:text="${student.studentName}">Student</span>
                     </span>
                     <span class="status-pill info" th:text="${student.totalBorrowed}">0</span>
                 </li>
@@ -153,7 +240,7 @@
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Lối tắt</p>
-                    <h3 style="font-size: 1rem;">Thao tác nhanh</h3>
+                    <h3 class="dashboard-panel-title-sm">Thao tác nhanh</h3>
                 </div>
             </div>
             <div class="quick-grid">
@@ -172,96 +259,14 @@
             </div>
         </section>
     </div>
-
-    <!-- Chart.js and initialization -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script th:inline="javascript">
-        document.addEventListener("DOMContentLoaded", function() {
-            /*<![CDATA[*/
-            const monthlyDataRaw = /*[[${monthlyBorrowJson}]]*/ '{}';
-            const categoryDataRaw = /*[[${categoryDistJson}]]*/ '{}';
-            
-            const monthlyData = JSON.parse(monthlyDataRaw || '{}');
-            const categoryData = JSON.parse(categoryDataRaw || '{}');
-            /*]]>*/
-
-            // Global Defaults
-            Chart.defaults.font.family = "'Manrope', sans-serif";
-            Chart.defaults.color = '#64748b';
-            
-            // 1. Monthly Bar Chart
-            const monthLabels = Object.keys(monthlyData).map(m => 'Tháng ' + m);
-            const monthValues = Object.values(monthlyData);
-            
-            if (monthValues.length > 0) {
-                new Chart(document.getElementById('monthlyBorrowChart'), {
-                    type: 'bar',
-                    data: {
-                        labels: monthLabels,
-                        datasets: [{
-                            label: 'Lượt mượn',
-                            data: monthValues,
-                            backgroundColor: '#2e9e8f', // var(--primary)
-                            borderRadius: 4,
-                            barPercentage: 0.6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false }
-                        },
-                        scales: {
-                            y: { 
-                                beginAtZero: true, 
-                                ticks: { precision: 0 },
-                                grid: { color: '#f1f5f9' } // var(--gray-soft)
-                            },
-                            x: {
-                                grid: { display: false }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // 2. Category Doughnut Chart
-            const catLabels = Object.keys(categoryData);
-            const catValues = Object.values(categoryData);
-            
-            if (catValues.length > 0) {
-                new Chart(document.getElementById('categoryChart'), {
-                    type: 'doughnut',
-                    data: {
-                        labels: catLabels,
-                        datasets: [{
-                            data: catValues,
-                            backgroundColor: [
-                                '#2e9e8f', '#fbbf24', '#f87171', '#38bdf8', '#818cf8', '#a78bfa', '#34d399'
-                            ],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'right',
-                                labels: {
-                                    boxWidth: 12,
-                                    usePointStyle: true
-                                }
-                            }
-                        },
-                        cutout: '70%'
-                    }
-                });
-            }
-        });
-    </script>
 </section>
+
+<th:block layout:fragment="pageScripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="dashboardMonthlyBorrowData" type="application/json" th:utext="${monthlyBorrowJson}">{}</script>
+    <script id="dashboardCategoryData" type="application/json" th:utext="${categoryDistJson}">{}</script>
+    <script id="dashboardRevenueData" type="application/json" th:utext="${revenueChartJson}">{}</script>
+    <script th:src="@{/js/pages/admin-dashboard.js}"></script>
+</th:block>
 </body>
 </html>

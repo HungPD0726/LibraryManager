@@ -64,6 +64,11 @@ class DashboardReadServiceTest {
         statisticsService.categoryDistribution.put("Java", 7L);
         statisticsService.borrowStatusDistribution = new LinkedHashMap<>();
         statisticsService.borrowStatusDistribution.put("BORROWING", 5L);
+        statisticsService.revenueChart = new LinkedHashMap<>();
+        statisticsService.revenueChart.put("labels", List.of("T3/26", "T4/26"));
+        statisticsService.revenueChart.put("orderRevenue", List.of(new BigDecimal("120000"), new BigDecimal("140000")));
+        statisticsService.revenueChart.put("fineRevenue", List.of(new BigDecimal("10000"), new BigDecimal("20000")));
+        statisticsService.revenueChart.put("totalRevenue", List.of(new BigDecimal("130000"), new BigDecimal("160000")));
         statisticsService.topBooks = List.of(new TopBorrowedBookView(1, "Clean Code", 9L));
         statisticsService.topBorrowers = List.of(new TopBorrowerView(2, "Nguyen Van A", 4L));
 
@@ -77,6 +82,8 @@ class DashboardReadServiceTest {
         assertThat(pageView.charts().monthlyBorrowJson()).isEqualTo("{\"1\":4,\"2\":6}");
         assertThat(pageView.charts().categoryDistJson()).isEqualTo("{\"Java\":7}");
         assertThat(pageView.charts().borrowStatusJson()).isEqualTo("{\"BORROWING\":5}");
+        assertThat(pageView.charts().revenueChartJson())
+                .isEqualTo("{\"labels\":[\"T3/26\",\"T4/26\"],\"orderRevenue\":[120000,140000],\"fineRevenue\":[10000,20000],\"totalRevenue\":[130000,160000]}");
     }
 
     private static final class FakeBookService extends BookService {
@@ -191,6 +198,7 @@ class DashboardReadServiceTest {
         private Map<Integer, Long> monthlyStats = Map.of();
         private Map<String, Long> categoryDistribution = Map.of();
         private Map<String, Long> borrowStatusDistribution = Map.of();
+        private Map<String, Object> revenueChart = Map.of();
         private BigDecimal totalRevenue = BigDecimal.ZERO;
         private List<TopBorrowedBookView> topBooks = List.of();
         private List<TopBorrowerView> topBorrowers = List.of();
@@ -212,6 +220,11 @@ class DashboardReadServiceTest {
         @Override
         public Map<String, Long> getBorrowStatusDistribution() {
             return borrowStatusDistribution;
+        }
+
+        @Override
+        public Map<String, Object> getMonthlyRevenueChart() {
+            return revenueChart;
         }
 
         @Override

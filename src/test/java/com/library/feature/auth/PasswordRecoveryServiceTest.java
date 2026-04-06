@@ -82,6 +82,25 @@ class PasswordRecoveryServiceTest {
     }
 
     @Test
+    void startReset_whenEmailSendingFailsShouldClearPendingResetState() {
+        MockHttpSession session = new MockHttpSession();
+        Staff staff = new Staff();
+        staff.setUsername("student01");
+        staff.setEmail("student01@example.com");
+
+        when(staffRepository.findByUsername("student01")).thenReturn(Optional.of(staff));
+        emailService.throwOnSend = true;
+
+        assertThatThrownBy(() -> passwordRecoveryService.startReset("student01", session))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("SMTP");
+
+        assertThat(session.getAttribute(PasswordRecoveryService.RESET_USERNAME)).isNull();
+        assertThat(session.getAttribute(PasswordRecoveryService.RESET_OTP_HASH)).isNull();
+        assertThat(session.getAttribute(PasswordRecoveryService.RESET_OTP_VERIFIED)).isNull();
+    }
+
+    @Test
     void resetPassword_afterOtpVerificationShouldPersistEncodedPassword() {
         MockHttpSession session = new MockHttpSession();
         Staff staff = new Staff();
@@ -105,6 +124,7 @@ class PasswordRecoveryServiceTest {
 
         private String lastTo;
         private String lastOtp;
+        private boolean throwOnSend;
 
         private FakeEmailService() {
             super(null, null);
@@ -117,6 +137,9 @@ class PasswordRecoveryServiceTest {
 
         @Override
         public void sendOtpEmail(String toEmail, String otpCode) {
+            if (throwOnSend) {
+                throw new IllegalStateException("SMTP unavailable");
+            }
             this.lastTo = toEmail;
             this.lastOtp = otpCode;
         }

@@ -12,7 +12,7 @@
         <div>
             <p class="eyebrow">Thông báo</p>
             <h2>Hộp thông báo của bạn
-                <span th:if="${unreadCount > 0}" class="status-pill danger" style="font-size: 0.75rem; vertical-align: middle;"
+                <span th:if="${unreadCount > 0}" class="status-pill danger notification-summary-badge"
                       th:text="|${unreadCount} chưa đọc|">0 chưa đọc</span>
             </h2>
         </div>
@@ -27,22 +27,22 @@
     <div class="stack-list notification-feed">
         <article th:each="n : ${notifications}" class="inline-card notification-card"
                  th:classappend="${!n.isRead ? ' notification-unread' : ''}">
-            <div style="flex: 1;">
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                    <i th:switch="${n.type}" class="notification-icon">
-                        <i th:case="'BORROW_APPROVED'" class="fa-solid fa-circle-check" style="color: var(--green-soft);"></i>
-                        <i th:case="'BORROW_REJECTED'" class="fa-solid fa-circle-xmark" style="color: var(--rose-soft);"></i>
-                        <i th:case="'BORROW_RETURNED'" class="fa-solid fa-arrow-rotate-left" style="color: var(--sea-soft);"></i>
-                        <i th:case="'FINE_CREATED'" class="fa-solid fa-gavel" style="color: var(--warn-soft);"></i>
-                        <i th:case="'FINE_PAID'" class="fa-solid fa-money-bill-wave" style="color: var(--green-soft);"></i>
-                        <i th:case="'ORDER_DELIVERED'" class="fa-solid fa-truck" style="color: var(--teal-soft);"></i>
-                        <i th:case="'ORDER_CANCELLED'" class="fa-solid fa-ban" style="color: var(--rose-soft);"></i>
-                        <i th:case="*" class="fa-solid fa-bell" style="color: var(--gold-soft);"></i>
-                    </i>
+            <div class="notification-body">
+                <div class="notification-meta">
+                    <span th:switch="${n.type}" class="notification-icon">
+                        <i th:case="'BORROW_APPROVED'" class="fa-solid fa-circle-check notification-tone-success"></i>
+                        <i th:case="'BORROW_REJECTED'" class="fa-solid fa-circle-xmark notification-tone-danger"></i>
+                        <i th:case="'BORROW_RETURNED'" class="fa-solid fa-arrow-rotate-left notification-tone-info"></i>
+                        <i th:case="'FINE_CREATED'" class="fa-solid fa-gavel notification-tone-warning"></i>
+                        <i th:case="'FINE_PAID'" class="fa-solid fa-money-bill-wave notification-tone-success"></i>
+                        <i th:case="'ORDER_DELIVERED'" class="fa-solid fa-truck notification-tone-teal"></i>
+                        <i th:case="'ORDER_CANCELLED'" class="fa-solid fa-ban notification-tone-danger"></i>
+                        <i th:case="*" class="fa-solid fa-bell notification-tone-default"></i>
+                    </span>
                     <strong th:text="${n.title}">Tiêu đề</strong>
-                    <span th:if="${!n.isRead}" class="status-pill danger" style="font-size: 0.65rem;">Mới</span>
+                    <span th:if="${!n.isRead}" class="status-pill danger notification-new-badge">Mới</span>
                 </div>
-                <p th:text="${n.message}" class="muted-text" style="margin: 0;">Nội dung thông báo</p>
+                <p th:text="${n.message}" class="muted-text notification-message">Nội dung thông báo</p>
                 <small class="muted-text" th:text="${#temporals.format(n.createdDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 10:00</small>
             </div>
             <form th:if="${!n.isRead}" th:action="@{/notifications/{id}/read(id=${n.notificationId})}" method="post">

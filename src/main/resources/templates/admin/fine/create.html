@@ -19,7 +19,7 @@
         </a>
     </div>
 
-    <div class="panel" style="max-width: 600px;">
+    <div class="panel fine-create-panel">
         <form th:action="@{/admin/fines/create}" method="post" class="form-stack">
             <div class="form-group">
                 <label for="borrowId">ID đơn mượn <span class="text-danger">*</span></label>
@@ -27,7 +27,7 @@
                        th:value="${borrowId}" class="form-input" placeholder="Nhập ID đơn mượn">
             </div>
 
-            <div th:if="${borrow != null}" class="alert alert-info" style="margin-bottom: 1rem;">
+            <div th:if="${borrow != null}" class="alert alert-info fine-borrow-alert">
                 <i class="fa-solid fa-circle-info"></i>
                 <span>
                     Đơn mượn #<strong th:text="${borrow.borrowId}">0</strong>
