@@ -28,6 +28,22 @@ class AuthTemplateRenderTest {
                 .contains("/libraryManager/js/auth.js")
                 .contains("data-flash-error=\"Invalid login\"")
                 .contains("data-toggle-password=\"#loginPassword\"")
+                .doesNotContain("/libraryManager/oauth2/authorization/google")
                 .doesNotContain("/libraryManager/js/app.js");
+    }
+
+    @Test
+    void login_shouldRenderGoogleActionWhenOauthIsEnabled() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("googleLoginEnabled", true);
+
+        String html = ThymeleafRenderSupport.render(
+                "auth/login",
+                "/login",
+                model,
+                null
+        );
+
+        assertThat(html).contains("/libraryManager/oauth2/authorization/google");
     }
 }

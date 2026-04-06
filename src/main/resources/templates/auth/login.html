@@ -46,11 +46,11 @@
                     </button>
                 </div>
 
-                <div class="login-divider">
+                <div class="login-divider" th:if="${googleLoginEnabled}">
                     <span>Hoặc đăng nhập với</span>
                 </div>
 
-                <div class="social-login-row">
+                <div class="social-login-row" th:if="${googleLoginEnabled}">
                     <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline btn-block social-btn google-btn">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" width="18">
                         Google

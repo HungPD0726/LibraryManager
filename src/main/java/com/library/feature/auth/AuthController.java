@@ -7,7 +7,9 @@ import com.library.feature.student.StudentMirrorService;
 import com.library.shared.support.RoleSupport;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +26,7 @@ public class AuthController {
     private final StaffService staffService;
     private final StudentMirrorService studentMirrorService;
     private final CurrentStudentService currentStudentService;
+    private final ObjectProvider<ClientRegistrationRepository> clientRegistrationRepositoryProvider;
 
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
@@ -31,6 +34,8 @@ public class AuthController {
                             @RequestParam(value = "reset", required = false) String reset,
                             @RequestParam(value = "expired", required = false) String expired,
                             Model model) {
+        model.addAttribute("googleLoginEnabled", clientRegistrationRepositoryProvider.getIfAvailable() != null);
+
         if (error != null) {
             model.addAttribute("error", "Tên đăng nhập, email hoặc mật khẩu chưa đúng.");
         }
