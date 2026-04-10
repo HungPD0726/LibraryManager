@@ -15,6 +15,9 @@
                 <span th:if="${unreadCount > 0}" class="status-pill danger notification-summary-badge"
                       th:text="|${unreadCount} chưa đọc|">0 chưa đọc</span>
             </h2>
+            <div class="page-head-meta">
+                <span class="status-pill secondary" th:text="${#lists.size(notifications) + ' thông báo'}">0 thông báo</span>
+            </div>
         </div>
         <form th:if="${unreadCount > 0}" th:action="@{/notifications/read-all}" method="post">
             <button type="submit" class="btn btn-outline">

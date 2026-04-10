@@ -4,24 +4,24 @@
 <body>
 
 <div th:fragment="alerts">
-    <div th:if="${msg}" class="alert alert-success">
-        <i class="fa-solid fa-circle-check"></i>
-        <span th:text="${msg}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
+    <div th:if="${msg}" class="alert alert-success" role="status" aria-live="polite">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        <span class="alert-message" th:text="${msg}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert aria-label="Đóng thông báo">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
-    <div th:if="${message}" class="alert alert-success">
-        <i class="fa-solid fa-circle-check"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
+    <div th:if="${message}" class="alert alert-success" role="status" aria-live="polite">
+        <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+        <span class="alert-message" th:text="${message}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert aria-label="Đóng thông báo">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>
-    <div th:if="${error}" class="alert alert-danger">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="alert-close" data-dismiss-alert>
+    <div th:if="${error}" class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <span class="alert-message" th:text="${error}"></span>
+        <button type="button" class="alert-close" data-dismiss-alert aria-label="Đóng cảnh báo">
             <i class="fa-solid fa-xmark"></i>
         </button>
     </div>

@@ -20,28 +20,40 @@
 <div class="auth-orb auth-orb-one" aria-hidden="true"></div>
 <div class="auth-orb auth-orb-two" aria-hidden="true"></div>
 <main class="auth-stage">
-    <section class="auth-panel">
+    <section class="auth-panel auth-panel-shell">
         <div class="auth-brand">
             <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
-            <div>
+            <div class="auth-brand-copy">
                 <p class="eyebrow">Library Manager</p>
                 <h1>Cổng thông tin Thư viện</h1>
+                <p class="auth-brand-support">Một không gian gọn gàng để đăng nhập, khôi phục tài khoản và quay lại luồng học tập nhanh hơn.</p>
             </div>
         </div>
 
-        <div layout:fragment="content"></div>
+        <div class="auth-content-shell" layout:fragment="content"></div>
     </section>
 
     <aside class="auth-aside">
         <div class="hero-card auth-showcase">
-            <span class="hero-chip">Chào mừng trở lại</span>
+            <span class="hero-chip">Sẵn sàng cho mọi vai trò</span>
             <h2>Không gian số hỗ trợ học tập và quản lý sách.</h2>
-            <p>Đăng nhập để bắt đầu khám phá kho sách, quản lý mượn trả, theo dõi đơn mua và tương tác với chatbot hỗ trợ trong cùng một trải nghiệm.</p>
+            <p>Đăng nhập để bắt đầu khám phá kho sách, quản lý mượn trả, theo dõi đơn mua và tương tác với trợ lý thư viện trong cùng một trải nghiệm.</p>
+
+            <div class="auth-showcase-stats">
+                <article class="auth-stat-card">
+                    <span>Sinh viên</span>
+                    <strong>Mượn, mua và theo dõi thông báo</strong>
+                </article>
+                <article class="auth-stat-card">
+                    <span>Nhân viên</span>
+                    <strong>Điều phối đơn, duyệt phiếu và hỗ trợ vận hành</strong>
+                </article>
+            </div>
 
             <ul class="hero-points">
                 <li><i class="fa-solid fa-check"></i> Tra cứu và mượn sách trực tuyến</li>
                 <li><i class="fa-solid fa-check"></i> Theo dõi đơn hàng và thông báo</li>
-                <li><i class="fa-solid fa-check"></i> Hỗ trợ giải đáp qua Library AI</li>
+                <li><i class="fa-solid fa-check"></i> Hỗ trợ giải đáp qua trợ lý thư viện</li>
             </ul>
         </div>
     </aside>

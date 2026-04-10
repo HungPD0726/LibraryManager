@@ -8,53 +8,60 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="section-heading">
-        <p class="eyebrow">Đăng ký</p>
-        <h2>Tạo tài khoản sinh viên</h2>
-        <p>Tài khoản mới sẽ tự đồng bộ hồ sơ sinh viên để dùng portal ngay sau khi đăng nhập.</p>
-    </div>
-
-    <form th:action="@{/register}" th:object="${form}" method="post" class="stack-form">
-        <label class="field">
-            <span>Họ và tên</span>
-            <input type="text" th:field="*{staffName}" placeholder="Nguyễn Văn A">
-            <small class="field-error" th:if="${#fields.hasErrors('staffName')}" th:errors="*{staffName}"></small>
-        </label>
-
-        <div class="field-row">
-            <label class="field">
-                <span>Tên đăng nhập</span>
-                <input type="text" th:field="*{username}" placeholder="student01">
-                <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
-            </label>
-            <label class="field">
-                <span>Email</span>
-                <input type="email" th:field="*{email}" placeholder="student01@example.com">
-                <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
-            </label>
+    <div class="auth-flow-shell">
+        <div class="section-heading">
+            <p class="eyebrow">Đăng ký</p>
+            <h2>Tạo tài khoản sinh viên</h2>
+            <p>Tài khoản mới sẽ tự đồng bộ hồ sơ sinh viên để dùng ngay trong cổng sinh viên sau khi đăng nhập.</p>
         </div>
 
-        <div class="field-row">
+        <form th:action="@{/register}" th:object="${form}" method="post" class="stack-form auth-form-stack">
             <label class="field">
-                <span>Mật khẩu</span>
-                <input type="password" th:field="*{password}">
-                <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                <span>Họ và tên</span>
+                <input type="text" th:field="*{staffName}" placeholder="Nguyễn Văn A">
+                <small class="field-error" th:if="${#fields.hasErrors('staffName')}" th:errors="*{staffName}"></small>
             </label>
-            <label class="field">
-                <span>Xác nhận mật khẩu</span>
-                <input type="password" th:field="*{confirmPassword}">
-                <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
-            </label>
+
+            <div class="field-row">
+                <label class="field">
+                    <span>Tên đăng nhập</span>
+                    <input type="text" th:field="*{username}" placeholder="student01">
+                    <small class="field-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></small>
+                </label>
+                <label class="field">
+                    <span>Email</span>
+                    <input type="email" th:field="*{email}" placeholder="student01@example.com">
+                    <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                </label>
+            </div>
+
+            <div class="field-row">
+                <label class="field">
+                    <span>Mật khẩu</span>
+                    <input type="password" th:field="*{password}">
+                    <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                </label>
+                <label class="field">
+                    <span>Xác nhận mật khẩu</span>
+                    <input type="password" th:field="*{confirmPassword}">
+                    <small class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></small>
+                </label>
+            </div>
+
+            <div class="auth-check-list auth-check-list-inline">
+                <span class="status-pill secondary"><i class="fa-solid fa-envelope-circle-check"></i> Email dùng để khôi phục tài khoản</span>
+                <span class="status-pill secondary"><i class="fa-solid fa-user-graduate"></i> Đồng bộ sẵn cho luồng sinh viên</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-user-plus"></i>
+                Tạo tài khoản
+            </button>
+        </form>
+
+        <div class="inline-links auth-flow-footer">
+            <a th:href="@{/login}">Quay lại đăng nhập</a>
         </div>
-
-        <button type="submit" class="btn btn-primary btn-block">
-            <i class="fa-solid fa-user-plus"></i>
-            Tạo tài khoản
-        </button>
-    </form>
-
-    <div class="inline-links">
-        <a th:href="@{/login}">Quay lại đăng nhập</a>
     </div>
 </section>
 </body>

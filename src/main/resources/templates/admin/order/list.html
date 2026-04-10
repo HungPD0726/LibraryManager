@@ -12,6 +12,7 @@
         <div>
             <p class="eyebrow">Đơn mua</p>
             <h2>Điều phối đơn mua sách của sinh viên</h2>
+            <p class="page-head-support">Tra cứu nhanh theo mã đơn hoặc mở từng đơn gần đây để duyệt, hoàn tất giao hay hủy xử lý.</p>
         </div>
     </div>
 
@@ -38,7 +39,7 @@
                 <p class="eyebrow">Kết quả</p>
                 <h4 th:text="${'Đơn #' + searchOrder.orderId()}">Đơn #1</h4>
                 <p th:text="${searchOrder.studentName()}">Sinh viên</p>
-                <p th:text="${'Trạng thái: ' + searchOrder.status()}">Trạng thái</p>
+                <p th:text="${'Trạng thái: ' + statusDisplay.orderLabel(searchOrder.status())}">Trạng thái</p>
             </div>
         </section>
 
@@ -47,6 +48,7 @@
                 <div>
                     <p class="eyebrow">Danh sách</p>
                     <h3>Đơn mua gần đây</h3>
+                    <p class="panel-head-support">Mở rộng từng đơn để xem chi tiết đầu sách, tổng tiền và các hành động xử lý khả dụng.</p>
                 </div>
             </div>
             <div class="stack-list">
@@ -57,8 +59,8 @@
                             <small th:text="${order.studentName() + ' • ' + order.orderDate()}">Sinh viên</small>
                         </div>
                         <span class="status-pill"
-                              th:classappend="${order.status() == 'Pending' ? ' warning' : (#strings.contains(order.status(), 'Đã giao') ? ' success' : (#strings.contains(order.status(), 'Đã hủy') or order.status() == 'Rejected' ? ' danger' : ' info'))}"
-                              th:text="${order.status()}">Sẵn sàng</span>
+                              th:classappend="${' ' + statusDisplay.orderTone(order.status())}"
+                              th:text="${statusDisplay.orderLabel(order.status())}">Sẵn sàng</span>
                     </summary>
 
                     <div class="details-body">
@@ -95,26 +97,26 @@
                         </div>
 
                         <div class="action-row">
-                            <form th:if="${order.status() == 'Pending'}" th:action="@{/admin/orders/approve/{id}(id=${order.orderId()})}" method="post">
+                            <form th:if="${statusDisplay.isLegacyPendingOrder(order.status())}" th:action="@{/admin/orders/approve/{id}(id=${order.orderId()})}" method="post">
                                 <button type="submit" class="btn btn-outline">
                                     <i class="fa-solid fa-check"></i>
-                                    Duyệt Pending
+                                    Duyệt đơn chờ
                                 </button>
                             </form>
-                            <form th:if="${order.status() == 'Pending'}" th:action="@{/admin/orders/reject/{id}(id=${order.orderId()})}" method="post">
+                            <form th:if="${statusDisplay.isLegacyPendingOrder(order.status())}" th:action="@{/admin/orders/reject/{id}(id=${order.orderId()})}" method="post">
                                 <button type="submit" class="btn btn-danger">
                                     <i class="fa-solid fa-ban"></i>
                                     Từ chối
                                 </button>
                             </form>
-                            <form th:if="${order.status() != 'Đã giao' and order.status() != 'Đã hủy' and order.status() != 'Approved' and order.status() != 'Rejected'}"
+                            <form th:if="${statusDisplay.canCompleteOrder(order.status())}"
                                   th:action="@{/admin/orders/complete/{id}(id=${order.orderId()})}" method="post">
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fa-solid fa-truck-fast"></i>
                                     Hoàn tất giao
                                 </button>
                             </form>
-                            <form th:if="${order.status() != 'Đã giao' and order.status() != 'Đã hủy' and order.status() != 'Approved' and order.status() != 'Rejected'}"
+                            <form th:if="${statusDisplay.canCompleteOrder(order.status())}"
                                   th:action="@{/admin/orders/cancel/{id}(id=${order.orderId()})}" method="post">
                                 <button type="submit" class="btn btn-ghost">
                                     <i class="fa-solid fa-xmark"></i>

@@ -9,10 +9,21 @@
 <body>
 <section layout:fragment="content">
     <section class="hero hero-student">
-        <div>
+        <div class="hero-student-copy">
             <p class="eyebrow">Xin chào</p>
             <h2 th:text="${studentDisplayName}">Sinh viên</h2>
-            <p>Khám phá đầu sách, gửi yêu cầu mượn, theo dõi đơn mua và truy cập tài liệu số từ một portal thống nhất.</p>
+            <p>Khám phá đầu sách, gửi yêu cầu mượn, theo dõi đơn mua và truy cập tài liệu số từ một cổng thông tin thống nhất.</p>
+
+            <div class="hero-inline-pills">
+                <span class="status-pill success">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span th:text="${summary.activeBorrowCount() + ' phiếu đang hoạt động'}">0 phiếu đang hoạt động</span>
+                </span>
+                <span class="status-pill secondary">
+                    <i class="fa-solid fa-bell"></i>
+                    <span th:text="${summary.holdCount() + ' lượt giữ chỗ đang chờ'}">0 lượt giữ chỗ đang chờ</span>
+                </span>
+            </div>
         </div>
         <div class="hero-actions">
             <a th:href="@{/borrows}" class="btn btn-primary">
@@ -59,6 +70,7 @@
                 <div>
                     <p class="eyebrow">Tìm sách</p>
                     <h3>Lọc theo tên, chữ cái đầu, danh mục, nhà xuất bản hoặc tác giả</h3>
+                    <p class="panel-head-support catalog-filter-support">Bộ lọc giúp bạn thu hẹp nhanh danh sách đầu sách trước khi mượn, giữ chỗ hoặc mua.</p>
                 </div>
             </div>
 
@@ -116,7 +128,7 @@
                 <div class="catalog-results-copy">
                     <p class="eyebrow">Kệ sách</p>
                     <h3>Sách có thể mượn hoặc đặt giữ chỗ ngay</h3>
-                    <p class="muted-text"
+                    <p class="muted-text catalog-results-support"
                        th:text="${#lists.isEmpty(books) ? 'Hiện chưa có đầu sách phù hợp, hãy nới bộ lọc để xem thêm lựa chọn.' : 'Đang hiển thị ' + #lists.size(books) + ' đầu sách ở trang này.'}">
                         Đang hiển thị đầu sách.
                     </p>

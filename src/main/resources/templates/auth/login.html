@@ -8,12 +8,12 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="login-shell">
-        <div class="login-form-surface">
-            <div class="login-heading">
+    <div class="login-shell auth-flow-shell">
+        <div class="login-form-surface auth-flow-card">
+            <div class="login-heading section-heading">
                 <p class="eyebrow">Đăng nhập</p>
                 <h2 class="login-title">Chào mừng bạn quay lại</h2>
-                <p class="login-subtitle">Theo dõi mượn trả, đơn mua và Library AI trong một không gian học tập gọn gàng hơn.</p>
+                <p class="login-subtitle">Theo dõi mượn trả, đơn mua và trợ lý thư viện trong một không gian học tập gọn gàng hơn.</p>
             </div>
 
             <form th:action="@{/login}" method="post" class="stack-form login-form">
@@ -58,7 +58,12 @@
                 </div>
             </form>
 
-            <div class="inline-links login-links login-links-row">
+            <div class="auth-check-list">
+                <span class="status-pill secondary"><i class="fa-solid fa-shield-halved"></i> Phiên đăng nhập an toàn</span>
+                <span class="status-pill secondary"><i class="fa-solid fa-bolt"></i> Truy cập nhanh tới các luồng chính</span>
+            </div>
+
+            <div class="inline-links login-links login-links-row auth-flow-footer">
                 <a th:href="@{/forgot-password}">Quên mật khẩu?</a>
                 <a th:href="@{/register}">Tạo tài khoản mới</a>
             </div>

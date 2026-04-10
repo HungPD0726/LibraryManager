@@ -15,12 +15,13 @@
     <th:block layout:fragment="pageStyles"></th:block>
 </head>
 <body class="student-shell">
+<div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
 <header class="student-topbar">
-    <a class="brand-mark" th:href="@{/home}">
+    <a class="brand-mark" th:href="@{/home}" title="Trang chủ sinh viên">
         <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
-        <span>
+        <span class="brand-copy">
             <strong>Library Manager</strong>
-            <small>Student Portal</small>
+            <small>Cổng sinh viên</small>
         </span>
     </a>
 
@@ -43,8 +44,8 @@
                       class="notification-badge"
                       th:text="${unreadNotifications}">0</span>
             </a>
-            <a th:href="@{/chatbot}" th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">Chatbot</a>
-            <a th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">Admin</a>
+            <a th:href="@{/chatbot}" th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">Trợ lý thư viện</a>
+            <a th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">Quản trị</a>
         </nav>
     </div>
 
@@ -93,7 +94,7 @@
                 <a class="student-dropdown-link"
                    th:href="@{/chatbot}"
                    th:classappend="${#strings.startsWith(requestPath, '/chatbot') ? ' is-active' : ''}">
-                    <span><i class="fa-solid fa-robot"></i> Library AI</span>
+                    <span><i class="fa-solid fa-robot"></i> Trợ lý thư viện</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </a>
                 <a class="student-dropdown-link" th:if="${isAdmin or isStaff}" th:href="@{/admin/dashboard}">

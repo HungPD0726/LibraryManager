@@ -27,8 +27,19 @@ class AuthTemplateRenderTest {
                 .contains("/libraryManager/css/parts/auth.css")
                 .contains("/libraryManager/js/auth.js")
                 .contains("data-flash-error=\"Invalid login\"")
+                .contains("auth-showcase-stats")
                 .contains("data-toggle-password=\"#loginPassword\"")
                 .contains("/libraryManager/oauth2/authorization/google")
+                .contains("Cổng thông tin Thư viện")
+                .contains("trợ lý thư viện")
+                .contains("Theo dõi mượn trả, đơn mua và trợ lý thư viện")
+                .doesNotContain("Chatbot")
+                .doesNotContain("Assistant")
+                .doesNotContain("Library AI")
+                .doesNotContain("Student Portal")
+                .doesNotContain("Admin Console")
+                .doesNotContain("Ãƒ")
+                .doesNotContain("Ã‚")
                 .doesNotContain("/libraryManager/js/app.js");
     }
 }

@@ -12,6 +12,10 @@
         <div>
             <p class="eyebrow">Quản lý sách</p>
             <h2>Danh mục sách và tồn kho hiện tại</h2>
+            <p class="page-head-support">Tra cứu nhanh, kiểm tra số lượng sẵn có và đi thẳng tới thao tác chỉnh sửa từng đầu sách.</p>
+            <div class="page-head-meta">
+                <span class="status-pill secondary" th:text="${#lists.size(books) + ' đầu sách trên trang'}">0 đầu sách trên trang</span>
+            </div>
         </div>
         <a th:href="@{/admin/books/create}" class="btn btn-primary">
             <i class="fa-solid fa-plus"></i>

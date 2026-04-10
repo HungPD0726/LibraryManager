@@ -4,15 +4,15 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/student}">
 <head>
-    <title>Chatbot</title>
+    <title>Trợ lý thư viện</title>
 </head>
 <body>
 <section layout:fragment="content">
     <section class="hero hero-student chatbot-hero">
         <div class="chatbot-hero-copy">
-            <p class="eyebrow">Library AI Desk</p>
+            <p class="eyebrow">Trợ lý thư viện</p>
             <h2>Trợ lý thư viện giúp tra cứu nhanh, hiểu quy trình rõ và thao tác tự tin hơn</h2>
-            <p>Hỏi về mượn trả, giữ chỗ, mua sách, cách tìm đầu sách phù hợp hoặc nhờ assistant tóm tắt bước cần làm ngay trong cổng sinh viên.</p>
+            <p>Hỏi về mượn trả, giữ chỗ, mua sách, cách tìm đầu sách phù hợp hoặc nhờ trợ lý tóm tắt bước cần làm ngay trong cổng sinh viên.</p>
 
             <div class="hero-actions">
                 <button type="button" class="btn btn-primary" data-chatbot-prompt="Tôi muốn mượn sách thì cần làm gì trước?">
@@ -32,7 +32,7 @@
             <div class="chatbot-hero-pills">
                 <span class="status-pill success" th:if="${chatbotConfigured}">
                     <i class="fa-solid fa-circle-check"></i>
-                    Chatbot sẵn sàng
+                    Trợ lý sẵn sàng
                 </span>
                 <span class="status-pill danger" th:unless="${chatbotConfigured}">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -42,7 +42,7 @@
                     <i class="fa-solid fa-language"></i>
                     Trả lời bằng tiếng Việt
                 </span>
-                <span class="status-pill info" th:if="${chatbotConfigured}" th:text="${'Model: ' + chatbotModel}">
+                <span class="status-pill info" th:if="${chatbotConfigured}" th:text="${'Mô hình: ' + chatbotModel}">
                     Model
                 </span>
             </div>
@@ -50,12 +50,12 @@
 
         <div class="chatbot-note">
             <article class="result-card">
-                <h4>Assistant này làm tốt gì?</h4>
+                <h4>Trợ lý này hỗ trợ tốt gì?</h4>
                 <p>Giải thích quy trình mượn trả, nhắc các bước thao tác trong hệ thống và giúp bạn diễn đạt lại yêu cầu cho rõ hơn.</p>
             </article>
             <article class="result-card">
                 <h4>Giới hạn hiện tại</h4>
-                <p>Nếu câu hỏi cần dữ liệu nghiệp vụ rất cụ thể mà hệ thống chưa cung cấp cho AI, assistant sẽ nói rõ giới hạn thay vì đoán.</p>
+                <p>Nếu câu hỏi cần dữ liệu nghiệp vụ rất cụ thể mà hệ thống chưa cung cấp cho AI, trợ lý sẽ nói rõ giới hạn thay vì đoán.</p>
             </article>
         </div>
     </section>
@@ -66,6 +66,7 @@
                 <div>
                     <p class="eyebrow">Gợi ý nhanh</p>
                     <h3>Bắt đầu bằng một câu hỏi rõ mục tiêu</h3>
+                    <p class="panel-head-support">Những câu gợi ý này phù hợp khi bạn muốn hỏi ngắn, rõ và có thể hành động ngay.</p>
                 </div>
             </div>
 
@@ -93,7 +94,7 @@
                 </button>
                 <button type="button" class="prompt-chip" data-chatbot-prompt="Làm sao để tìm sách theo tác giả và danh mục trên hệ thống?">
                     <strong>Tìm đúng đầu sách</strong>
-                    <span>Nhờ assistant gợi ý bộ lọc hoặc từ khóa tìm kiếm.</span>
+                    <span>Nhờ trợ lý gợi ý bộ lọc hoặc từ khóa tìm kiếm.</span>
                 </button>
                 <button type="button" class="prompt-chip" data-chatbot-prompt="Tôi muốn mua sách thay vì mượn thì nên thao tác ở đâu?">
                     <strong>Mua thay vì mượn</strong>
@@ -110,7 +111,7 @@
                 <ul class="bullet-list">
                     <li>Nói rõ bạn đang muốn mượn, mua, giữ chỗ hay kiểm tra trạng thái.</li>
                     <li>Nếu có lỗi thao tác, hãy mô tả màn hình hoặc bước vừa thực hiện.</li>
-                    <li>Với câu hỏi dài, assistant vẫn ưu tiên trả lời ngắn gọn và thực tế.</li>
+                    <li>Với câu hỏi dài, trợ lý vẫn ưu tiên trả lời ngắn gọn và thực tế.</li>
                 </ul>
             </div>
         </aside>
@@ -120,6 +121,7 @@
                 <div>
                     <p class="eyebrow">Phiên hội thoại</p>
                     <h3>Tra cứu nhanh và hỏi đáp theo ngữ cảnh thư viện</h3>
+                    <p class="panel-head-support">Lịch sử phiên chat được giữ cục bộ để bạn tiếp tục câu hỏi dở dang thuận tiện hơn.</p>
                 </div>
                 <div class="chatbot-panel-actions">
                     <span id="chatbotStatusBadge" class="status-pill success">Sẵn sàng</span>
@@ -140,7 +142,7 @@
                         </div>
                         <div class="chat-bubble assistant">
                             <div class="chat-meta">
-                                <strong>Library AI</strong>
+                                <strong>Trợ lý thư viện</strong>
                                 <span>Khởi động phiên chat</span>
                             </div>
                             <p>Xin chào <span th:text="${viewerName}">user</span>. Mình có thể hỗ trợ quy trình mượn trả, mua sách, tìm đầu sách phù hợp hoặc giải thích nhanh cách dùng hệ thống.</p>
@@ -165,7 +167,7 @@
                         <label class="field">
                             <span>Câu hỏi của bạn</span>
                             <textarea id="chatbotInput" rows="4" placeholder="Ví dụ: Tôi đang có phiếu mượn quá hạn, bây giờ cần xử lý như thế nào?"></textarea>
-                            <small id="chatbotStatusText" class="chatbot-status-text">Assistant sẽ trả lời ngắn gọn, bằng tiếng Việt và ưu tiên hướng dẫn thực tế.</small>
+                            <small id="chatbotStatusText" class="chatbot-status-text">Trợ lý sẽ trả lời ngắn gọn, bằng tiếng Việt và ưu tiên hướng dẫn thực tế.</small>
                         </label>
 
                         <div class="chatbot-action-row">
@@ -187,7 +189,7 @@
     <section class="panel" th:unless="${chatbotConfigured}">
         <div class="empty-state large-empty chatbot-empty-state">
             <i class="fa-solid fa-robot"></i>
-            <p>Chatbot chưa sẵn sàng vì chưa có `GROQ_API_KEY` hoặc feature flag đang tắt.</p>
+            <p>Trợ lý thư viện chưa sẵn sàng vì chưa có `GROQ_API_KEY` hoặc feature flag đang tắt.</p>
             <p class="muted-text">Mẹo triển khai an toàn: đặt `GROQ_API_KEY` trong biến môi trường thay vì đưa trực tiếp vào source code.</p>
         </div>
     </section>

@@ -15,126 +15,147 @@
     <link th:href="@{/css/parts/admin.css}" rel="stylesheet">
     <th:block layout:fragment="pageStyles"></th:block>
 </head>
-<body class="shell admin-shell">
-<div class="shell-sidebar-backdrop" data-sidebar-toggle></div>
+<body class="shell admin-shell admin-shell-polished" data-sidebar-storage-key="libraryManager.adminSidebarCollapsed">
+<script>
+    (() => {
+        try {
+            if (localStorage.getItem("libraryManager.adminSidebarCollapsed") === "true") {
+                document.body.classList.add("sidebar-collapsed");
+            }
+        } catch (error) {
+            console.debug("Không thể khôi phục trạng thái menu quản trị.", error);
+        }
+    })();
+</script>
+<div class="shell-sidebar-backdrop" data-sidebar-backdrop></div>
 <aside class="shell-sidebar" id="sidebar">
     <div class="shell-brand">
-        <a class="brand-mark" th:href="@{/admin/dashboard}">
+        <a class="brand-mark" th:href="@{/admin/dashboard}" aria-label="Library Manager - Bảng quản trị" title="Bảng quản trị">
             <span class="brand-badge"><i class="fa-solid fa-book-open-reader"></i></span>
-            <span>
+            <span class="brand-copy">
                 <strong>Library Manager</strong>
-                <small>Admin Console</small>
+                <small>Bảng quản trị</small>
             </span>
         </a>
     </div>
 
-    <nav class="shell-nav">
-        <a th:href="@{/admin/dashboard}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/dashboard') ? ' is-active' : ''}">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Tổng quan</span>
-        </a>
-        <a th:href="@{/admin/books}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/books') ? ' is-active' : ''}">
-            <i class="fa-solid fa-book"></i>
-            <span>Sách</span>
-        </a>
-        <a th:href="@{/admin/borrows}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/borrows') ? ' is-active' : ''}">
-            <i class="fa-solid fa-arrow-right-arrow-left"></i>
-            <span>Mượn trả</span>
-        </a>
-        <a th:href="@{/admin/orders}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/orders') ? ' is-active' : ''}">
-            <i class="fa-solid fa-basket-shopping"></i>
-            <span>Đơn mua</span>
-        </a>
-        <a th:href="@{/admin/fines}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/fines') ? ' is-active' : ''}">
-            <i class="fa-solid fa-gavel"></i>
-            <span>Quản lý phạt</span>
-        </a>
-        <a th:href="@{/admin/authors}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/authors') ? ' is-active' : ''}">
-            <i class="fa-solid fa-pen-nib"></i>
-            <span>Tác giả</span>
-        </a>
-        <a th:href="@{/admin/bookfiles}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/bookfiles') ? ' is-active' : ''}">
-            <i class="fa-solid fa-file-arrow-down"></i>
-            <span>File sách</span>
-        </a>
-        <a th:href="@{/admin/categories}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/categories') ? ' is-active' : ''}">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Danh mục</span>
-        </a>
-        <a th:href="@{/admin/publishers}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/publishers') ? ' is-active' : ''}">
-            <i class="fa-solid fa-building"></i>
-            <span>Nhà xuất bản</span>
-        </a>
-        <a th:href="@{/admin/students}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/students') ? ' is-active' : ''}">
-            <i class="fa-solid fa-user-graduate"></i>
-            <span>Sinh viên</span>
-        </a>
-        <a th:href="@{/admin/staff}" class="nav-link"
-           th:classappend="${#strings.startsWith(requestPath, '/admin/staff') ? ' is-active' : ''}">
-            <i class="fa-solid fa-user-gear"></i>
-            <span>Nhân viên</span>
-        </a>
-        <a th:if="${isStudent}" th:href="@{/home}" class="nav-link">
-            <i class="fa-solid fa-house"></i>
-            <span>Cổng sinh viên</span>
-        </a>
-    </nav>
+    <div class="shell-sidebar-scroll" data-sidebar-scroll>
+        <nav class="shell-nav" aria-label="Điều hướng quản trị">
+            <a th:href="@{/admin/dashboard}" class="nav-link" data-tooltip="Tổng quan" aria-label="Tổng quan" title="Tổng quan"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/dashboard') ? ' is-active' : ''}">
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="nav-link-label">Tổng quan</span>
+            </a>
+            <a th:href="@{/admin/books}" class="nav-link" data-tooltip="Sách" aria-label="Sách" title="Sách"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/books') ? ' is-active' : ''}">
+                <i class="fa-solid fa-book"></i>
+                <span class="nav-link-label">Sách</span>
+            </a>
+            <a th:href="@{/admin/borrows}" class="nav-link" data-tooltip="Mượn trả" aria-label="Mượn trả" title="Mượn trả"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/borrows') ? ' is-active' : ''}">
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                <span class="nav-link-label">Mượn trả</span>
+            </a>
+            <a th:href="@{/admin/orders}" class="nav-link" data-tooltip="Đơn mua" aria-label="Đơn mua" title="Đơn mua"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/orders') ? ' is-active' : ''}">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <span class="nav-link-label">Đơn mua</span>
+            </a>
+            <a th:href="@{/admin/fines}" class="nav-link" data-tooltip="Quản lý phạt" aria-label="Quản lý phạt" title="Quản lý phạt"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/fines') ? ' is-active' : ''}">
+                <i class="fa-solid fa-gavel"></i>
+                <span class="nav-link-label">Quản lý phạt</span>
+            </a>
+            <a th:href="@{/admin/authors}" class="nav-link" data-tooltip="Tác giả" aria-label="Tác giả" title="Tác giả"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/authors') ? ' is-active' : ''}">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span class="nav-link-label">Tác giả</span>
+            </a>
+            <a th:href="@{/admin/bookfiles}" class="nav-link" data-tooltip="File sách" aria-label="File sách" title="File sách"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/bookfiles') ? ' is-active' : ''}">
+                <i class="fa-solid fa-file-arrow-down"></i>
+                <span class="nav-link-label">File sách</span>
+            </a>
+            <a th:href="@{/admin/categories}" class="nav-link" data-tooltip="Danh mục" aria-label="Danh mục" title="Danh mục"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/categories') ? ' is-active' : ''}">
+                <i class="fa-solid fa-layer-group"></i>
+                <span class="nav-link-label">Danh mục</span>
+            </a>
+            <a th:href="@{/admin/publishers}" class="nav-link" data-tooltip="Nhà xuất bản" aria-label="Nhà xuất bản" title="Nhà xuất bản"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/publishers') ? ' is-active' : ''}">
+                <i class="fa-solid fa-building"></i>
+                <span class="nav-link-label">Nhà xuất bản</span>
+            </a>
+            <a th:href="@{/admin/students}" class="nav-link" data-tooltip="Sinh viên" aria-label="Sinh viên" title="Sinh viên"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/students') ? ' is-active' : ''}">
+                <i class="fa-solid fa-user-graduate"></i>
+                <span class="nav-link-label">Sinh viên</span>
+            </a>
+            <a th:href="@{/admin/staff}" class="nav-link" data-tooltip="Nhân viên" aria-label="Nhân viên" title="Nhân viên"
+               th:classappend="${#strings.startsWith(requestPath, '/admin/staff') ? ' is-active' : ''}">
+                <i class="fa-solid fa-user-gear"></i>
+                <span class="nav-link-label">Nhân viên</span>
+            </a>
+            <a th:if="${isStudent}" th:href="@{/home}" class="nav-link" data-tooltip="Cổng sinh viên" aria-label="Cổng sinh viên" title="Cổng sinh viên">
+                <i class="fa-solid fa-house"></i>
+                <span class="nav-link-label">Cổng sinh viên</span>
+            </a>
+        </nav>
+    </div>
 
     <div class="shell-sidebar-footer">
-        <div class="profile-chip">
-                <span class="profile-avatar" th:text="${#strings.substring((currentUsername != null ? currentUsername : 'U'), 0, 1).toUpperCase()}">U</span>
-            <div>
+        <div class="profile-chip" title="Tài khoản hiện tại">
+            <span class="profile-avatar" th:text="${#strings.substring((currentUsername != null ? currentUsername : 'U'), 0, 1).toUpperCase()}">U</span>
+            <div class="profile-chip-copy">
                 <strong th:text="${currentUsername}">user</strong>
                 <small sec:authorize="hasRole('ADMIN')">Quản trị / nhân viên</small>
                 <small sec:authorize="!hasRole('ADMIN')">Nhân viên thư viện</small>
             </div>
         </div>
         <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-ghost btn-block">
+            <button type="submit" class="btn btn-ghost btn-block sidebar-logout-btn" aria-label="Đăng xuất" title="Đăng xuất">
                 <i class="fa-solid fa-right-from-bracket"></i>
-                Đăng xuất
+                <span class="sidebar-action-label">Đăng xuất</span>
             </button>
         </form>
     </div>
 </aside>
 
-<main class="shell-main">
+<main class="shell-main shell-main-admin">
     <header class="topbar">
         <div class="topbar-left">
-            <button type="button" class="icon-button" data-sidebar-toggle>
+            <button type="button"
+                    class="icon-button sidebar-toggle-button"
+                    data-sidebar-toggle
+                    aria-controls="sidebar"
+                    aria-expanded="true"
+                    aria-label="Thu gọn hoặc mở menu quản trị">
                 <i class="fa-solid fa-bars"></i>
             </button>
-            <div>
+            <div class="topbar-copy">
                 <p class="eyebrow">Bảng điều hành</p>
                 <h1 class="topbar-title">Theo dõi thư viện theo thời gian thực</h1>
+                <p class="muted-text topbar-support">Tập trung các tác vụ vận hành, duyệt yêu cầu và theo dõi điểm nghẽn chỉ trong một màn hình.</p>
             </div>
         </div>
         <div class="topbar-right">
             <div class="metric-pill">
-                <span class="metric-pill-label">Yêu cầu mượn chờ</span>
-                <strong th:text="${pendingBorrowCount ?: 0}">0</strong>
+                <i class="fa-regular fa-clock"></i>
+                <span class="metric-pill-label">Yêu cầu mượn đang chờ</span>
+                <strong data-pending-count
+                        th:attr="data-pending-count-url=@{/api/pending-count}">0</strong>
             </div>
             <a th:if="${isStudent}" th:href="@{/chatbot}" class="btn btn-outline">
                 <i class="fa-solid fa-robot"></i>
-                Chatbot
+                Trợ lý thư viện
             </a>
             <div class="topbar-operator">
                 <span class="topbar-operator-avatar"
                       th:text="${#strings.substring((currentUsername != null ? currentUsername : 'U'), 0, 1).toUpperCase()}">U</span>
                 <div class="topbar-operator-copy">
                     <strong th:text="${currentUsername}">user</strong>
-                    <span sec:authorize="hasRole('ADMIN')">Administrator</span>
-                    <span sec:authorize="!hasRole('ADMIN')">Staff console</span>
+                    <span sec:authorize="hasRole('ADMIN')">Quản trị viên</span>
+                    <span sec:authorize="!hasRole('ADMIN')">Bảng điều khiển nhân viên</span>
                 </div>
             </div>
             <form th:action="@{/logout}" method="post" class="topbar-logout-form">
@@ -146,7 +167,7 @@
         </div>
     </header>
 
-    <section class="page-shell">
+    <section class="page-shell page-shell-admin">
         <div th:replace="~{fragments/alerts :: alerts}"></div>
         <div layout:fragment="content"></div>
     </section>

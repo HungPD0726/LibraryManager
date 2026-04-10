@@ -12,11 +12,19 @@
         <div>
             <p class="eyebrow">Chi tiết sách</p>
             <h2 th:text="${bookDetail.bookName()}">Tên sách</h2>
+            <div class="page-head-meta">
+                <span class="status-pill"
+                      th:classappend="${bookDetail.available() > 0 ? ' success' : ' danger'}"
+                      th:text="${bookDetail.available() > 0 ? 'Còn ' + bookDetail.available() + ' cuốn' : 'Tạm hết'}">Còn 1</span>
+                <span class="status-pill secondary" th:text="${bookDetail.categoryName()}">Danh mục</span>
+            </div>
         </div>
-        <a th:href="@{/home}" class="btn btn-outline">
-            <i class="fa-solid fa-arrow-left"></i>
-            Quay lại danh sách
-        </a>
+        <div class="page-head-actions">
+            <a th:href="@{/home}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại danh sách
+            </a>
+        </div>
     </div>
 
     <div class="detail-layout">
@@ -24,17 +32,23 @@
             <img class="book-cover large" th:src="${bookDetail.imageUrl() != null ? bookDetail.imageUrl() : 'https://placehold.co/400x520/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
             <div class="detail-copy detail-copy-stack">
                 <div class="book-meta-line">
-                    <span class="status-pill" th:classappend="${bookDetail.available() > 0 ? ' success' : ' danger'}"
-                          th:text="${bookDetail.available() > 0 ? 'Còn ' + bookDetail.available() + ' cuốn' : 'Tạm hết'}">Còn 1</span>
-                    <span class="muted-text" th:text="${bookDetail.categoryName()}">Danh mục</span>
+                    <span class="status-pill secondary" th:text="${bookDetail.shelfLocation() != null ? 'Kệ ' + bookDetail.shelfLocation() : 'Chưa gán vị trí'}">Kệ A-02</span>
+                    <span class="muted-text" th:text="${#lists.size(bookDetail.files()) + ' file số'}">0 file số</span>
                 </div>
-                <p><strong>Nhà xuất bản:</strong> <span th:text="${bookDetail.publisherName() != null ? bookDetail.publisherName() : '-'}">NXB</span></p>
-                <p><strong>Tác giả:</strong> <span th:text="${#lists.isEmpty(bookDetail.authors()) ? 'Chưa gán' : #strings.listJoin(bookDetail.authors(), ', ')}">Tác giả</span></p>
-                <p><strong>Tổng số lượng:</strong> <span th:text="${bookDetail.quantity()}">0</span></p>
-                <p><strong>Giá hiện tại:</strong>
-                    <span th:text="${bookDetail.priceAmount() != null ? #numbers.formatDecimal(bookDetail.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + bookDetail.currency() : 'Chưa có giá'}">0</span>
-                </p>
-                <p th:if="${bookDetail.priceNote() != null}"><strong>Ghi chú giá:</strong> <span th:text="${bookDetail.priceNote()}">-</span></p>
+
+                <div class="panel-soft detail-summary-card">
+                    <p th:text="${bookDetail.description() != null ? bookDetail.description() : 'Chưa có mô tả cho đầu sách này.'}">Mô tả sách</p>
+                </div>
+
+                <div class="detail-grid">
+                    <p><strong>Nhà xuất bản:</strong> <span th:text="${bookDetail.publisherName() != null ? bookDetail.publisherName() : '-'}">NXB</span></p>
+                    <p><strong>Tác giả:</strong> <span th:text="${#lists.isEmpty(bookDetail.authors()) ? 'Chưa gán' : #strings.listJoin(bookDetail.authors(), ', ')}">Tác giả</span></p>
+                    <p><strong>Tổng số lượng:</strong> <span th:text="${bookDetail.quantity()}">0</span></p>
+                    <p><strong>Giá hiện tại:</strong>
+                        <span th:text="${bookDetail.priceAmount() != null ? #numbers.formatDecimal(bookDetail.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + bookDetail.currency() : 'Chưa có giá'}">0</span>
+                    </p>
+                    <p th:if="${bookDetail.priceNote() != null}"><strong>Ghi chú giá:</strong> <span th:text="${bookDetail.priceNote()}">-</span></p>
+                </div>
 
                 <div class="action-row">
                     <form th:if="${bookDetail.available() > 0}" th:action="@{/borrows/cart/add}" method="post">
@@ -69,6 +83,7 @@
                 <div>
                     <p class="eyebrow">Tài liệu số</p>
                     <h3>File có thể truy cập</h3>
+                    <p class="panel-head-support">Mở hoặc tải các tệp số được cấp quyền cho đầu sách này.</p>
                 </div>
             </div>
             <div class="stack-list">

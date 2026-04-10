@@ -12,11 +12,14 @@
         <div>
             <p class="eyebrow">Nhà xuất bản</p>
             <h2>Quản lý đối tác xuất bản</h2>
+            <div class="page-head-meta">
+                <span class="status-pill secondary" th:text="${#lists.size(publishers) + ' nhà xuất bản'}">0 nhà xuất bản</span>
+            </div>
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid admin-crud-grid">
+        <section class="panel crud-form-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Thêm mới</p>
@@ -36,20 +39,20 @@
             </form>
         </section>
 
-        <section class="panel">
+        <section class="panel crud-list-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách</p>
                     <h3>Nhà xuất bản hiện có</h3>
                 </div>
             </div>
-            <div class="stack-list">
-                <article class="inline-card" th:each="publisher : ${publishers}">
-                    <form th:action="@{/admin/publishers/edit/{id}(id=${publisher.publisherId})}" method="post" class="inline-form grow">
+            <div class="stack-list crud-list-stack">
+                <article class="inline-card crud-inline-card" th:each="publisher : ${publishers}">
+                    <form th:action="@{/admin/publishers/edit/{id}(id=${publisher.publisherId})}" method="post" class="inline-form grow crud-inline-form">
                         <input type="text" name="publisherName" th:value="${publisher.publisherName}">
                         <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
                     </form>
-                    <a class="btn btn-danger btn-sm" th:href="@{/admin/publishers/delete/{id}(id=${publisher.publisherId})}"
+                    <a class="btn btn-danger btn-sm crud-inline-delete" th:href="@{/admin/publishers/delete/{id}(id=${publisher.publisherId})}"
                        onclick="return confirm('Xóa nhà xuất bản này?');">Xóa</a>
                 </article>
                 <div class="empty-state" th:if="${#lists.isEmpty(publishers)}">

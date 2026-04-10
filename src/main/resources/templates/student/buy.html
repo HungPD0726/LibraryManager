@@ -12,6 +12,13 @@
         <div>
             <p class="eyebrow">Mua sách</p>
             <h2>Danh sách chờ mua và lịch sử đơn hàng</h2>
+            <p class="page-head-support">Thêm sách vào danh sách chờ mua, cập nhật số lượng rồi tạo đơn ngay khi bạn sẵn sàng.</p>
+        </div>
+        <div class="page-head-actions">
+            <a th:href="@{/home}" class="btn btn-outline">
+                <i class="fa-solid fa-book-open"></i>
+                Về kệ sách
+            </a>
         </div>
     </div>
 
@@ -22,7 +29,7 @@
         </article>
         <article class="metric-card">
             <span class="metric-icon soft-gold"><i class="fa-solid fa-basket-shopping"></i></span>
-            <div><strong th:text="${#lists.size(waitlistItems)}">0</strong><p>Mục đang chờ checkout</p></div>
+            <div><strong th:text="${#lists.size(waitlistItems)}">0</strong><p>Mục đang chờ đặt mua</p></div>
         </article>
         <article class="metric-card">
             <span class="metric-icon soft-lime"><i class="fa-solid fa-receipt"></i></span>
@@ -34,8 +41,9 @@
         <section class="panel buy-catalog-panel">
             <div class="panel-head">
                 <div>
-                    <p class="eyebrow">Catalog</p>
+                    <p class="eyebrow">Danh mục</p>
                     <h3>Thêm sách vào danh sách chờ mua</h3>
+                    <p class="panel-head-support">Bạn có thể thêm nhiều đầu sách rồi tạo một đơn duy nhất ở cột bên phải.</p>
                 </div>
             </div>
             <div class="card-grid buy-catalog-grid">
@@ -59,9 +67,13 @@
                 <div>
                     <p class="eyebrow">Danh sách chờ</p>
                     <h3>Chọn sách để đặt đơn</h3>
+                    <p class="panel-head-support">Tích chọn các sách muốn mua, lưu số lượng rồi tạo đơn ở cuối bảng.</p>
                 </div>
             </div>
             <div th:if="${!#lists.isEmpty(waitlistItems)}" class="stack-form">
+                <div class="panel-soft waitlist-summary">
+                    <p class="muted-text">Bạn đang có <strong th:text="${#lists.size(waitlistItems)}">0</strong> mục trong danh sách chờ mua.</p>
+                </div>
                 <div class="table-wrap">
                     <table class="data-table compact-table">
                         <thead>
@@ -114,6 +126,7 @@
             <div>
                 <p class="eyebrow">Lịch sử đơn</p>
                 <h3>Các đơn mua đã tạo</h3>
+                <p class="panel-head-support">Mở từng đơn để xem sách bên trong, tổng tiền và trạng thái xử lý hiện tại.</p>
             </div>
         </div>
         <div class="stack-list order-history-stack">
@@ -124,8 +137,8 @@
                         <small th:text="${order.orderDate()}">2026-03-28</small>
                     </div>
                     <span class="status-pill"
-                          th:classappend="${#strings.contains(order.status(), 'Đã giao') ? ' success' : (#strings.contains(order.status(), 'Đã hủy') ? ' danger' : ' info')}"
-                          th:text="${order.status()}">Sẵn sàng</span>
+                          th:classappend="${' ' + statusDisplay.orderTone(order.status())}"
+                          th:text="${statusDisplay.orderLabel(order.status())}">Sẵn sàng</span>
                 </summary>
                 <div class="details-body">
                     <p><strong>Tổng tiền:</strong> <span th:text="|${#numbers.formatDecimal(order.totalAmount(), 1, 'COMMA', 2, 'POINT')} VND|">0</span></p>

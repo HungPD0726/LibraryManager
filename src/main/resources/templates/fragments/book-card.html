@@ -3,18 +3,33 @@
 <body>
 
 <div th:fragment="book-card(book)">
-    <article class="book-card">
-        <img class="book-cover" th:src="${book.imageUrl() != null ? book.imageUrl() : 'https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
+    <article class="book-card animate-slide-up">
+        <div class="book-cover-wrap">
+            <img class="book-cover" th:src="${book.imageUrl() != null ? book.imageUrl() : 'https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
+            <div class="book-cover-overlay">
+                <a th:href="@{/home/book(id=${book.bookId()})}" class="btn btn-outline btn-sm book-cover-cta">
+                    <i class="fa-solid fa-eye"></i>
+                    Xem nhanh
+                </a>
+            </div>
+        </div>
         <div class="book-card-body">
             <div class="book-meta-line">
                 <span class="status-pill" th:classappend="${book.available() > 0 ? ' success' : ' danger'}"
                       th:text="${book.available() > 0 ? 'Còn ' + book.available() : 'Hết sách'}">Còn 2</span>
                 <span class="muted-text" th:text="${book.categoryName()}">Danh mục</span>
             </div>
-            <h3 th:text="${book.bookName()}">Tên sách</h3>
-            <p class="muted-text" th:text="${book.publisherName() != null ? book.publisherName() : 'Chưa có nhà xuất bản'}">NXB</p>
-            <p class="muted-text" th:text="${#lists.isEmpty(book.authors()) ? 'Chưa gán tác giả' : #strings.listJoin(book.authors(), ', ')}">Tác giả</p>
-            <strong class="price-text" th:text="${book.priceAmount() != null ? #numbers.formatDecimal(book.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + book.currency() : 'Chưa có giá'}">0 VND</strong>
+
+            <div class="book-card-copy">
+                <h3 th:text="${book.bookName()}">Tên sách</h3>
+                <p class="muted-text" th:text="${book.publisherName() != null ? book.publisherName() : 'Chưa có nhà xuất bản'}">NXB</p>
+                <p class="muted-text" th:text="${#lists.isEmpty(book.authors()) ? 'Chưa gán tác giả' : #strings.listJoin(book.authors(), ', ')}">Tác giả</p>
+            </div>
+
+            <div class="book-card-price-row">
+                <strong class="price-text" th:text="${book.priceAmount() != null ? #numbers.formatDecimal(book.priceAmount(), 1, 'COMMA', 2, 'POINT') + ' ' + book.currency() : 'Chưa có giá'}">0 VND</strong>
+                <small class="muted-text">Có thể mượn hoặc đặt giữ chỗ ngay</small>
+            </div>
 
             <div class="action-row book-card-actions">
                 <a class="btn btn-outline btn-sm" th:href="@{/home/book(id=${book.bookId()})}">

@@ -12,7 +12,29 @@
         <div>
             <p class="eyebrow">Mượn sách</p>
             <h2>Giỏ mượn, lịch sử và giữ chỗ</h2>
+            <p class="page-head-support">Theo dõi toàn bộ luồng mượn sách của bạn, từ lúc thêm vào giỏ cho tới khi hoàn tất trả sách.</p>
         </div>
+        <div class="page-head-actions">
+            <a th:href="@{/home}" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại kho sách
+            </a>
+        </div>
+    </div>
+
+    <div class="metric-grid borrow-summary-grid">
+        <article class="metric-card">
+            <span class="metric-icon soft-teal"><i class="fa-solid fa-cart-shopping"></i></span>
+            <div><strong th:text="${#lists.size(cartItems)}">0</strong><p>Sách trong giỏ mượn</p></div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-gold"><i class="fa-solid fa-bell"></i></span>
+            <div><strong th:text="${#lists.size(activeHolds)}">0</strong><p>Giữ chỗ đang chờ</p></div>
+        </article>
+        <article class="metric-card">
+            <span class="metric-icon soft-sea"><i class="fa-solid fa-clock-rotate-left"></i></span>
+            <div><strong th:text="${#lists.size(borrowHistory)}">0</strong><p>Phiếu mượn đã gửi</p></div>
+        </article>
     </div>
 
     <div class="split-grid">
@@ -21,6 +43,7 @@
                 <div>
                     <p class="eyebrow">Giỏ mượn</p>
                     <h3>Gửi yêu cầu mượn</h3>
+                    <p class="panel-head-support">Chốt danh sách sách muốn mượn và chọn hạn trả mong muốn trước khi gửi yêu cầu.</p>
                 </div>
             </div>
             <div class="table-wrap" th:if="${!#lists.isEmpty(cartItems)}">
@@ -50,7 +73,7 @@
                 <p>Giỏ mượn đang trống. Hãy thêm sách từ trang chủ hoặc trang chi tiết.</p>
             </div>
 
-            <form th:if="${!#lists.isEmpty(cartItems)}" th:action="@{/borrows/request}" method="post" class="stack-form">
+            <form th:if="${!#lists.isEmpty(cartItems)}" th:action="@{/borrows/request}" method="post" class="stack-form borrow-request-form">
                 <label class="field">
                     <span>Hạn trả mong muốn</span>
                     <input type="date" name="dueDate" th:value="${defaultDueDate}">
@@ -67,13 +90,19 @@
                 <div>
                     <p class="eyebrow">Giữ chỗ</p>
                     <h3>Yêu cầu đang hoạt động</h3>
+                    <p class="panel-head-support">Hệ thống sẽ thông báo khi đầu sách có thể được mượn trở lại.</p>
                 </div>
             </div>
             <div class="stack-list">
                 <article class="inline-card" th:each="hold : ${activeHolds}">
                     <div>
                         <strong th:text="${hold.bookName()}">Tên sách</strong>
-                        <small th:text="${hold.status() + ' • ' + hold.holdDate()}">Waiting</small>
+                        <div class="action-row">
+                            <span class="status-pill"
+                                  th:classappend="${' ' + statusDisplay.holdTone(hold.status())}"
+                                  th:text="${statusDisplay.holdLabel(hold.status())}">Đang chờ</span>
+                            <small th:text="${hold.holdDate()}">2026-04-11</small>
+                        </div>
                     </div>
                     <form th:action="@{/borrows/holds/{holdId}/cancel(holdId=${hold.holdId()})}" method="post">
                         <button type="submit" class="btn btn-ghost btn-sm">Hủy giữ chỗ</button>
@@ -92,6 +121,7 @@
             <div>
                 <p class="eyebrow">Lịch sử</p>
                 <h3>Các phiếu mượn đã gửi</h3>
+                <p class="panel-head-support">Theo dõi trạng thái phiếu mượn và mốc thời gian trả sách của từng yêu cầu.</p>
             </div>
         </div>
         <div class="table-wrap" th:if="${!#lists.isEmpty(borrowHistory)}">
@@ -113,8 +143,8 @@
                     <td th:text="${borrow.returnDate != null ? borrow.returnDate : '-'}">-</td>
                     <td>
                         <span class="status-pill"
-                              th:classappend="${borrow.status == 'Returned' ? ' success' : (borrow.status == 'Pending' ? ' warning' : (borrow.status == 'Borrowing' ? ' info' : ' danger'))}"
-                              th:text="${borrow.status}">Pending</span>
+                              th:classappend="${' ' + statusDisplay.borrowTone(borrow.status)}"
+                              th:text="${statusDisplay.borrowLabel(borrow.status)}">Chờ duyệt</span>
                     </td>
                 </tr>
                 </tbody>

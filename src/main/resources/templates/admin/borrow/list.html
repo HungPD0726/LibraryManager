@@ -12,6 +12,7 @@
         <div>
             <p class="eyebrow">Mượn trả</p>
             <h2>Điều phối phiếu mượn và yêu cầu chờ duyệt</h2>
+            <p class="page-head-support">Lọc theo trạng thái để xử lý nhanh các yêu cầu mới, phiếu đang mượn và các trường hợp cần hoàn tất trả sách.</p>
         </div>
         <a th:href="@{/admin/borrows/create}" class="btn btn-primary">
             <i class="fa-solid fa-plus"></i>
@@ -25,11 +26,11 @@
                 <span>Trạng thái</span>
                 <select name="status">
                     <option value="">Tất cả</option>
-                    <option value="Pending" th:selected="${filterStatus == 'Pending'}">Pending</option>
-                    <option value="Borrowing" th:selected="${filterStatus == 'Borrowing'}">Borrowing</option>
-                    <option value="Returned" th:selected="${filterStatus == 'Returned'}">Returned</option>
-                    <option value="Overdue" th:selected="${filterStatus == 'Overdue'}">Overdue</option>
-                    <option value="Rejected" th:selected="${filterStatus == 'Rejected'}">Rejected</option>
+                    <option value="Pending" th:selected="${filterStatus == 'Pending'}">Chờ duyệt</option>
+                    <option value="Borrowing" th:selected="${filterStatus == 'Borrowing'}">Đang mượn</option>
+                    <option value="Returned" th:selected="${filterStatus == 'Returned'}">Đã trả</option>
+                    <option value="Overdue" th:selected="${filterStatus == 'Overdue'}">Quá hạn</option>
+                    <option value="Rejected" th:selected="${filterStatus == 'Rejected'}">Từ chối</option>
                 </select>
             </label>
             <button type="submit" class="btn btn-outline">
@@ -60,8 +61,8 @@
                     <td th:text="${borrow.dueDate}">2026-04-11</td>
                     <td>
                         <span class="status-pill"
-                              th:classappend="${borrow.status == 'Pending' ? ' warning' : (borrow.status == 'Borrowing' ? ' info' : (borrow.status == 'Returned' ? ' success' : ' danger'))}"
-                              th:text="${borrow.status}">Pending</span>
+                              th:classappend="${' ' + statusDisplay.borrowTone(borrow.status)}"
+                              th:text="${statusDisplay.borrowLabel(borrow.status)}">Chờ duyệt</span>
                     </td>
                     <td class="text-right">
                         <div class="action-row justify-end">

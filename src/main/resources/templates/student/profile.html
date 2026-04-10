@@ -12,6 +12,10 @@
         <div>
             <p class="eyebrow">Hồ sơ</p>
             <h2>Thông tin cá nhân và bảo mật</h2>
+            <p class="page-head-support">Cập nhật hồ sơ, ảnh đại diện và mật khẩu để trải nghiệm trong cổng sinh viên luôn nhất quán.</p>
+            <div class="page-head-meta" th:if="${studentProfile.email != null}">
+                <span class="status-pill secondary" th:text="${studentProfile.email}">student@example.com</span>
+            </div>
         </div>
     </div>
 

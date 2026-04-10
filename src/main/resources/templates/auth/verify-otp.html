@@ -8,26 +8,33 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="section-heading">
-        <p class="eyebrow">Bước 2</p>
-        <h2>Xác minh mã OTP</h2>
-        <p>Mã đã được gửi tới tài khoản <strong th:text="${pendingUsername}">student01</strong>.</p>
-    </div>
+    <div class="auth-flow-shell">
+        <div class="section-heading">
+            <p class="eyebrow">Bước 2</p>
+            <h2>Xác minh mã OTP</h2>
+            <p>Mã đã được gửi tới tài khoản <strong th:text="${pendingUsername}">student01</strong>. Nhập mã 6 chữ số để tiếp tục.</p>
+        </div>
 
-    <form th:action="@{/verify-otp}" th:object="${form}" method="post" class="stack-form">
-        <label class="field">
-            <span>Mã OTP</span>
-            <input type="text" th:field="*{otp}" placeholder="Nhập 6 chữ số" maxlength="6">
-            <small class="field-error" th:if="${#fields.hasErrors('otp')}" th:errors="*{otp}"></small>
-        </label>
-        <button type="submit" class="btn btn-primary btn-block">
-            <i class="fa-solid fa-shield-heart"></i>
-            Xác minh
-        </button>
-    </form>
+        <form th:action="@{/verify-otp}" th:object="${form}" method="post" class="stack-form auth-form-stack">
+            <label class="field">
+                <span>Mã OTP</span>
+                <input type="text" th:field="*{otp}" placeholder="Nhập 6 chữ số" maxlength="6" inputmode="numeric">
+                <small class="field-error" th:if="${#fields.hasErrors('otp')}" th:errors="*{otp}"></small>
+            </label>
 
-    <div class="inline-links">
-        <a th:href="@{/forgot-password}">Bắt đầu lại</a>
+            <div class="auth-check-list">
+                <span class="status-pill secondary"><i class="fa-solid fa-shield-heart"></i> Xác minh trước khi đặt lại mật khẩu</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+                <i class="fa-solid fa-shield-heart"></i>
+                Xác minh
+            </button>
+        </form>
+
+        <div class="inline-links auth-flow-footer">
+            <a th:href="@{/forgot-password}">Bắt đầu lại</a>
+        </div>
     </div>
 </section>
 </body>
