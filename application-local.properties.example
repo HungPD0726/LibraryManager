@@ -1,5 +1,10 @@
 # Copy this file to application-local.properties for machine-specific secrets.
 # application-local.properties is ignored by Git.
 
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.thymeleaf.cache=false
+logging.level.com.library=DEBUG
+
 app.security.oauth2.google.client-id=
 app.security.oauth2.google.client-secret=

@@ -3,6 +3,7 @@ package com.library.feature.student;
 import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
 import com.library.domain.repository.StaffRepository;
+import com.library.domain.repository.StudentRepository;
 import com.library.shared.support.RoleSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class CurrentStudentService {
 
     private final StaffRepository staffRepository;
-    private final StudentMirrorService studentMirrorService;
+    private final StudentRepository studentRepository;
 
     @Transactional(readOnly = true)
     public Optional<Staff> findCurrentStaff(Authentication authentication) {
@@ -35,14 +36,14 @@ public class CurrentStudentService {
                 .or(() -> staffRepository.findByEmail(identifier));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Student> resolveCurrentStudent(Authentication authentication) {
         if (!RoleSupport.isStudent(authentication)) {
             return Optional.empty();
         }
 
         return findCurrentStaff(authentication)
-                .map(studentMirrorService::ensureStudentMirror);
+                .flatMap(staff -> studentRepository.findById(staff.getStaffId()));
     }
 
     private String normalize(String value) {

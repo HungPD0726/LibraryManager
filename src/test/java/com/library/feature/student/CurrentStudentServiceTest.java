@@ -3,6 +3,7 @@ package com.library.feature.student;
 import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
 import com.library.domain.repository.StaffRepository;
+import com.library.domain.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,14 +22,14 @@ class CurrentStudentServiceTest {
 
     @Mock
     private StaffRepository staffRepository;
+    @Mock
+    private StudentRepository studentRepository;
 
-    private FakeStudentMirrorService studentMirrorService;
     private CurrentStudentService currentStudentService;
 
     @BeforeEach
     void setUp() {
-        studentMirrorService = new FakeStudentMirrorService();
-        currentStudentService = new CurrentStudentService(staffRepository, studentMirrorService);
+        currentStudentService = new CurrentStudentService(staffRepository, studentRepository);
     }
 
     @Test
@@ -51,7 +52,7 @@ class CurrentStudentServiceTest {
     }
 
     @Test
-    void resolveCurrentStudent_shouldCreateMirrorWhenRoleIsStudent() {
+    void resolveCurrentStudent_shouldLookupExistingStudentWhenRoleIsStudent() {
         Staff staff = new Staff();
         staff.setStaffId(10);
         staff.setUsername("student01");
@@ -59,40 +60,16 @@ class CurrentStudentServiceTest {
 
         Student student = new Student();
         student.setStudentId(10);
-        studentMirrorService.willReturn(student);
 
         when(staffRepository.findByUsername("student01@gmail.com")).thenReturn(Optional.empty());
         when(staffRepository.findByEmail("student01@gmail.com")).thenReturn(Optional.of(staff));
+        when(studentRepository.findById(10)).thenReturn(Optional.of(student));
 
         Optional<Student> resolved = currentStudentService.resolveCurrentStudent(
                 new TestingAuthenticationToken("student01@gmail.com", "n/a", "ROLE_STUDENT")
         );
 
         assertThat(resolved).contains(student);
-        assertThat(studentMirrorService.getLastStaff()).isSameAs(staff);
-    }
-
-    private static final class FakeStudentMirrorService extends StudentMirrorService {
-
-        private Student nextStudent;
-        private Staff lastStaff;
-
-        private FakeStudentMirrorService() {
-            super(null, null);
-        }
-
-        @Override
-        public Student ensureStudentMirror(Staff staff) {
-            lastStaff = staff;
-            return nextStudent;
-        }
-
-        private void willReturn(Student student) {
-            this.nextStudent = student;
-        }
-
-        private Staff getLastStaff() {
-            return lastStaff;
-        }
+        verify(studentRepository).findById(10);
     }
 }

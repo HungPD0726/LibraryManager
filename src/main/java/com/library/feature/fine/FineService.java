@@ -83,7 +83,7 @@ public class FineService {
     @Transactional
     public Fine createFine(Integer borrowId, BigDecimal amount, String reason) {
         Borrow borrow = borrowRepository.findById(borrowId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y Ã„â€˜Ã†Â¡n mÃ†Â°Ã¡Â»Â£n ID: " + borrowId));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy đơn mượn ID: " + borrowId));
 
         Fine fine = new Fine();
         fine.setBorrow(borrow);
@@ -97,10 +97,10 @@ public class FineService {
     @Transactional
     public Fine markPaid(Integer fineId) {
         Fine fine = fineRepository.findById(fineId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y phiÃ¡ÂºÂ¿u phÃ¡ÂºÂ¡t ID: " + fineId));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phiếu phạt ID: " + fineId));
 
         if (FineStatus.PAID.equals(fine.getStatus())) {
-            throw new IllegalArgumentException("PhiÃ¡ÂºÂ¿u phÃ¡ÂºÂ¡t Ã„â€˜ÃƒÂ£ Ã„â€˜Ã†Â°Ã¡Â»Â£c thanh toÃƒÂ¡n.");
+            throw new IllegalArgumentException("Phiếu phạt đã được thanh toán.");
         }
 
         fine.setStatus(FineStatus.PAID);
@@ -124,7 +124,7 @@ public class FineService {
             }
 
             BigDecimal amount = DAILY_FINE_RATE.multiply(BigDecimal.valueOf(daysLate));
-            String reason = "TrÃ¡ÂºÂ£ sÃƒÂ¡ch trÃ¡Â»â€¦ " + daysLate + " ngÃƒÂ y (tÃ¡Â»Â± Ã„â€˜Ã¡Â»â„¢ng)";
+            String reason = "Trả sách trễ " + daysLate + " ngày (tự động)";
 
             Fine fine = new Fine();
             fine.setBorrow(borrow);

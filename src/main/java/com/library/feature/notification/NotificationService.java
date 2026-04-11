@@ -4,6 +4,7 @@ import com.library.domain.model.Notification;
 import com.library.domain.model.Student;
 import com.library.domain.repository.NotificationRepository;
 import com.library.domain.repository.StudentRepository;
+import com.library.shared.support.NotificationTextSupport;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,17 +18,19 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final StudentRepository studentRepository;
+    private final NotificationTextSupport notificationTextSupport;
 
     @Transactional
     public Notification create(Integer studentId, String title, String message, String type) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sinh viÃƒÂªn ID: " + studentId));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên ID: " + studentId));
+        NotificationTextSupport.NotificationText normalized = notificationTextSupport.normalize(type, title, message);
 
         Notification notification = new Notification();
         notification.setStudent(student);
-        notification.setTitle(title);
-        notification.setMessage(message);
-        notification.setType(type);
+        notification.setTitle(normalized.title());
+        notification.setMessage(normalized.message());
+        notification.setType(normalized.type());
         notification.setIsRead(false);
         notification.setCreatedDate(LocalDateTime.now());
         return notificationRepository.save(notification);
@@ -35,7 +38,10 @@ public class NotificationService {
 
     @Transactional(readOnly = true)
     public List<Notification> findByStudent(Integer studentId) {
-        return notificationRepository.findByStudentStudentIdOrderByCreatedDateDesc(studentId);
+        return notificationRepository.findByStudentStudentIdOrderByCreatedDateDesc(studentId)
+                .stream()
+                .map(notificationTextSupport::normalize)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -46,7 +52,7 @@ public class NotificationService {
     @Transactional
     public void markRead(Integer notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y thÃƒÂ´ng bÃƒÂ¡o."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông báo."));
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }

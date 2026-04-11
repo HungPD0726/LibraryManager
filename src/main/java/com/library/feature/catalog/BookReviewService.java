@@ -44,16 +44,16 @@ public class BookReviewService {
     @Transactional
     public BookReview addReview(Integer bookId, Integer studentId, Integer rating, String comment) {
         if (rating == null || rating < 1 || rating > 5) {
-            throw new IllegalArgumentException("Ã„ÂÃƒÂ¡nh giÃƒÂ¡ phÃ¡ÂºÂ£i tÃ¡Â»Â« 1 Ã„â€˜Ã¡ÂºÂ¿n 5 sao.");
+            throw new IllegalArgumentException("Đánh giá phải từ 1 đến 5 sao.");
         }
         if (reviewRepository.existsByBookBookIdAndStudentStudentId(bookId, studentId)) {
-            throw new IllegalArgumentException("BÃ¡ÂºÂ¡n Ã„â€˜ÃƒÂ£ Ã„â€˜ÃƒÂ¡nh giÃƒÂ¡ sÃƒÂ¡ch nÃƒÂ y rÃ¡Â»â€œi.");
+            throw new IllegalArgumentException("Bạn đã đánh giá sách này rồi.");
         }
 
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sÃƒÂ¡ch."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách."));
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sinh viÃƒÂªn."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên."));
 
         BookReview review = new BookReview();
         review.setBook(book);

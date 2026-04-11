@@ -71,14 +71,14 @@ public class BookController {
         Book book = new Book();
         applyBook(book, form);
         bookService.createBook(book, form.getPriceAmount(), form.getCurrency(), form.getPriceNote());
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm sách thành công.");
         return "redirect:/admin/books";
     }
 
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Integer id, Model model) {
         Book book = bookService.findDetailedById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sÃƒÂ¡ch cÃ¡ÂºÂ§n chÃ¡Â»â€°nh sÃ¡Â»Â­a."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách cần chỉnh sửa."));
 
         BookForm form = new BookForm();
         form.setBookName(book.getBookName());
@@ -108,7 +108,7 @@ public class BookController {
                        RedirectAttributes redirectAttributes) {
         validateAvailable(form, bindingResult);
         Book existing = bookService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sÃƒÂ¡ch cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách cần cập nhật."));
 
         if (bindingResult.hasErrors()) {
             prepareForm(model, form, existing);
@@ -117,30 +117,30 @@ public class BookController {
 
         applyBook(existing, form);
         bookService.updateBook(existing, form.getPriceAmount(), form.getCurrency(), form.getPriceNote());
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật sách thành công.");
         return "redirect:/admin/books";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         bookService.deleteBook(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa sách thành công.");
         return "redirect:/admin/books";
     }
 
     private void prepareForm(Model model, BookForm form, Book book) {
         model.addAttribute("form", form);
         model.addAttribute("book", book);
-        model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("publishers", publisherService.findAll());
-        model.addAttribute("authors", authorService.findAll());
+        model.addAttribute("categories", categoryService.findAllOptions());
+        model.addAttribute("publishers", publisherService.findAllOptions());
+        model.addAttribute("authors", authorService.findAllOptions());
     }
 
     private void applyBook(Book book, BookForm form) {
         Category category = categoryService.findById(form.getCategoryId())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y danh mÃ¡Â»Â¥c Ã„â€˜ÃƒÂ£ chÃ¡Â»Ân."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục đã chọn."));
         Publisher publisher = publisherService.findById(form.getPublisherId())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n Ã„â€˜ÃƒÂ£ chÃ¡Â»Ân."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhà xuất bản đã chọn."));
 
         book.setBookName(form.getBookName().trim());
         book.setQuantity(form.getQuantity());
@@ -155,7 +155,7 @@ public class BookController {
 
     private void validateAvailable(BookForm form, BindingResult bindingResult) {
         if (form.getQuantity() != null && form.getAvailable() != null && form.getAvailable() > form.getQuantity()) {
-            bindingResult.rejectValue("available", "invalid", "SÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng cÃƒÂ³ sÃ¡ÂºÂµn khÃƒÂ´ng thÃ¡Â»Æ’ lÃ¡Â»â€ºn hÃ†Â¡n tÃ¡Â»â€¢ng sÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng.");
+            bindingResult.rejectValue("available", "invalid", "Số lượng có sẵn không thể lớn hơn tổng số lượng.");
         }
     }
 

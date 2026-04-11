@@ -44,7 +44,7 @@ public class PublisherController {
         Publisher publisher = new Publisher();
         publisher.setPublisherName(form.getPublisherName().trim());
         publisherService.save(publisher);
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm nhà xuất bản thành công.");
         return "redirect:/admin/publishers";
     }
 
@@ -60,17 +60,17 @@ public class PublisherController {
         }
 
         Publisher publisher = publisherService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhà xuất bản cần cập nhật."));
         publisher.setPublisherName(form.getPublisherName().trim());
         publisherService.save(publisher);
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật nhà xuất bản thành công.");
         return "redirect:/admin/publishers";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         publisherService.deleteById(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa nhà xuất bản thành công.");
         return "redirect:/admin/publishers";
     }
 }

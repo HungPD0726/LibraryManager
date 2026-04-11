@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -17,20 +19,29 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
 
+    @Transactional(readOnly = true)
     public Page<Student> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("studentId").descending());
         return studentRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<Student> search(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("studentId").descending());
         return studentRepository.search(keyword, pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<Student> findAll() {
         return studentRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<StudentOptionView> findAllOptions() {
+        return studentRepository.findAllOptions();
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Student> findById(Integer id) {
         return studentRepository.findById(id);
     }
@@ -43,6 +54,7 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public long count() {
         return studentRepository.count();
     }

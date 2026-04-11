@@ -34,7 +34,7 @@ public class BookFileAdminController {
             model.addAttribute("form", new BookFileForm());
         }
         model.addAttribute("bookFiles", bookFileService.findAllViews());
-        model.addAttribute("books", bookService.findAll());
+        model.addAttribute("books", bookService.findAllOptions());
         return "admin/bookfile/list";
     }
 
@@ -46,14 +46,14 @@ public class BookFileAdminController {
                          RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("bookFiles", bookFileService.findAllViews());
-            model.addAttribute("books", bookService.findAll());
+            model.addAttribute("books", bookService.findAllOptions());
             return "admin/bookfile/list";
         }
 
         Staff staff = staffService.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ¢n viÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên đăng nhập."));
         bookFileService.create(form, staff.getStaffId());
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm file sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm file sách thành công.");
         return "redirect:/admin/bookfiles";
     }
 
@@ -66,21 +66,21 @@ public class BookFileAdminController {
                        RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("bookFiles", bookFileService.findAllViews());
-            model.addAttribute("books", bookService.findAll());
+            model.addAttribute("books", bookService.findAllOptions());
             return "admin/bookfile/list";
         }
 
         Staff staff = staffService.findByUsername(authentication.getName())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ¢n viÃƒÂªn Ã„â€˜Ã„Æ’ng nhÃ¡ÂºÂ­p."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên đăng nhập."));
         bookFileService.update(id, form, staff.getStaffId());
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t file sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật file sách thành công.");
         return "redirect:/admin/bookfiles";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         bookFileService.delete(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a file sÃƒÂ¡ch thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa file sách thành công.");
         return "redirect:/admin/bookfiles";
     }
 

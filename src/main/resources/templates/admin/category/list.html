@@ -15,8 +15,8 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid admin-crud-grid">
+        <section class="panel crud-form-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Thêm mới</p>
@@ -36,20 +36,20 @@
             </form>
         </section>
 
-        <section class="panel">
+        <section class="panel crud-list-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách</p>
                     <h3>Danh mục hiện có</h3>
                 </div>
             </div>
-            <div class="stack-list">
-                <article class="inline-card" th:each="category : ${categories}">
-                    <form th:action="@{/admin/categories/edit/{id}(id=${category.categoryId})}" method="post" class="inline-form grow">
+            <div class="stack-list crud-list-stack">
+                <article class="inline-card crud-inline-card" th:each="category : ${categories}">
+                    <form th:action="@{/admin/categories/edit/{id}(id=${category.categoryId})}" method="post" class="inline-form grow crud-inline-form">
                         <input type="text" name="categoryName" th:value="${category.categoryName}">
                         <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
                     </form>
-                    <a class="btn btn-danger btn-sm" th:href="@{/admin/categories/delete/{id}(id=${category.categoryId})}"
+                    <a class="btn btn-danger btn-sm crud-inline-delete" th:href="@{/admin/categories/delete/{id}(id=${category.categoryId})}"
                        onclick="return confirm('Xóa danh mục này?');">Xóa</a>
                 </article>
                 <div class="empty-state" th:if="${#lists.isEmpty(categories)}">

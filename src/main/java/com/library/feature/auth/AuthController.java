@@ -54,7 +54,9 @@ public class AuthController {
 
         if (RoleSupport.isStudent(authentication)) {
             try {
-                boolean resolved = currentStudentService.resolveCurrentStudent(authentication).isPresent();
+                boolean resolved = currentStudentService.findCurrentStaff(authentication)
+                        .map(studentMirrorService::ensureStudentMirror)
+                        .isPresent();
                 if (resolved) {
                     return "redirect:/home";
                 }

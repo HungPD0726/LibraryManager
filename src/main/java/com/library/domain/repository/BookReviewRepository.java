@@ -1,6 +1,7 @@
 package com.library.domain.repository;
 
 import com.library.domain.model.BookReview;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ import java.util.List;
 @Repository
 public interface BookReviewRepository extends JpaRepository<BookReview, Integer> {
 
+    @EntityGraph(attributePaths = {"student"})
     List<BookReview> findByBookBookIdOrderByCreatedDateDesc(Integer bookId);
 
     List<BookReview> findByStudentStudentIdOrderByCreatedDateDesc(Integer studentId);

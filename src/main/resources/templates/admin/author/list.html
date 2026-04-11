@@ -15,8 +15,8 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid admin-crud-grid">
+        <section class="panel crud-form-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Thêm mới</p>
@@ -36,20 +36,20 @@
             </form>
         </section>
 
-        <section class="panel">
+        <section class="panel crud-list-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách</p>
                     <h3>Tác giả hiện có</h3>
                 </div>
             </div>
-            <div class="stack-list">
-                <article class="inline-card" th:each="author : ${authors}">
-                    <form th:action="@{/admin/authors/edit/{id}(id=${author.authorId})}" method="post" class="inline-form grow">
+            <div class="stack-list crud-list-stack">
+                <article class="inline-card crud-inline-card" th:each="author : ${authors}">
+                    <form th:action="@{/admin/authors/edit/{id}(id=${author.authorId})}" method="post" class="inline-form grow crud-inline-form">
                         <input type="text" name="authorName" th:value="${author.authorName}">
                         <button type="submit" class="btn btn-outline btn-sm">Lưu</button>
                     </form>
-                    <a class="btn btn-danger btn-sm" th:href="@{/admin/authors/delete/{id}(id=${author.authorId})}"
+                    <a class="btn btn-danger btn-sm crud-inline-delete" th:href="@{/admin/authors/delete/{id}(id=${author.authorId})}"
                        onclick="return confirm('Xóa tác giả này?');">Xóa</a>
                 </article>
                 <div class="empty-state" th:if="${#lists.isEmpty(authors)}">

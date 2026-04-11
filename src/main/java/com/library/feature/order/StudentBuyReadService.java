@@ -1,8 +1,5 @@
 package com.library.feature.order;
 
-import com.library.domain.model.Book;
-import com.library.domain.model.Price;
-import com.library.feature.catalog.BookService;
 import com.library.feature.catalog.PriceDisplayView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,34 +15,12 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class StudentBuyReadService {
 
-    private final BookService bookService;
     private final BookPricingService bookPricingService;
     private final OrderQueryService orderQueryService;
 
     @Transactional(readOnly = true)
     public StudentBuyPageView buildPage(Integer studentId, Map<Integer, Integer> waitlist) {
-        List<Book> books = bookService.findAll();
-        Map<Integer, Price> pricesByBookId = bookPricingService.findCurrentPrices(
-                books.stream().map(Book::getBookId).toList()
-        );
-
-        List<PriceDisplayView> bookPrices = books.stream()
-                .map(book -> {
-                    Price price = pricesByBookId.get(book.getBookId());
-                    if (price == null) {
-                        return null;
-                    }
-                    return new PriceDisplayView(
-                            book.getBookId(),
-                            book.getBookName(),
-                            book.getAvailable(),
-                            price.getAmount(),
-                            price.getCurrency(),
-                            price.getNote()
-                    );
-                })
-                .filter(Objects::nonNull)
-                .toList();
+        List<PriceDisplayView> bookPrices = bookPricingService.findCatalogPrices();
 
         Map<Integer, PriceDisplayView> priceViewsByBookId = new LinkedHashMap<>();
         for (PriceDisplayView view : bookPrices) {

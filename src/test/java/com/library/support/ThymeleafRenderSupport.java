@@ -1,5 +1,6 @@
 package com.library.support;
 
+import com.library.shared.support.StatusDisplaySupport;
 import jakarta.servlet.ServletContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -10,8 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.GenericWebApplicationContext;
+import org.springframework.web.servlet.support.RequestContext;
 import org.thymeleaf.context.WebContext;
 import org.thymeleaf.extras.springsecurity6.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring6.context.webmvc.SpringWebMvcThymeleafRequestContext;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.web.servlet.JakartaServletWebApplication;
@@ -38,6 +41,11 @@ public final class ThymeleafRenderSupport {
                 "webSecurityExpressionHandler",
                 DefaultWebSecurityExpressionHandler.class,
                 DefaultWebSecurityExpressionHandler::new
+        );
+        applicationContext.registerBean(
+                "statusDisplay",
+                StatusDisplaySupport.class,
+                StatusDisplaySupport::new
         );
         applicationContext.setServletContext(servletContext);
         applicationContext.refresh();
@@ -69,8 +77,15 @@ public final class ThymeleafRenderSupport {
             model.putIfAbsent("isAdmin", hasRole("ROLE_ADMIN", roles));
             model.putIfAbsent("isStaff", hasRole("ROLE_STAFF", roles) || hasRole("ROLE_LIBRARIAN", roles));
             model.putIfAbsent("isStudent", hasRole("ROLE_STUDENT", roles));
+            model.putIfAbsent("statusDisplay", new StatusDisplaySupport());
             model.putIfAbsent("unreadNotifications", 0L);
             model.putIfAbsent("pendingBorrowCount", 0L);
+
+            RequestContext springRequestContext = new RequestContext(request, response, servletContext, model);
+            SpringWebMvcThymeleafRequestContext thymeleafRequestContext =
+                    new SpringWebMvcThymeleafRequestContext(springRequestContext, request);
+            model.put("springRequestContext", springRequestContext);
+            model.put("thymeleafRequestContext", thymeleafRequestContext);
 
             JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(servletContext);
             WebContext context = new WebContext(

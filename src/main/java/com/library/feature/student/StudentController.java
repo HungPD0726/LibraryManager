@@ -59,7 +59,7 @@ public class StudentController {
         student.setEmail(blankToNull(form.getEmail()));
         student.setPhone(blankToNull(form.getPhone()));
         studentService.save(student);
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm sinh viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm sinh viên thành công.");
         return "redirect:/admin/students";
     }
 
@@ -77,19 +77,19 @@ public class StudentController {
         }
 
         Student student = studentService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sinh viÃƒÂªn cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên cần cập nhật."));
         student.setStudentName(form.getStudentName().trim());
         student.setEmail(blankToNull(form.getEmail()));
         student.setPhone(blankToNull(form.getPhone()));
         studentService.save(student);
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t sinh viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật sinh viên thành công.");
         return "redirect:/admin/students";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         studentService.deleteById(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a sinh viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa sinh viên thành công.");
         return "redirect:/admin/students";
     }
 

@@ -8,18 +8,18 @@ import lombok.Data;
 @Data
 public class BookFileForm {
 
-    @NotNull(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân sÃƒÂ¡ch.")
+    @NotNull(message = "Vui lòng chọn sách.")
     private Integer bookId;
 
-    @NotBlank(message = "TÃƒÂªn file khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Tên file không được để trống.")
     private String fileName;
 
-    @NotBlank(message = "URL file khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "URL file không được để trống.")
     private String fileUrl;
 
     private String fileType;
 
-    @PositiveOrZero(message = "KÃƒÂ­ch thÃ†Â°Ã¡Â»â€ºc file khÃƒÂ´ng hÃ¡Â»Â£p lÃ¡Â»â€¡.")
+    @PositiveOrZero(message = "Kích thước file không hợp lệ.")
     private Long fileSize;
 
     private Boolean active = Boolean.TRUE;

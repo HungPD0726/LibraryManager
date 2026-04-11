@@ -1,8 +1,10 @@
 package com.library.feature.student;
 
 import com.library.domain.model.BookReview;
+import com.library.domain.model.Borrow;
 import com.library.domain.model.Notification;
 import com.library.domain.model.Student;
+import com.library.feature.borrow.HoldRowView;
 import com.library.feature.catalog.BookCardView;
 import com.library.feature.catalog.BookDetailView;
 import com.library.feature.catalog.BookFileView;
@@ -69,6 +71,13 @@ class StudentTemplateRenderTest {
                 .contains("Sapiens")
                 .contains("120,000.00 VND")
                 .contains("Sách có thể mượn hoặc đặt giữ chỗ ngay")
+                .contains("Cổng sinh viên")
+                .contains("Trợ lý thư viện")
+                .doesNotContain("Student Portal")
+                .doesNotContain("Chatbot")
+                .doesNotContain("Assistant")
+                .doesNotContain("Ã")
+                .doesNotContain("Â")
                 .doesNotContain("/libraryManager/css/parts/admin.css");
     }
 
@@ -96,7 +105,7 @@ class StudentTemplateRenderTest {
                 "Thủ thư A",
                 LocalDate.of(2026, 4, 4),
                 new BigDecimal("90000"),
-                "Đã giao",
+                "Pending",
                 List.of(new OrderItemView(
                         11,
                         "Doraemon",
@@ -118,7 +127,53 @@ class StudentTemplateRenderTest {
                 .contains("Doraemon")
                 .contains("45,000.00 VND")
                 .contains("90,000.00 VND")
-                .contains("Đơn #31");
+                .contains("Đơn #31")
+                .contains("Đang chờ xử lý")
+                .doesNotContain("Pending")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
+    }
+
+    @Test
+    void borrows_shouldRenderLocalizedHoldAndBorrowStatuses() {
+        Student student = student();
+
+        Borrow borrow = new Borrow();
+        borrow.setBorrowId(19);
+        borrow.setBorrowDate(LocalDate.of(2026, 4, 1));
+        borrow.setDueDate(LocalDate.of(2026, 4, 15));
+        borrow.setStatus("Pending");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("currentStudent", student);
+        model.put("cartItems", List.of());
+        model.put("activeHolds", List.of(new HoldRowView(
+                5,
+                11,
+                "Doraemon",
+                "Waiting",
+                LocalDateTime.of(2026, 4, 2, 9, 0),
+                null,
+                "Giữ giúp tôi"
+        )));
+        model.put("borrowHistory", List.of(borrow));
+
+        String html = ThymeleafRenderSupport.render(
+                "student/borrows",
+                "/borrows",
+                model,
+                "student01",
+                "ROLE_STUDENT"
+        );
+
+        assertThat(html)
+                .contains("Đang chờ")
+                .contains("Chờ duyệt")
+                .contains("Hủy giữ chỗ")
+                .doesNotContain("Waiting")
+                .doesNotContain("Pending")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
     }
 
     @Test
@@ -148,7 +203,9 @@ class StudentTemplateRenderTest {
         assertThat(html)
                 .contains("1 chưa đọc")
                 .contains("/libraryManager/notifications/99/read")
-                .contains("Sách đã sẵn sàng");
+                .contains("Sách đã sẵn sàng")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
     }
 
     @Test
@@ -208,7 +265,9 @@ class StudentTemplateRenderTest {
                 .contains("Atomic Habits")
                 .contains("199,000.00 VND")
                 .contains("2 lượt đánh giá")
-                .contains("Rất đáng đọc");
+                .contains("Rất đáng đọc")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
     }
 
     @Test
@@ -231,6 +290,14 @@ class StudentTemplateRenderTest {
                 .contains("/libraryManager/css/parts/student.css")
                 .contains("/libraryManager/js/app.js")
                 .contains("/libraryManager/js/pages/chatbot.js")
+                .contains("Trợ lý thư viện")
+                .contains("Mô hình: llama-3.1-8b-instant")
+                .doesNotContain("Chatbot")
+                .doesNotContain("Assistant")
+                .doesNotContain("Library AI")
+                .doesNotContain("Student Portal")
+                .doesNotContain("Ã")
+                .doesNotContain("Â")
                 .doesNotContain("/libraryManager/js/pages/admin-dashboard.js");
     }
 

@@ -16,6 +16,10 @@ public interface BorrowRepository extends JpaRepository<Borrow, Integer> {
 
     @EntityGraph(attributePaths = {"student", "staff"})
     @Override
+    java.util.Optional<Borrow> findById(Integer id);
+
+    @EntityGraph(attributePaths = {"student", "staff"})
+    @Override
     Page<Borrow> findAll(Pageable pageable);
 
     @EntityGraph(attributePaths = {"student", "staff"})

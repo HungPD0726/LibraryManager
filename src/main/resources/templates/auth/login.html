@@ -8,7 +8,7 @@
 </head>
 <body>
 <section layout:fragment="content">
-    <div class="login-shell auth-flow-shell">
+    <div class="login-shell auth-flow-shell" data-auth-login-page>
         <div class="login-form-surface auth-flow-card">
             <div class="login-heading section-heading">
                 <p class="eyebrow">Đăng nhập</p>
@@ -16,34 +16,80 @@
                 <p class="login-subtitle">Theo dõi mượn trả, đơn mua và trợ lý thư viện trong một không gian học tập gọn gàng hơn.</p>
             </div>
 
-            <form th:action="@{/login}" method="post" class="stack-form login-form">
-                <label class="field">
+            <div class="login-inline-status"
+                 th:if="${error != null or message != null}"
+                 th:classappend="${error != null ? ' is-danger' : ' is-success'}"
+                 th:attr="role=${error != null ? 'alert' : 'status'},aria-live=${error != null ? 'assertive' : 'polite'}"
+                 data-login-inline-alert>
+                <span class="login-inline-status-icon" aria-hidden="true">
+                    <i th:class="${error != null ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-check'}"></i>
+                </span>
+                <div class="login-inline-status-copy">
+                    <strong th:text="${error != null ? 'Đăng nhập chưa thành công' : 'Bạn có thể tiếp tục'}">Đăng nhập chưa thành công</strong>
+                    <p th:text="${error != null ? error : message}">Tên đăng nhập, email hoặc mật khẩu chưa đúng.</p>
+                </div>
+            </div>
+
+            <form th:action="@{/login}"
+                  method="post"
+                  class="stack-form login-form"
+                  th:classappend="${error != null ? ' has-login-error' : ''}"
+                  data-auth-login-form>
+                <label class="field login-field" data-auth-field>
                     <span>Tài khoản hoặc email</span>
-                    <div class="input-with-icon">
+                    <div class="input-with-icon" data-auth-input-shell>
                         <i class="fa-regular fa-user"></i>
-                        <input type="text" name="username" placeholder="Nhập tên đăng nhập hoặc email" autofocus required>
+                        <input id="loginUsername"
+                               type="text"
+                               name="username"
+                               placeholder="Nhập tên đăng nhập hoặc email"
+                               autocomplete="username"
+                               autocapitalize="none"
+                               spellcheck="false"
+                               aria-describedby="loginUsernameHint"
+                               data-auth-input
+                               autofocus
+                               required>
                     </div>
+                    <small id="loginUsernameHint" class="field-hint">Dùng tên đăng nhập nội bộ hoặc email đã đăng ký.</small>
                 </label>
 
-                <label class="field">
+                <label class="field login-field" data-auth-field>
                     <span>Mật khẩu</span>
-                    <div class="input-with-icon has-action">
+                    <div class="input-with-icon has-action" data-auth-input-shell>
                         <i class="fa-solid fa-lock"></i>
-                        <input id="loginPassword" type="password" name="password" placeholder="Nhập mật khẩu" required>
+                        <input id="loginPassword"
+                               type="password"
+                               name="password"
+                               placeholder="Nhập mật khẩu"
+                               autocomplete="current-password"
+                               aria-describedby="loginPasswordHint loginPasswordCaps"
+                               data-auth-input
+                               data-auth-password-input
+                               required>
                         <button type="button"
                                 class="input-action"
                                 data-toggle-password="#loginPassword"
+                                aria-pressed="false"
                                 aria-label="Hiện hoặc ẩn mật khẩu">
                             <i class="fa-regular fa-eye"></i>
                         </button>
                     </div>
+                    <small id="loginPasswordHint" class="field-hint">Mật khẩu phân biệt chữ hoa và chữ thường.</small>
+                    <small id="loginPasswordCaps"
+                           class="field-error login-caps-warning"
+                           data-login-caps-warning
+                           hidden>
+                        Caps Lock đang bật, hãy kiểm tra lại trước khi đăng nhập.
+                    </small>
                 </label>
 
                 <div class="login-submit-row">
-                    <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                        Đăng nhập
+                    <button type="submit" class="btn btn-primary btn-block login-submit-button" data-auth-submit-button>
+                        <i class="fa-solid fa-arrow-right-to-bracket" data-auth-submit-icon></i>
+                        <span data-auth-submit-label>Đăng nhập</span>
                     </button>
+                    <p class="login-submit-note">Ưu tiên dùng tài khoản chính để tiếp tục đúng vai trò và dữ liệu của bạn.</p>
                 </div>
 
                 <div class="login-divider">
@@ -51,6 +97,7 @@
                 </div>
 
                 <div class="social-login-row">
+                    <p class="login-social-note">Nếu tài khoản đã liên kết, bạn có thể tiếp tục nhanh bằng Google.</p>
                     <a th:href="@{/oauth2/authorization/google}" class="btn btn-outline btn-block social-btn google-btn">
                         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" width="18">
                         Google

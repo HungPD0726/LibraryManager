@@ -3,6 +3,7 @@ package com.library.domain.repository;
 import com.library.domain.model.Fine;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,21 +16,29 @@ import java.util.List;
 @Repository
 public interface FineRepository extends JpaRepository<Fine, Integer> {
 
+    @EntityGraph(attributePaths = {"borrow", "borrow.student"})
+    @Override
+    java.util.Optional<Fine> findById(Integer id);
+
     List<Fine> findByBorrowBorrowId(Integer borrowId);
 
     List<Fine> findByStatus(String status);
 
     long countByStatus(String status);
 
+    @EntityGraph(attributePaths = {"borrow", "borrow.student"})
     @Query("SELECT f FROM Fine f ORDER BY f.fineId DESC")
     Page<Fine> findAllPaged(Pageable pageable);
 
+    @EntityGraph(attributePaths = {"borrow", "borrow.student"})
     @Query("SELECT f FROM Fine f WHERE f.status = :status ORDER BY f.fineId DESC")
     Page<Fine> findByStatusPaged(@Param("status") String status, Pageable pageable);
 
+    @EntityGraph(attributePaths = {"borrow", "borrow.student"})
     @Query("SELECT f FROM Fine f WHERE f.borrow.student.studentId = :studentId ORDER BY f.fineId DESC")
     List<Fine> findByStudentId(@Param("studentId") Integer studentId);
 
+    @EntityGraph(attributePaths = {"borrow", "borrow.student"})
     @Query("SELECT f FROM Fine f WHERE f.borrow.student.studentId = :studentId AND f.status = :status")
     List<Fine> findByStudentIdAndStatus(@Param("studentId") Integer studentId, @Param("status") String status);
 

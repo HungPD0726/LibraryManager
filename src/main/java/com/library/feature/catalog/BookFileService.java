@@ -24,8 +24,7 @@ public class BookFileService {
 
     @Transactional(readOnly = true)
     public List<BookFileView> findAllViews() {
-        return bookFileRepository.findAll().stream()
-                .sorted((left, right) -> right.getBookFileId().compareTo(left.getBookFileId()))
+        return bookFileRepository.findAllByOrderByBookFileIdDesc().stream()
                 .map(this::toView)
                 .toList();
     }
@@ -40,13 +39,13 @@ public class BookFileService {
     @Transactional(readOnly = true)
     public BookFile findById(Integer id) {
         return bookFileRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y tÃ¡Â»â€¡p sÃƒÂ¡ch."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tệp sách."));
     }
 
     @Transactional(readOnly = true)
     public BookFile findActiveEntity(Integer id) {
         return bookFileRepository.findByBookFileIdAndIsActiveTrue(id)
-                .orElseThrow(() -> new IllegalArgumentException("TÃ¡Â»â€¡p sÃƒÂ¡ch khÃƒÂ´ng khÃ¡ÂºÂ£ dÃ¡Â»Â¥ng."));
+                .orElseThrow(() -> new IllegalArgumentException("Tệp sách không khả dụng."));
     }
 
     @Transactional
@@ -67,9 +66,9 @@ public class BookFileService {
 
     private BookFile buildEntity(BookFile target, BookFileForm form, Integer staffId) {
         Book book = bookRepository.findById(form.getBookId())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sÃƒÂ¡ch Ã„â€˜Ã¡Â»Æ’ gÃ¡ÂºÂ¯n file."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách để gắn file."));
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ¢n viÃƒÂªn thao tÃƒÂ¡c."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên thao tác."));
 
         target.setBook(book);
         target.setStaff(staff);

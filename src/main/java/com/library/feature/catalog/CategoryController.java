@@ -44,7 +44,7 @@ public class CategoryController {
         Category category = new Category();
         category.setCategoryName(form.getCategoryName().trim());
         categoryService.save(category);
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm danh mÃ¡Â»Â¥c thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm danh mục thành công.");
         return "redirect:/admin/categories";
     }
 
@@ -60,17 +60,17 @@ public class CategoryController {
         }
 
         Category category = categoryService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y danh mÃ¡Â»Â¥c cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy danh mục cần cập nhật."));
         category.setCategoryName(form.getCategoryName().trim());
         categoryService.save(category);
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t danh mÃ¡Â»Â¥c thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật danh mục thành công.");
         return "redirect:/admin/categories";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         categoryService.deleteById(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a danh mÃ¡Â»Â¥c thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa danh mục thành công.");
         return "redirect:/admin/categories";
     }
 }

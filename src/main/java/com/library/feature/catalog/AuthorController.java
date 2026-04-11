@@ -44,7 +44,7 @@ public class AuthorController {
         Author author = new Author();
         author.setAuthorName(form.getAuthorName().trim());
         authorService.save(author);
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm tÃƒÂ¡c giÃ¡ÂºÂ£ thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm tác giả thành công.");
         return "redirect:/admin/authors";
     }
 
@@ -60,17 +60,17 @@ public class AuthorController {
         }
 
         Author author = authorService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y tÃƒÂ¡c giÃ¡ÂºÂ£ cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tác giả cần cập nhật."));
         author.setAuthorName(form.getAuthorName().trim());
         authorService.save(author);
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t tÃƒÂ¡c giÃ¡ÂºÂ£ thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật tác giả thành công.");
         return "redirect:/admin/authors";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         authorService.deleteById(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a tÃƒÂ¡c giÃ¡ÂºÂ£ thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa tác giả thành công.");
         return "redirect:/admin/authors";
     }
 }

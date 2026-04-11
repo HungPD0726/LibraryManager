@@ -18,7 +18,7 @@ function bindChatbot() {
 
     const endpoint = form.dataset.endpoint || root.dataset.endpoint || window.location.pathname;
     const viewerName = root.dataset.viewer || "Bạn";
-    const assistantName = "Library AI";
+    const assistantName = "Trợ lý thư viện";
     const storageKey = root.dataset.storageKey || "library-manager.chatbot";
     const initialConversation = readConversationFromDom(log);
     let conversation = loadConversation(storageKey, initialConversation);
@@ -29,7 +29,7 @@ function bindChatbot() {
         statusText,
         "success",
         "Sẵn sàng",
-        "Assistant sẽ trả lời ngắn gọn, bằng tiếng Việt và ưu tiên hướng dẫn thực tế."
+        "Trợ lý sẽ trả lời ngắn gọn, bằng tiếng Việt và ưu tiên hướng dẫn thực tế."
     );
 
     promptButtons.forEach((button) => {
@@ -84,7 +84,7 @@ function bindChatbot() {
                 statusText,
                 "warning",
                 "Thiếu nội dung",
-                "Hãy nhập một câu hỏi cụ thể để assistant có thể hỗ trợ tốt hơn."
+                "Hãy nhập một câu hỏi cụ thể để trợ lý có thể hỗ trợ tốt hơn."
             );
             input.focus();
             return;
@@ -109,7 +109,7 @@ function bindChatbot() {
             statusText,
             "info",
             "Đang phản hồi",
-            "Assistant đang phân tích câu hỏi và soạn câu trả lời."
+            "Trợ lý đang phân tích câu hỏi và soạn câu trả lời."
         );
 
         try {
@@ -128,7 +128,7 @@ function bindChatbot() {
 
             const payload = await readJson(response);
             if (!response.ok) {
-                throw new Error(payload.error || "Không thể nhận phản hồi từ chatbot.");
+                throw new Error(payload.error || "Không thể nhận phản hồi từ trợ lý thư viện.");
             }
 
             typingIndicator.remove();
@@ -148,7 +148,7 @@ function bindChatbot() {
                 "Đã nhận phản hồi",
                 payload.model
                     ? `Phản hồi vừa được tạo bởi model ${payload.model}.`
-                    : "Assistant đã trả lời xong."
+                    : "Trợ lý đã trả lời xong."
             );
         } catch (error) {
             typingIndicator.remove();
@@ -156,7 +156,7 @@ function bindChatbot() {
                 log,
                 {
                     role: "assistant",
-                    content: error.message || "Chatbot đang tạm bận, vui lòng thử lại sau.",
+                    content: error.message || "Trợ lý thư viện đang tạm bận, vui lòng thử lại sau.",
                     timestamp: Date.now()
                 },
                 viewerName,
@@ -168,7 +168,7 @@ function bindChatbot() {
                 statusText,
                 "danger",
                 "Có lỗi xảy ra",
-                error.message || "Chatbot đang tạm bận, vui lòng thử lại sau."
+                error.message || "Trợ lý thư viện đang tạm bận, vui lòng thử lại sau."
             );
         } finally {
             setFormPendingState(form, input, promptButtons, clearButtons, false);

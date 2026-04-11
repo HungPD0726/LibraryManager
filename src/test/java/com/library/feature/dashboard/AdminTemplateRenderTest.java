@@ -2,7 +2,10 @@ package com.library.feature.dashboard;
 
 import com.library.domain.model.Borrow;
 import com.library.domain.model.Fine;
+import com.library.domain.model.Publisher;
+import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
+import com.library.feature.catalog.PublisherForm;
 import com.library.feature.order.OrderItemView;
 import com.library.feature.order.OrderRowView;
 import com.library.support.ThymeleafRenderSupport;
@@ -51,14 +54,31 @@ class AdminTemplateRenderTest {
                 .contains("/libraryManager/css/style.css")
                 .contains("/libraryManager/css/parts/admin.css")
                 .contains("/libraryManager/js/app.js")
+                .contains("/libraryManager/js/pages/admin-live.js")
+                .contains("data-pending-count")
+                .contains("/libraryManager/api/pending-count")
+                .contains("data-admin-live-url=\"/libraryManager/ws/admin/live\"")
+                .contains("data-admin-live-feed")
+                .contains("data-admin-live-connection")
                 .contains("/libraryManager/js/pages/admin-dashboard.js")
                 .contains("id=\"dashboardRevenueData\"")
                 .contains("2,500,000")
                 .contains("5,800,000")
                 .contains("6,500,000")
                 .contains("doanh thu 12 th")
+                .contains("Bảng quản trị")
+                .contains("Quản trị viên")
+                .contains("data-sidebar-storage-key=\"libraryManager.adminSidebarCollapsed\"")
+                .contains("data-sidebar-backdrop")
+                .contains("data-sidebar-scroll")
+                .contains("aria-controls=\"sidebar\"")
                 .contains("#1")
                 .contains("Dune")
+                .doesNotContain("Admin Console")
+                .doesNotContain("Administrator")
+                .doesNotContain("Staff console")
+                .doesNotContain("Ã")
+                .doesNotContain("Â")
                 .doesNotContain("/libraryManager/css/parts/student.css");
     }
 
@@ -100,8 +120,11 @@ class AdminTemplateRenderTest {
         assertThat(html)
                 .contains("45,000")
                 .contains("90,000")
+                .contains("Chưa thanh toán")
                 .contains("/libraryManager/admin/fines/41/pay")
-                .contains("Trang 1 / 2");
+                .contains("Trang 1 / 2")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
     }
 
     @Test
@@ -112,7 +135,7 @@ class AdminTemplateRenderTest {
                 "Thu thu B",
                 LocalDate.of(2026, 4, 4),
                 new BigDecimal("199000"),
-                "Đã giao",
+                "Pending",
                 List.of(new OrderItemView(
                         22,
                         "Atomic Habits",
@@ -140,6 +163,83 @@ class AdminTemplateRenderTest {
         assertThat(html)
                 .contains("Đơn #15")
                 .contains("199,000.00 VND")
-                .contains("Atomic Habits");
+                .contains("Atomic Habits")
+                .contains("Đang chờ xử lý")
+                .contains("Duyệt đơn chờ")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
+    }
+
+    @Test
+    void borrowList_shouldRenderLocalizedBorrowStatus() {
+        Student student = new Student();
+        student.setStudentId(9);
+        student.setStudentName("Lê Huy");
+
+        Staff staff = new Staff();
+        staff.setStaffId(4);
+        staff.setStaffName("Thủ thư B");
+
+        Borrow borrow = new Borrow();
+        borrow.setBorrowId(73);
+        borrow.setStudent(student);
+        borrow.setStaff(staff);
+        borrow.setBorrowDate(LocalDate.of(2026, 4, 2));
+        borrow.setDueDate(LocalDate.of(2026, 4, 16));
+        borrow.setStatus("Pending");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("borrows", List.of(borrow));
+        model.put("currentPage", 0);
+        model.put("totalPages", 1);
+        model.put("filterStatus", "Pending");
+
+        String html = ThymeleafRenderSupport.render(
+                "admin/borrow/list",
+                "/admin/borrows",
+                model,
+                "admin01",
+                "ROLE_ADMIN"
+        );
+
+        assertThat(html)
+                .contains("Chờ duyệt")
+                .contains("Duyệt")
+                .contains("Từ chối")
+                .contains("Tất cả")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
+    }
+
+    @Test
+    void publisherList_shouldRenderCrudShellWithSidebarHooks() {
+        Publisher publisher = new Publisher();
+        publisher.setPublisherId(12);
+        publisher.setPublisherName("NXB Trẻ");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("form", new PublisherForm());
+        model.put("publishers", List.of(publisher));
+
+        String html = ThymeleafRenderSupport.render(
+                "admin/publisher/list",
+                "/admin/publishers",
+                model,
+                "admin01",
+                "ROLE_ADMIN"
+        );
+
+        assertThat(html)
+                .contains("admin-crud-grid")
+                .contains("crud-form-panel")
+                .contains("crud-list-panel")
+                .contains("crud-list-stack")
+                .contains("crud-inline-card")
+                .contains("crud-inline-form")
+                .contains("Nhà xuất bản hiện có")
+                .contains("data-sidebar-scroll")
+                .contains("title=\"Nhà xuất bản\"")
+                .doesNotContain("Ã")
+                .doesNotContain("Â");
     }
 }

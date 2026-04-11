@@ -30,7 +30,7 @@ public class StaffController {
         model.addAttribute("staffList", staffPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", staffPage.getTotalPages());
-        model.addAttribute("roles", staffService.findAllRoles());
+        model.addAttribute("roles", staffService.findAllRoleOptions());
         if (!model.containsAttribute("form")) {
             model.addAttribute("form", new StaffForm());
         }
@@ -43,14 +43,14 @@ public class StaffController {
                          Model model,
                          RedirectAttributes redirectAttributes) {
         if (form.getPassword() == null || form.getPassword().isBlank()) {
-            bindingResult.rejectValue("password", "required", "MÃ¡ÂºÂ­t khÃ¡ÂºÂ©u khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.");
+            bindingResult.rejectValue("password", "required", "Mật khẩu không được để trống.");
         }
         if (bindingResult.hasErrors()) {
             Page<Staff> staffPage = staffService.findAll(0, 10);
             model.addAttribute("staffList", staffPage.getContent());
             model.addAttribute("currentPage", 0);
             model.addAttribute("totalPages", staffPage.getTotalPages());
-            model.addAttribute("roles", staffService.findAllRoles());
+            model.addAttribute("roles", staffService.findAllRoleOptions());
             return "admin/staff/list";
         }
 
@@ -59,7 +59,7 @@ public class StaffController {
         staff.setUsername(form.getUsername());
         staff.setEmail(form.getEmail());
         staffService.createStaff(staff, form.getPassword(), form.getRoleIds());
-        redirectAttributes.addFlashAttribute("msg", "ThÃƒÂªm nhÃƒÂ¢n viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Thêm nhân viên thành công.");
         return "redirect:/admin/staff";
     }
 
@@ -74,24 +74,24 @@ public class StaffController {
             model.addAttribute("staffList", staffPage.getContent());
             model.addAttribute("currentPage", 0);
             model.addAttribute("totalPages", staffPage.getTotalPages());
-            model.addAttribute("roles", staffService.findAllRoles());
+            model.addAttribute("roles", staffService.findAllRoleOptions());
             return "admin/staff/list";
         }
 
         Staff staff = staffService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y nhÃƒÂ¢n viÃƒÂªn cÃ¡ÂºÂ§n cÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy nhân viên cần cập nhật."));
         staff.setStaffName(form.getStaffName());
         staff.setUsername(form.getUsername());
         staff.setEmail(form.getEmail());
         staffService.updateStaff(staff, form.getPassword(), form.getRoleIds());
-        redirectAttributes.addFlashAttribute("msg", "CÃ¡ÂºÂ­p nhÃ¡ÂºÂ­t nhÃƒÂ¢n viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Cập nhật nhân viên thành công.");
         return "redirect:/admin/staff";
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         staffService.deleteById(id);
-        redirectAttributes.addFlashAttribute("msg", "XÃƒÂ³a nhÃƒÂ¢n viÃƒÂªn thÃƒÂ nh cÃƒÂ´ng.");
+        redirectAttributes.addFlashAttribute("msg", "Xóa nhân viên thành công.");
         return "redirect:/admin/staff";
     }
 }

@@ -3,6 +3,7 @@ package com.library.feature.order;
 import com.library.domain.model.Student;
 import com.library.feature.student.CurrentStudentService;
 import com.library.feature.student.StudentSessionService;
+import com.library.shared.realtime.AdminLiveUpdateService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -26,11 +27,12 @@ public class StudentBuyController {
     private final OrderCheckoutService orderCheckoutService;
     private final CurrentStudentService currentStudentService;
     private final StudentSessionService studentSessionService;
+    private final AdminLiveUpdateService adminLiveUpdateService;
 
     @GetMapping("/buy")
     public String buyCenter(Authentication authentication, HttpSession session, Model model) {
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
 
         StudentBuyPageView view = studentBuyReadService.buildPage(
                 student.getStudentId(),
@@ -49,7 +51,7 @@ public class StudentBuyController {
                                 RedirectAttributes redirectAttributes) {
         Map<Integer, Integer> waitlist = studentSessionService.waitlist(session);
         waitlist.put(bookId, waitlist.getOrDefault(bookId, 0) + Math.max(1, quantity));
-        redirectAttributes.addFlashAttribute("msg", "Đã thêm sách vào danh sách chờ mua.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ thÃªm sÃ¡ch vÃ o danh sÃ¡ch chá» mua.");
         return "redirect:/buy";
     }
 
@@ -59,10 +61,10 @@ public class StudentBuyController {
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         if (quantity <= 0) {
-            throw new IllegalArgumentException("Số lượng phải lớn hơn 0.");
+            throw new IllegalArgumentException("Sá»‘ lÆ°á»£ng pháº£i lá»›n hÆ¡n 0.");
         }
         studentSessionService.waitlist(session).put(bookId, quantity);
-        redirectAttributes.addFlashAttribute("msg", "Đã cập nhật số lượng mua.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ cáº­p nháº­t sá»‘ lÆ°á»£ng mua.");
         return "redirect:/buy";
     }
 
@@ -71,7 +73,7 @@ public class StudentBuyController {
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         studentSessionService.waitlist(session).remove(bookId);
-        redirectAttributes.addFlashAttribute("msg", "Đã xóa sách khỏi danh sách chờ mua.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ xÃ³a sÃ¡ch khá»i danh sÃ¡ch chá» mua.");
         return "redirect:/buy";
     }
 
@@ -81,14 +83,14 @@ public class StudentBuyController {
                            HttpSession session,
                            RedirectAttributes redirectAttributes) {
         if (selectedBookIds == null || selectedBookIds.isEmpty()) {
-            throw new IllegalArgumentException("Vui lòng chọn ít nhất một sách để đặt.");
+            throw new IllegalArgumentException("Vui lÃ²ng chá»n Ã­t nháº¥t má»™t sÃ¡ch Ä‘á»ƒ Ä‘áº·t.");
         }
 
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
         Integer staffId = currentStudentService.findCurrentStaff(authentication)
                 .map(staff -> staff.getStaffId())
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định tài khoản đăng nhập."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh tÃ i khoáº£n Ä‘Äƒng nháº­p."));
 
         Map<Integer, Integer> currentWaitlist = studentSessionService.waitlist(session);
         Map<Integer, Integer> orderItems = new LinkedHashMap<>();
@@ -99,12 +101,14 @@ public class StudentBuyController {
             }
         }
         if (orderItems.isEmpty()) {
-            throw new IllegalArgumentException("Không có sách hợp lệ để đặt.");
+            throw new IllegalArgumentException("KhÃ´ng cÃ³ sÃ¡ch há»£p lá»‡ Ä‘á»ƒ Ä‘áº·t.");
         }
 
-        orderCheckoutService.createStudentOrder(student.getStudentId(), staffId, orderItems);
+        adminLiveUpdateService.publishOrderCreated(
+                orderCheckoutService.createStudentOrder(student.getStudentId(), staffId, orderItems)
+        );
         orderItems.keySet().forEach(currentWaitlist::remove);
-        redirectAttributes.addFlashAttribute("msg", "Đã tạo đơn mua sách thành công.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ táº¡o Ä‘Æ¡n mua sÃ¡ch thÃ nh cÃ´ng.");
         return "redirect:/buy";
     }
 }

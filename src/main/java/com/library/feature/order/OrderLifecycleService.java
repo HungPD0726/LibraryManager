@@ -72,7 +72,7 @@ public class OrderLifecycleService {
     public Orders approveLegacyPending(Integer orderId, Integer staffId) {
         Orders order = getEditableOrder(orderId);
         if (!OrderStatus.LEGACY_PENDING.equals(order.getStatus())) {
-            throw new IllegalArgumentException("Chỉ có thể duyệt đơn đang ở trạng thái Pending.");
+            throw new IllegalArgumentException("Chỉ có thể duyệt đơn đang chờ xử lý.");
         }
         order.setStaff(resolveStaff(staffId));
         order.setStatus(OrderStatus.READY);
@@ -83,7 +83,7 @@ public class OrderLifecycleService {
     public Orders rejectLegacyPending(Integer orderId, Integer staffId) {
         Orders order = getEditableOrder(orderId);
         if (!OrderStatus.LEGACY_PENDING.equals(order.getStatus())) {
-            throw new IllegalArgumentException("Chỉ có thể từ chối đơn đang ở trạng thái Pending.");
+            throw new IllegalArgumentException("Chỉ có thể từ chối đơn đang chờ xử lý.");
         }
         order.setStaff(resolveStaff(staffId));
         order.setStatus(OrderStatus.CANCELLED);

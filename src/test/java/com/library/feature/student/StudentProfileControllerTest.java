@@ -9,6 +9,7 @@ import com.library.feature.auth.CustomUserDetailsService;
 import com.library.feature.staff.StaffService;
 import com.library.shared.config.CurrentUserModelService;
 import com.library.shared.config.SecurityConfig;
+import com.library.shared.support.StatusDisplaySupport;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -202,6 +203,11 @@ class StudentProfileControllerTest {
             return new FakeCurrentUserModelService();
         }
 
+        @Bean
+        StatusDisplaySupport statusDisplaySupport() {
+            return new StatusDisplaySupport();
+        }
+
         static class FakeCurrentStudentService extends CurrentStudentService {
 
             private Staff currentStaff;
@@ -321,7 +327,7 @@ class StudentProfileControllerTest {
             private Student currentStudent;
 
             FakeCurrentUserModelService() {
-                super(null, null, null);
+                super(null, null);
             }
 
             @Override

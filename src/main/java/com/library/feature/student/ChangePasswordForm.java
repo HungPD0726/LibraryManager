@@ -6,12 +6,12 @@ import lombok.Data;
 @Data
 public class ChangePasswordForm {
 
-    @NotBlank(message = "Vui lÃƒÂ²ng nhÃ¡ÂºÂ­p mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u hiÃ¡Â»â€¡n tÃ¡ÂºÂ¡i.")
+    @NotBlank(message = "Vui lòng nhập mật khẩu hiện tại.")
     private String currentPassword;
 
-    @NotBlank(message = "Vui lÃƒÂ²ng nhÃ¡ÂºÂ­p mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u mÃ¡Â»â€ºi.")
+    @NotBlank(message = "Vui lòng nhập mật khẩu mới.")
     private String newPassword;
 
-    @NotBlank(message = "Vui lÃƒÂ²ng xÃƒÂ¡c nhÃ¡ÂºÂ­n mÃ¡ÂºÂ­t khÃ¡ÂºÂ©u mÃ¡Â»â€ºi.")
+    @NotBlank(message = "Vui lòng xác nhận mật khẩu mới.")
     private String confirmPassword;
 }

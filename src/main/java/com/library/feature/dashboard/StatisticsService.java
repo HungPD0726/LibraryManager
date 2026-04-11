@@ -95,7 +95,7 @@ public class StatisticsService {
 
     @Transactional(readOnly = true)
     public BigDecimal getTotalRevenue() {
-        return orderRepository.sumRevenueByStatus(OrderStatus.DELIVERED);
+        return orderRepository.sumRevenueByStatuses(OrderStatus.storedValuesFor(OrderStatus.DELIVERED));
     }
 
     @Transactional(readOnly = true)
@@ -106,7 +106,7 @@ public class StatisticsService {
         Map<YearMonth, BigDecimal> orderRevenueByMonth = initializeMoneyTimeline(startMonth);
         Map<YearMonth, BigDecimal> fineRevenueByMonth = initializeMoneyTimeline(startMonth);
 
-        for (Object[] row : orderRepository.sumRevenueByMonthSince(OrderStatus.DELIVERED, startDate)) {
+        for (Object[] row : orderRepository.sumRevenueByMonthSinceStatuses(OrderStatus.storedValuesFor(OrderStatus.DELIVERED), startDate)) {
             YearMonth yearMonth = YearMonth.of(((Number) row[0]).intValue(), ((Number) row[1]).intValue());
             if (orderRevenueByMonth.containsKey(yearMonth)) {
                 orderRevenueByMonth.put(yearMonth, toBigDecimal(row[2]));

@@ -13,21 +13,21 @@ import java.util.List;
 @Data
 public class BookForm {
 
-    @NotBlank(message = "TÃƒÂªn sÃƒÂ¡ch khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Tên sách không được để trống.")
     private String bookName;
 
-    @NotNull(message = "SÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
-    @Min(value = 0, message = "SÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng khÃƒÂ´ng hÃ¡Â»Â£p lÃ¡Â»â€¡.")
+    @NotNull(message = "Số lượng không được để trống.")
+    @Min(value = 0, message = "Số lượng không hợp lệ.")
     private Integer quantity;
 
-    @NotNull(message = "SÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng cÃƒÂ³ sÃ¡ÂºÂµn khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
-    @Min(value = 0, message = "SÃ¡Â»â€˜ lÃ†Â°Ã¡Â»Â£ng cÃƒÂ³ sÃ¡ÂºÂµn khÃƒÂ´ng hÃ¡Â»Â£p lÃ¡Â»â€¡.")
+    @NotNull(message = "Số lượng có sẵn không được để trống.")
+    @Min(value = 0, message = "Số lượng có sẵn không hợp lệ.")
     private Integer available;
 
-    @NotNull(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân danh mÃ¡Â»Â¥c.")
+    @NotNull(message = "Vui lòng chọn danh mục.")
     private Integer categoryId;
 
-    @NotNull(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân nhÃƒÂ  xuÃ¡ÂºÂ¥t bÃ¡ÂºÂ£n.")
+    @NotNull(message = "Vui lòng chọn nhà xuất bản.")
     private Integer publisherId;
 
     private List<Integer> authorIds = new ArrayList<>();
@@ -38,8 +38,8 @@ public class BookForm {
 
     private String imageUrl;
 
-    @NotNull(message = "GiÃƒÂ¡ bÃƒÂ¡n khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
-    @Positive(message = "GiÃƒÂ¡ bÃƒÂ¡n phÃ¡ÂºÂ£i lÃ¡Â»â€ºn hÃ†Â¡n 0.")
+    @NotNull(message = "Giá bán không được để trống.")
+    @Positive(message = "Giá bán phải lớn hơn 0.")
     private BigDecimal priceAmount;
 
     private String currency = "VND";

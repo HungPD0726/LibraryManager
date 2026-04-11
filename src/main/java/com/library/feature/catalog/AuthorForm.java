@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class AuthorForm {
 
-    @NotBlank(message = "TÃƒÂªn tÃƒÂ¡c giÃ¡ÂºÂ£ khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Tên tác giả không được để trống.")
     private String authorName;
 }

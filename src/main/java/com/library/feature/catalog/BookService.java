@@ -27,16 +27,19 @@ public class BookService {
     private final PriceRepository priceRepository;
     private final BookPriceRepository bookPriceRepository;
 
+    @Transactional(readOnly = true)
     public Page<Book> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("bookId").descending());
         return bookRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<Book> searchByName(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("bookId").descending());
         return bookRepository.searchByName(keyword, pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<Book> searchCatalog(String search,
                                     String letter,
                                     Integer categoryId,
@@ -55,18 +58,32 @@ public class BookService {
         );
     }
 
+    @Transactional(readOnly = true)
     public Optional<Book> findById(Integer id) {
         return bookRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Book> findDetailedById(Integer id) {
         return bookRepository.findDetailedByBookId(id);
     }
 
+    @Transactional(readOnly = true)
     public List<Book> findAll() {
         return bookRepository.findAll(Sort.by(Sort.Direction.ASC, "bookName"));
     }
 
+    @Transactional(readOnly = true)
+    public List<BookOptionView> findAllOptions() {
+        return bookRepository.findAllOptions();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookAvailabilityOptionView> findAllBorrowOptions() {
+        return bookRepository.findAllBorrowOptions();
+    }
+
+    @Transactional(readOnly = true)
     public List<Book> findAllByIds(Iterable<Integer> ids) {
         if (ids == null) {
             return List.of();
@@ -93,18 +110,22 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public long countAll() {
         return bookRepository.countAllBooks();
     }
 
+    @Transactional(readOnly = true)
     public long countTotalAvailable() {
         return bookRepository.countTotalAvailable();
     }
 
+    @Transactional(readOnly = true)
     public Optional<BookPrice> getCurrentPrice(Integer bookId) {
         return bookPriceRepository.findCurrentByBookId(bookId);
     }
 
+    @Transactional(readOnly = true)
     public Price getCurrentPriceValue(Integer bookId) {
         return getCurrentPrice(bookId)
                 .flatMap(bookPrice -> priceRepository.findById(bookPrice.getPriceId()))

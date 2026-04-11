@@ -1,9 +1,11 @@
 package com.library.domain.repository;
 
 import com.library.domain.model.Book;
-import org.springframework.data.jpa.repository.EntityGraph;
+import com.library.feature.catalog.BookAvailabilityOptionView;
+import com.library.feature.catalog.BookOptionView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,4 +60,18 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
         ORDER BY c.categoryName
         """)
     java.util.List<Object[]> countByCategoryName();
+
+    @Query("""
+            SELECT new com.library.feature.catalog.BookOptionView(b.bookId, b.bookName)
+            FROM Book b
+            ORDER BY b.bookName, b.bookId
+            """)
+    java.util.List<BookOptionView> findAllOptions();
+
+    @Query("""
+            SELECT new com.library.feature.catalog.BookAvailabilityOptionView(b.bookId, b.bookName, b.available)
+            FROM Book b
+            ORDER BY b.bookName, b.bookId
+            """)
+    java.util.List<BookAvailabilityOptionView> findAllBorrowOptions();
 }

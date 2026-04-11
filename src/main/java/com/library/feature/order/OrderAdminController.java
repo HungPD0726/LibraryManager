@@ -80,7 +80,7 @@ public class OrderAdminController {
                           RedirectAttributes redirectAttributes) {
         Staff staff = resolveStaff(authentication);
         orderLifecycleService.approveLegacyPending(id, staff.getStaffId());
-        redirectAttributes.addFlashAttribute("msg", "Đã chuyển đơn Pending sang trạng thái sẵn sàng.");
+        redirectAttributes.addFlashAttribute("msg", "Đã chuyển đơn đang chờ xử lý sang trạng thái sẵn sàng.");
         return "redirect:/admin/orders";
     }
 
@@ -90,7 +90,7 @@ public class OrderAdminController {
                          RedirectAttributes redirectAttributes) {
         Staff staff = resolveStaff(authentication);
         orderLifecycleService.rejectLegacyPending(id, staff.getStaffId());
-        redirectAttributes.addFlashAttribute("msg", "Đã từ chối đơn Pending.");
+        redirectAttributes.addFlashAttribute("msg", "Đã từ chối đơn đang chờ xử lý.");
         return "redirect:/admin/orders";
     }
 

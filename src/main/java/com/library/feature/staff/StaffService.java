@@ -27,23 +27,28 @@ public class StaffService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public Page<Staff> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("staffId").descending());
         return staffRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public List<Staff> findAll() {
         return staffRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Optional<Staff> findById(Integer id) {
         return staffRepository.findById(id);
     }
 
+    @Transactional(readOnly = true)
     public Optional<Staff> findByUsername(String username) {
         return staffRepository.findByUsername(normalizeNullable(username));
     }
 
+    @Transactional(readOnly = true)
     public Optional<Staff> findByEmail(String email) {
         return staffRepository.findByEmail(normalizeNullable(email));
     }
@@ -111,12 +116,19 @@ public class StaffService {
         staffRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public long count() {
         return staffRepository.count();
     }
 
+    @Transactional(readOnly = true)
     public List<Role> findAllRoles() {
         return roleRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<RoleOptionView> findAllRoleOptions() {
+        return roleRepository.findAllOptions();
     }
 
     private Role resolveDefaultStudentRole() {

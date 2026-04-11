@@ -1,6 +1,5 @@
 package com.library.shared.config;
 
-import com.library.feature.borrow.BorrowQueryService;
 import com.library.feature.notification.NotificationService;
 import com.library.feature.student.CurrentStudentService;
 import com.library.shared.support.RoleSupport;
@@ -15,7 +14,6 @@ import org.springframework.ui.Model;
 @RequiredArgsConstructor
 public class CurrentUserModelService {
 
-    private final BorrowQueryService borrowQueryService;
     private final CurrentStudentService currentStudentService;
     private final NotificationService notificationService;
 
@@ -31,9 +29,6 @@ public class CurrentUserModelService {
         model.addAttribute("isStaff", RoleSupport.isStaff(authentication));
         model.addAttribute("isStudent", RoleSupport.isStudent(authentication));
 
-        if (RoleSupport.isAdmin(authentication) || RoleSupport.isStaff(authentication)) {
-            model.addAttribute("pendingBorrowCount", borrowQueryService.countPending());
-        }
         if (RoleSupport.isStudent(authentication)) {
             currentStudentService.resolveCurrentStudent(authentication)
                     .ifPresent(student -> {

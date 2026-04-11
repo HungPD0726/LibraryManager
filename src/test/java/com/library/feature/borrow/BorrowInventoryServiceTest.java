@@ -41,7 +41,7 @@ class BorrowInventoryServiceTest {
 
         when(bookRepository.findAllById(List.of(9))).thenReturn(List.of(book));
 
-        borrowInventoryService.decrementAvailabilityForItems(List.of(item), "khÃ´ng Ä‘á»§.");
+        borrowInventoryService.decrementAvailabilityForItems(List.of(item), "không đủ.");
 
         assertThat(book.getAvailable()).isEqualTo(1);
         verify(bookRepository).save(book);

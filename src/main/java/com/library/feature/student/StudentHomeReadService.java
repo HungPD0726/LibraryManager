@@ -62,8 +62,8 @@ public class StudentHomeReadService {
 
         return new StudentHomePageView(
                 books,
-                categoryService.findAll(),
-                publisherService.findAll(),
+                categoryService.findAllOptions(),
+                publisherService.findAllOptions(),
                 page,
                 bookPage.getTotalPages(),
                 search,

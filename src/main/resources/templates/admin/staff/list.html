@@ -15,8 +15,8 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid admin-crud-grid">
+        <section class="panel crud-form-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Tạo tài khoản</p>
@@ -61,14 +61,14 @@
             </form>
         </section>
 
-        <section class="panel">
+        <section class="panel crud-list-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách</p>
                     <h3>Tài khoản hiện có</h3>
                 </div>
             </div>
-            <div class="stack-list">
+            <div class="stack-list crud-list-stack">
                 <details class="expand-card" th:each="staff : ${staffList}">
                     <summary>
                         <div>

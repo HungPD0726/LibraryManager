@@ -86,17 +86,23 @@ class AuthControllerTest {
 
     @Test
     void loginSuccess_shouldRedirectStudentToHome() throws Exception {
-        currentStudentService.willResolve(new Student());
+        Staff currentStaff = new Staff();
+        currentStaff.setStaffId(11);
+        currentStudentService.willFindStaff(currentStaff);
+        studentMirrorService.willReturn(new Student());
 
         mockMvc.perform(get("/login/success")
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT")))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/home"));
+
+        assertThat(studentMirrorService.getEnsureMirrorCalls()).isEqualTo(1);
+        assertThat(studentMirrorService.getLastStaff()).isSameAs(currentStaff);
     }
 
     @Test
     void loginSuccess_shouldRedirectStudentBackToLoginWhenProfileCannotBeResolved() throws Exception {
-        currentStudentService.willResolve(null);
+        currentStudentService.willFindStaff(null);
 
         mockMvc.perform(get("/login/success")
                         .with(SecurityMockMvcRequestPostProcessors.user("student01").roles("STUDENT")))
@@ -296,23 +302,23 @@ class AuthControllerTest {
 
         static class FakeCurrentStudentService extends CurrentStudentService {
 
-            private Student nextStudent;
+            private Staff currentStaff;
 
             FakeCurrentStudentService() {
                 super(null, null);
             }
 
             @Override
-            public Optional<Student> resolveCurrentStudent(Authentication authentication) {
-                return Optional.ofNullable(nextStudent);
+            public Optional<Staff> findCurrentStaff(Authentication authentication) {
+                return Optional.ofNullable(currentStaff);
             }
 
-            void willResolve(Student student) {
-                this.nextStudent = student;
+            void willFindStaff(Staff staff) {
+                this.currentStaff = staff;
             }
 
             void reset() {
-                this.nextStudent = null;
+                this.currentStaff = null;
             }
         }
     }

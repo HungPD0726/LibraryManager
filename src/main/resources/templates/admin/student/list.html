@@ -15,8 +15,8 @@
         </div>
     </div>
 
-    <div class="split-grid">
-        <section class="panel">
+    <div class="split-grid admin-crud-grid">
+        <section class="panel crud-form-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Tạo hồ sơ</p>
@@ -44,7 +44,7 @@
             </form>
         </section>
 
-        <section class="panel">
+        <section class="panel crud-list-panel">
             <div class="panel-head">
                 <div>
                     <p class="eyebrow">Danh sách</p>
@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <form th:action="@{/admin/students}" method="get" class="toolbar">
+            <form th:action="@{/admin/students}" method="get" class="toolbar crud-toolbar">
                 <label class="field grow">
                     <span>Tìm kiếm</span>
                     <input type="search" name="search" th:value="${search}" placeholder="Tên hoặc email">
@@ -60,7 +60,7 @@
                 <button type="submit" class="btn btn-outline">Tìm</button>
             </form>
 
-            <div class="stack-list">
+            <div class="stack-list crud-list-stack">
                 <details class="expand-card" th:each="student : ${students}">
                     <summary>
                         <div>

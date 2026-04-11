@@ -15,4 +15,6 @@ public interface BookHoldRepository extends JpaRepository<BookHold, Integer> {
     long countByStudentStudentIdAndStatusIn(Integer studentId, Collection<String> statuses);
 
     boolean existsByStudentStudentIdAndBookBookIdAndStatusIn(Integer studentId, Integer bookId, Collection<String> statuses);
+
+    List<BookHold> findByBookBookIdAndStatusInOrderByHoldDateAsc(Integer bookId, Collection<String> statuses);
 }

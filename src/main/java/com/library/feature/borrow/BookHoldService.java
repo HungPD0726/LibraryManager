@@ -2,16 +2,22 @@ package com.library.feature.borrow;
 
 import com.library.domain.model.Book;
 import com.library.domain.model.BookHold;
+import com.library.domain.model.Borrow;
+import com.library.domain.model.BorrowItem;
 import com.library.domain.model.Student;
 import com.library.domain.repository.BookHoldRepository;
 import com.library.domain.repository.BookRepository;
 import com.library.domain.repository.StudentRepository;
-import com.library.feature.borrow.HoldRowView;
+import com.library.feature.notification.NotificationService;
+import com.library.shared.constant.NotificationType;
+import com.library.shared.realtime.AdminLiveUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,11 +25,16 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BookHoldService {
 
-    private static final Set<String> ACTIVE_STATUSES = Set.of("Waiting", "Notified");
+    static final Set<String> ACTIVE_STATUSES = Set.of("Waiting", "Notified");
+    static final String FULFILLED_STATUS = "Fulfilled";
+    private static final int AUTO_BORROW_DUE_DAYS = 14;
 
     private final BookHoldRepository bookHoldRepository;
     private final BookRepository bookRepository;
     private final StudentRepository studentRepository;
+    private final BorrowRequestService borrowRequestService;
+    private final NotificationService notificationService;
+    private final AdminLiveUpdateService adminLiveUpdateService;
 
     @Transactional(readOnly = true)
     public List<HoldRowView> findActiveByStudent(Integer studentId) {
@@ -40,15 +51,15 @@ public class BookHoldService {
     @Transactional
     public BookHold placeHold(Integer studentId, Integer bookId, String note) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sinh viÃƒÂªn."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sinh viÃªn."));
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y sÃƒÂ¡ch."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sÃ¡ch."));
 
         if (book.getAvailable() != null && book.getAvailable() > 0) {
-            throw new IllegalArgumentException("SÃƒÂ¡ch Ã„â€˜ang cÃƒÂ²n sÃ¡ÂºÂµn, bÃ¡ÂºÂ¡n cÃƒÂ³ thÃ¡Â»Æ’ mÃ†Â°Ã¡Â»Â£n trÃ¡Â»Â±c tiÃ¡ÂºÂ¿p.");
+            throw new IllegalArgumentException("SÃ¡ch Ä‘ang cÃ²n sáºµn, báº¡n cÃ³ thá»ƒ mÆ°á»£n trá»±c tiáº¿p.");
         }
         if (bookHoldRepository.existsByStudentStudentIdAndBookBookIdAndStatusIn(studentId, bookId, ACTIVE_STATUSES)) {
-            throw new IllegalArgumentException("BÃ¡ÂºÂ¡n Ã„â€˜ÃƒÂ£ cÃƒÂ³ yÃƒÂªu cÃ¡ÂºÂ§u giÃ¡Â»Â¯ chÃ¡Â»â€” Ã„â€˜ang hoÃ¡ÂºÂ¡t Ã„â€˜Ã¡Â»â„¢ng cho sÃƒÂ¡ch nÃƒÂ y.");
+            throw new IllegalArgumentException("Báº¡n Ä‘Ã£ cÃ³ yÃªu cáº§u giá»¯ chá»— Ä‘ang hoáº¡t Ä‘á»™ng cho sÃ¡ch nÃ y.");
         }
 
         BookHold hold = new BookHold();
@@ -63,18 +74,94 @@ public class BookHoldService {
     @Transactional
     public void cancelHold(Integer studentId, Integer holdId) {
         BookHold hold = bookHoldRepository.findById(holdId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃƒÂ´ng tÃƒÂ¬m thÃ¡ÂºÂ¥y yÃƒÂªu cÃ¡ÂºÂ§u giÃ¡Â»Â¯ chÃ¡Â»â€”."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y yÃªu cáº§u giá»¯ chá»—."));
 
         if (!hold.getStudent().getStudentId().equals(studentId)) {
-            throw new IllegalArgumentException("BÃ¡ÂºÂ¡n khÃƒÂ´ng cÃƒÂ³ quyÃ¡Â»Ân hÃ¡Â»Â§y yÃƒÂªu cÃ¡ÂºÂ§u nÃƒÂ y.");
+            throw new IllegalArgumentException("Báº¡n khÃ´ng cÃ³ quyá»n há»§y yÃªu cáº§u nÃ y.");
         }
         if (!ACTIVE_STATUSES.contains(hold.getStatus())) {
-            throw new IllegalArgumentException("YÃƒÂªu cÃ¡ÂºÂ§u nÃƒÂ y khÃƒÂ´ng cÃƒÂ²n Ã¡Â»Å¸ trÃ¡ÂºÂ¡ng thÃƒÂ¡i cÃƒÂ³ thÃ¡Â»Æ’ hÃ¡Â»Â§y.");
+            throw new IllegalArgumentException("YÃªu cáº§u nÃ y khÃ´ng cÃ²n á»Ÿ tráº¡ng thÃ¡i cÃ³ thá»ƒ há»§y.");
         }
 
         hold.setStatus("Cancelled");
         hold.setExpireDate(LocalDateTime.now());
         bookHoldRepository.save(hold);
+    }
+
+    @Transactional
+    public List<Borrow> fulfillAvailableHoldsForReturnedItems(Integer staffId, List<BorrowItem> returnedItems) {
+        if (staffId == null || returnedItems == null || returnedItems.isEmpty()) {
+            return List.of();
+        }
+
+        List<Borrow> autoBorrows = new ArrayList<>();
+        for (BorrowItem returnedItem : returnedItems) {
+            if (returnedItem == null || returnedItem.getBookId() == null) {
+                continue;
+            }
+
+            Book book = resolveBook(returnedItem);
+            int availableCopies = book.getAvailable() == null ? 0 : Math.max(book.getAvailable(), 0);
+            if (availableCopies <= 0) {
+                continue;
+            }
+
+            List<BookHold> queuedHolds = bookHoldRepository.findByBookBookIdAndStatusInOrderByHoldDateAsc(
+                    book.getBookId(),
+                    ACTIVE_STATUSES
+            );
+
+            int allocations = Math.min(availableCopies, queuedHolds.size());
+            for (int index = 0; index < allocations; index++) {
+                BookHold hold = queuedHolds.get(index);
+                Borrow autoBorrow = createBorrowFromHold(hold, staffId);
+                markHoldFulfilled(hold);
+                sendHoldFulfilledNotification(hold, autoBorrow, book);
+                adminLiveUpdateService.publishHoldFulfilled(hold, autoBorrow);
+                autoBorrows.add(autoBorrow);
+            }
+        }
+
+        return autoBorrows;
+    }
+
+    private Borrow createBorrowFromHold(BookHold hold, Integer staffId) {
+        BorrowItem borrowItem = new BorrowItem();
+        borrowItem.setBookId(hold.getBook().getBookId());
+        borrowItem.setQuantity(1);
+
+        return borrowRequestService.createBorrow(
+                hold.getStudent().getStudentId(),
+                staffId,
+                List.of(borrowItem),
+                LocalDate.now().plusDays(AUTO_BORROW_DUE_DAYS)
+        );
+    }
+
+    private void markHoldFulfilled(BookHold hold) {
+        LocalDateTime now = LocalDateTime.now();
+        hold.setStatus(FULFILLED_STATUS);
+        hold.setNotifiedDate(hold.getNotifiedDate() != null ? hold.getNotifiedDate() : now);
+        hold.setExpireDate(now);
+        bookHoldRepository.save(hold);
+    }
+
+    private void sendHoldFulfilledNotification(BookHold hold, Borrow autoBorrow, Book book) {
+        notificationService.create(
+                hold.getStudent().getStudentId(),
+                "Giá»¯ chá»— Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½",
+                "SÃ¡ch " + book.getBookName() + " Ä‘Ã£ Ä‘Æ°á»£c chuyá»ƒn thÃ nh phiáº¿u mÆ°á»£n #"
+                        + autoBorrow.getBorrowId() + " cho báº¡n.",
+                NotificationType.HOLD_FULFILLED
+        );
+    }
+
+    private Book resolveBook(BorrowItem returnedItem) {
+        if (returnedItem.getBook() != null) {
+            return returnedItem.getBook();
+        }
+        return bookRepository.findById(returnedItem.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sÃ¡ch."));
     }
 
     private HoldRowView toView(BookHold hold) {

@@ -3,6 +3,7 @@ package com.library.feature.order;
 import com.library.domain.model.BookPrice;
 import com.library.domain.model.Price;
 import com.library.domain.repository.BookPriceRepository;
+import com.library.feature.catalog.PriceDisplayView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,5 +41,10 @@ public class BookPricingService {
             }
         }
         return prices;
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<PriceDisplayView> findCatalogPrices() {
+        return bookPriceRepository.findCurrentCatalogPriceViews();
     }
 }

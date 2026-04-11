@@ -4,6 +4,8 @@ import com.library.domain.model.Publisher;
 import com.library.domain.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,10 +15,17 @@ public class PublisherService {
 
     private final PublisherRepository publisherRepository;
 
+    @Transactional(readOnly = true)
     public List<Publisher> findAll() {
         return publisherRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<PublisherOptionView> findAllOptions() {
+        return publisherRepository.findAllOptions();
+    }
+
+    @Transactional(readOnly = true)
     public Optional<Publisher> findById(Integer id) {
         return publisherRepository.findById(id);
     }
@@ -29,6 +38,7 @@ public class PublisherService {
         publisherRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public long count() {
         return publisherRepository.count();
     }

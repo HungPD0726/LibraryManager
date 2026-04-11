@@ -123,8 +123,8 @@ public class BorrowController {
 
     private void prepareCreateForm(Model model, BorrowRequestForm form) {
         model.addAttribute("form", form);
-        model.addAttribute("students", studentService.findAll());
-        model.addAttribute("books", bookService.findAll());
+        model.addAttribute("students", studentService.findAllOptions());
+        model.addAttribute("books", bookService.findAllBorrowOptions());
     }
 
     private List<BorrowItem> buildItems(BorrowRequestForm form) {

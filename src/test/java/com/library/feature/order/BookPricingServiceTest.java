@@ -3,6 +3,7 @@ package com.library.feature.order;
 import com.library.domain.model.BookPrice;
 import com.library.domain.model.Price;
 import com.library.domain.repository.BookPriceRepository;
+import com.library.feature.catalog.PriceDisplayView;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -71,5 +72,21 @@ class BookPricingServiceTest {
         Map<Integer, Price> prices = bookPricingService.findCurrentPrices(List.of(5, 6));
 
         assertThat(prices).containsEntry(5, firstPrice).containsEntry(6, secondPrice);
+    }
+
+    @Test
+    void findCatalogPrices_shouldReturnProjectedCatalogRows() {
+        PriceDisplayView row = new PriceDisplayView(
+                9,
+                "Clean Code",
+                3,
+                new BigDecimal("180000"),
+                "VND",
+                "Gia hien tai"
+        );
+
+        when(bookPriceRepository.findCurrentCatalogPriceViews()).thenReturn(List.of(row));
+
+        assertThat(bookPricingService.findCatalogPrices()).containsExactly(row);
     }
 }

@@ -94,7 +94,7 @@ class ChatbotControllerTest {
     @Test
     void postChat_shouldReturnServiceUnavailableWhenChatbotIsNotConfigured() throws Exception {
         chatbotService.willThrow(ChatbotService.ChatbotException.serviceUnavailable(
-                "Chatbot chưa được cấu hình GROQ_API_KEY."
+                "Trợ lý thư viện chưa được cấu hình GROQ_API_KEY."
         ));
 
         mockMvc.perform(post("/chatbot")
@@ -104,7 +104,7 @@ class ChatbotControllerTest {
                                 {"messages":[{"role":"user","content":"Xin chào"}]}
                                 """))
                 .andExpect(status().isServiceUnavailable())
-                .andExpect(jsonPath("$.error").value("Chatbot chưa được cấu hình GROQ_API_KEY."))
+                .andExpect(jsonPath("$.error").value("Trợ lý thư viện chưa được cấu hình GROQ_API_KEY."))
                 .andExpect(jsonPath("$.code").value("CHATBOT_NOT_CONFIGURED"))
                 .andExpect(jsonPath("$.path").value("/chatbot"))
                 .andExpect(jsonPath("$.timestamp").isNotEmpty());

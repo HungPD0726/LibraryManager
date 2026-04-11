@@ -11,14 +11,14 @@ import java.util.List;
 @Data
 public class BorrowRequestForm {
 
-    @NotNull(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân sinh viÃƒÂªn.")
+    @NotNull(message = "Vui lòng chọn sinh viên.")
     private Integer studentId;
 
-    @NotEmpty(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân ÃƒÂ­t nhÃ¡ÂºÂ¥t mÃ¡Â»â„¢t sÃƒÂ¡ch.")
+    @NotEmpty(message = "Vui lòng chọn ít nhất một sách.")
     private List<Integer> bookIds = new ArrayList<>();
 
     private List<Integer> quantities = new ArrayList<>();
 
-    @NotNull(message = "Vui lÃƒÂ²ng chÃ¡Â»Ân hÃ¡ÂºÂ¡n trÃ¡ÂºÂ£.")
+    @NotNull(message = "Vui lòng chọn hạn trả.")
     private LocalDate dueDate;
 }

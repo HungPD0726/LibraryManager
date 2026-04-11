@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class CategoryForm {
 
-    @NotBlank(message = "TÃƒÂªn danh mÃ¡Â»Â¥c khÃƒÂ´ng Ã„â€˜Ã†Â°Ã¡Â»Â£c Ã„â€˜Ã¡Â»Æ’ trÃ¡Â»â€˜ng.")
+    @NotBlank(message = "Tên danh mục không được để trống.")
     private String categoryName;
 }

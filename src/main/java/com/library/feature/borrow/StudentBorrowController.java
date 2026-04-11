@@ -5,6 +5,7 @@ import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
 import com.library.feature.student.CurrentStudentService;
 import com.library.feature.student.StudentSessionService;
+import com.library.shared.realtime.AdminLiveUpdateService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -30,11 +31,12 @@ public class StudentBorrowController {
     private final BookHoldService bookHoldService;
     private final CurrentStudentService currentStudentService;
     private final StudentSessionService studentSessionService;
+    private final AdminLiveUpdateService adminLiveUpdateService;
 
     @GetMapping("/borrows")
     public String borrowCenter(Authentication authentication, HttpSession session, Model model) {
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
 
         StudentBorrowPageView view = studentBorrowReadService.buildPage(
                 student.getStudentId(),
@@ -54,7 +56,7 @@ public class StudentBorrowController {
                             RedirectAttributes redirectAttributes) {
         Map<Integer, Integer> cart = studentSessionService.borrowCart(session);
         cart.put(bookId, cart.getOrDefault(bookId, 0) + Math.max(1, quantity));
-        redirectAttributes.addFlashAttribute("msg", "Đã thêm sách vào giỏ mượn.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ thÃªm sÃ¡ch vÃ o giá» mÆ°á»£n.");
         return "redirect:/borrows";
     }
 
@@ -63,7 +65,7 @@ public class StudentBorrowController {
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         studentSessionService.borrowCart(session).remove(bookId);
-        redirectAttributes.addFlashAttribute("msg", "Đã xóa sách khỏi giỏ mượn.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ xÃ³a sÃ¡ch khá»i giá» mÆ°á»£n.");
         return "redirect:/borrows";
     }
 
@@ -73,13 +75,13 @@ public class StudentBorrowController {
                                HttpSession session,
                                RedirectAttributes redirectAttributes) {
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
         Staff staff = currentStudentService.findCurrentStaff(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định tài khoản đăng nhập."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh tÃ i khoáº£n Ä‘Äƒng nháº­p."));
 
         Map<Integer, Integer> cart = studentSessionService.borrowCart(session);
         if (cart.isEmpty()) {
-            throw new IllegalArgumentException("Giỏ mượn đang trống.");
+            throw new IllegalArgumentException("Giá» mÆ°á»£n Ä‘ang trá»‘ng.");
         }
 
         List<BorrowItem> items = new ArrayList<>();
@@ -90,9 +92,11 @@ public class StudentBorrowController {
             items.add(item);
         }
 
-        borrowRequestService.requestBorrow(student.getStudentId(), staff.getStaffId(), items, dueDate);
+        adminLiveUpdateService.publishBorrowRequested(
+                borrowRequestService.requestBorrow(student.getStudentId(), staff.getStaffId(), items, dueDate)
+        );
         studentSessionService.clearBorrowCart(session);
-        redirectAttributes.addFlashAttribute("msg", "Đã gửi yêu cầu mượn sách.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ gá»­i yÃªu cáº§u mÆ°á»£n sÃ¡ch.");
         return "redirect:/borrows";
     }
 
@@ -102,9 +106,9 @@ public class StudentBorrowController {
                             Authentication authentication,
                             RedirectAttributes redirectAttributes) {
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
         bookHoldService.placeHold(student.getStudentId(), bookId, note);
-        redirectAttributes.addFlashAttribute("msg", "Đã tạo yêu cầu giữ chỗ.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ táº¡o yÃªu cáº§u giá»¯ chá»—.");
         return "redirect:/borrows";
     }
 
@@ -113,9 +117,9 @@ public class StudentBorrowController {
                              Authentication authentication,
                              RedirectAttributes redirectAttributes) {
         Student student = currentStudentService.resolveCurrentStudent(authentication)
-                .orElseThrow(() -> new IllegalArgumentException("Không thể xác định sinh viên hiện tại."));
+                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng thá»ƒ xÃ¡c Ä‘á»‹nh sinh viÃªn hiá»‡n táº¡i."));
         bookHoldService.cancelHold(student.getStudentId(), holdId);
-        redirectAttributes.addFlashAttribute("msg", "Đã hủy yêu cầu giữ chỗ.");
+        redirectAttributes.addFlashAttribute("msg", "ÄÃ£ há»§y yÃªu cáº§u giá»¯ chá»—.");
         return "redirect:/borrows";
     }
 }

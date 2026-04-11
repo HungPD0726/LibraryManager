@@ -73,7 +73,7 @@ public class ChatbotService {
 
     public ChatResult chat(List<ChatMessage> messages) {
         if (!isConfigured()) {
-            throw ChatbotException.serviceUnavailable("Chatbot chưa được cấu hình GROQ_API_KEY.");
+            throw ChatbotException.serviceUnavailable("Trợ lý thư viện chưa được cấu hình GROQ_API_KEY.");
         }
 
         List<ChatMessage> sanitized = sanitize(messages);
