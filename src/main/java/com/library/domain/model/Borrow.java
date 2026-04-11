@@ -34,4 +34,10 @@ public class Borrow {
 
     @Column(name = "ReturnDate")
     private LocalDate returnDate;
+
+    @Column(name = "DueReminderSentDate")
+    private LocalDate dueReminderSentDate;
+
+    @Column(name = "OverdueReminderSentDate")
+    private LocalDate overdueReminderSentDate;
 }

@@ -65,6 +65,18 @@ class PasswordRecoveryControllerTest {
     }
 
     @Test
+    void forgotPassword_shouldRenderExplicitMailConfigErrorWhenMailConfigIsMissing() throws Exception {
+        passwordRecoveryService.failStartReset("Thiếu cấu hình MAIL_USERNAME và MAIL_PASSWORD.");
+
+        mockMvc.perform(post("/forgot-password")
+                        .with(csrf())
+                        .param("identity", "student01"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/forgot-password"))
+                .andExpect(model().attribute("error", "Thiếu cấu hình MAIL_USERNAME và MAIL_PASSWORD."));
+    }
+
+    @Test
     void verifyOtp_shouldRedirectToForgotPasswordWhenSessionWasClearedByService() throws Exception {
         passwordRecoveryService.startPendingReset("student01");
         passwordRecoveryService.failVerifyAndClear("OTP da het han. Vui long yeu cau ma moi.");
@@ -168,6 +180,10 @@ class PasswordRecoveryControllerTest {
             void startPendingReset(String username) {
                 this.pendingReset = true;
                 this.pendingUsername = username;
+            }
+
+            void failStartReset(String message) {
+                this.nextStartResetException = new IllegalStateException(message);
             }
 
             void failVerifyAndClear(String message) {

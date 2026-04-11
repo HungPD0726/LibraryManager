@@ -5,6 +5,8 @@ public final class NotificationType {
     public static final String BORROW_APPROVED = "BORROW_APPROVED";
     public static final String BORROW_REJECTED = "BORROW_REJECTED";
     public static final String BORROW_RETURNED = "BORROW_RETURNED";
+    public static final String BORROW_DUE_SOON = "BORROW_DUE_SOON";
+    public static final String BORROW_OVERDUE = "BORROW_OVERDUE";
     public static final String FINE_CREATED = "FINE_CREATED";
     public static final String FINE_PAID = "FINE_PAID";
     public static final String HOLD_FULFILLED = "HOLD_FULFILLED";

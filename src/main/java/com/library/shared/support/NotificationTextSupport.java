@@ -64,6 +64,16 @@ public class NotificationTextSupport {
                             : "Đơn mượn #" + referenceId + " đã được xác nhận trả thành công.",
                     normalizedType
             );
+            case NotificationType.BORROW_DUE_SOON -> new NotificationText(
+                    "Sắp đến hạn trả sách",
+                    repairedMessage,
+                    normalizedType
+            );
+            case NotificationType.BORROW_OVERDUE -> new NotificationText(
+                    "Phiếu mượn đã quá hạn",
+                    repairedMessage,
+                    normalizedType
+            );
             case NotificationType.ORDER_DELIVERED -> new NotificationText(
                     "Đơn mua đã giao",
                     referenceId == null
@@ -139,10 +149,10 @@ public class NotificationTextSupport {
     }
 
     private boolean looksLikeMojibake(String value) {
-        return value.contains("Ã")
-                || value.contains("Ä")
-                || value.contains("Æ")
-                || value.contains("Ð");
+        return value.contains("Ãƒ")
+                || value.contains("Ã„")
+                || value.contains("Ã†")
+                || value.contains("Ã");
     }
 
     public record NotificationText(String title, String message, String type) {

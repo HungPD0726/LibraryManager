@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +34,29 @@ public class EmailService {
     private String fromEmail;
 
     public boolean isConfigured() {
-        return StringUtils.hasText(smtpUsername) && StringUtils.hasText(smtpPassword);
+        return missingMailConfigurationKeys().isEmpty();
+    }
+
+    List<String> missingMailConfigurationKeys() {
+        List<String> missingKeys = new ArrayList<>(2);
+        if (!StringUtils.hasText(smtpUsername)) {
+            missingKeys.add("MAIL_USERNAME");
+        }
+        if (!StringUtils.hasText(smtpPassword)) {
+            missingKeys.add("MAIL_PASSWORD");
+        }
+        return List.copyOf(missingKeys);
+    }
+
+    String missingMailConfigurationMessage() {
+        List<String> missingKeys = missingMailConfigurationKeys();
+        if (missingKeys.isEmpty()) {
+            return "Email đã được cấu hình đầy đủ.";
+        }
+        if (missingKeys.size() == 1) {
+            return "Thiếu cấu hình " + missingKeys.get(0) + ".";
+        }
+        return "Thiếu cấu hình " + missingKeys.get(0) + " và " + missingKeys.get(1) + ".";
     }
 
     public void sendOtpEmail(String toEmail, String otpCode) {
@@ -41,7 +65,7 @@ public class EmailService {
 
     public void sendHtml(String toEmail, String subject, String htmlContent) {
         if (!isConfigured()) {
-            throw new IllegalStateException("Email chưa được cấu hình đầy đủ.");
+            throw new IllegalStateException(missingMailConfigurationMessage());
         }
 
         try {

@@ -37,7 +37,8 @@ class NotificationServiceTest {
         notificationService = new NotificationService(
                 notificationRepository,
                 studentRepository,
-                new NotificationTextSupport());
+                new NotificationTextSupport()
+        );
     }
 
     @Test
@@ -51,8 +52,9 @@ class NotificationServiceTest {
         Notification created = notificationService.create(
                 8,
                 "Đơn mua đã giao",
-                "Ðơn mua #18 đã được giao thành công.",
-                NotificationType.ORDER_DELIVERED);
+                "Đơn mua #18 đã được giao thành công.",
+                NotificationType.ORDER_DELIVERED
+        );
 
         ArgumentCaptor<Notification> notificationCaptor = ArgumentCaptor.forClass(Notification.class);
         verify(notificationRepository).save(notificationCaptor.capture());
@@ -64,12 +66,32 @@ class NotificationServiceTest {
     }
 
     @Test
+    void create_shouldPersistNotificationWhenStudentEntityIsProvidedDirectly() {
+        Student student = new Student();
+        student.setStudentId(12);
+
+        when(studentRepository.getReferenceById(12)).thenReturn(student);
+        when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Notification created = notificationService.create(
+                student,
+                "Sắp đến hạn trả sách",
+                "Đơn mượn #12 sẽ đến hạn vào ngày 15/04/2026.",
+                NotificationType.BORROW_DUE_SOON
+        );
+
+        assertThat(created.getStudent()).isSameAs(student);
+        assertThat(created.getType()).isEqualTo(NotificationType.BORROW_DUE_SOON);
+        assertThat(created.getTitle()).isEqualTo("Sắp đến hạn trả sách");
+    }
+
+    @Test
     void findByStudent_shouldReturnNormalizedCopiesWithoutMutatingLoadedEntities() {
         Notification stored = new Notification();
         stored.setNotificationId(30);
         stored.setStudent(new Student());
         stored.setTitle("Sách đã được trả");
-        stored.setMessage("Ðơn muợn #30 đã được xác nhận trả thành công.");
+        stored.setMessage("ÃÆ¡n muá»£n #30 Ä‘Ã£ Ä‘Æ°á»£c xÃ¡c nháº­n tráº£ thÃ nh cÃ´ng.");
         stored.setType(NotificationType.BORROW_RETURNED);
         stored.setIsRead(false);
         stored.setCreatedDate(LocalDateTime.of(2026, 4, 5, 16, 30));
@@ -83,6 +105,6 @@ class NotificationServiceTest {
         assertThat(notifications.get(0).getTitle()).isEqualTo("Sách đã được trả");
         assertThat(notifications.get(0).getMessage()).isEqualTo("Đơn mượn #30 đã được xác nhận trả thành công.");
         assertThat(stored.getTitle()).isEqualTo("Sách đã được trả");
-        assertThat(stored.getMessage()).isEqualTo("Ðơn muợn #30 đã được xác nhận trả thành công.");
+        assertThat(stored.getMessage()).isEqualTo("ÃÆ¡n muá»£n #30 Ä‘Ã£ Ä‘Æ°á»£c xÃ¡c nháº­n tráº£ thÃ nh cÃ´ng.");
     }
 }

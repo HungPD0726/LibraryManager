@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -34,7 +35,7 @@ public class PasswordRecoveryService {
 
     public void startReset(String identity, HttpSession session) {
         if (!emailService.isConfigured()) {
-            throw new IllegalStateException("Hệ thống email chưa được cấu hình.");
+            throw new IllegalStateException(buildMissingMailConfigurationMessage());
         }
 
         Staff staff = findStaff(identity)
@@ -141,5 +142,16 @@ public class PasswordRecoveryService {
         if (!otpSessionService.isVerified(session)) {
             throw new IllegalArgumentException("Bạn cần xác minh OTP trước khi đặt lại mật khẩu.");
         }
+    }
+
+    private String buildMissingMailConfigurationMessage() {
+        List<String> missingKeys = emailService.missingMailConfigurationKeys();
+        if (missingKeys.size() == 1) {
+            return "Thiếu cấu hình " + missingKeys.get(0) + ".";
+        }
+        if (missingKeys.size() == 2) {
+            return "Thiếu cấu hình " + missingKeys.get(0) + " và " + missingKeys.get(1) + ".";
+        }
+        return "Hệ thống email chưa được cấu hình.";
     }
 }

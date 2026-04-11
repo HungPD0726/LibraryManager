@@ -1,10 +1,12 @@
-# Copy this file to application-local.properties for machine-specific secrets.
-# application-local.properties is ignored by Git.
+# Copy this file to application-local.properties for local development.
+# Do not commit real secrets to source control.
 
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-spring.thymeleaf.cache=false
-logging.level.com.library=DEBUG
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your-email@example.com
+spring.mail.password=your-app-password
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
 
-app.security.oauth2.google.client-id=
-app.security.oauth2.google.client-secret=
+app.mail.from-name=Library Manager
+app.mail.from-email=your-email@example.com

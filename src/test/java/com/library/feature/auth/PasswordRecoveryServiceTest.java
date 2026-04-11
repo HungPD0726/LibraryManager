@@ -2,14 +2,15 @@ package com.library.feature.auth;
 
 import com.library.domain.model.Staff;
 import com.library.domain.repository.StaffRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,6 +62,36 @@ class PasswordRecoveryServiceTest {
 
         assertThat(emailService.lastTo).isEqualTo("student01@example.com");
         assertThat(emailService.lastOtp).isEqualTo("123456");
+    }
+
+    @Test
+    void startReset_shouldExplainWhenMailUsernameAndPasswordAreMissing() {
+        MockHttpSession session = new MockHttpSession();
+        emailService.setMissingKeys("MAIL_USERNAME", "MAIL_PASSWORD");
+
+        assertThatThrownBy(() -> passwordRecoveryService.startReset("student01", session))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Thiếu cấu hình MAIL_USERNAME và MAIL_PASSWORD.");
+    }
+
+    @Test
+    void startReset_shouldExplainWhenMailUsernameIsMissing() {
+        MockHttpSession session = new MockHttpSession();
+        emailService.setMissingKeys("MAIL_USERNAME");
+
+        assertThatThrownBy(() -> passwordRecoveryService.startReset("student01", session))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Thiếu cấu hình MAIL_USERNAME.");
+    }
+
+    @Test
+    void startReset_shouldExplainWhenMailPasswordIsMissing() {
+        MockHttpSession session = new MockHttpSession();
+        emailService.setMissingKeys("MAIL_PASSWORD");
+
+        assertThatThrownBy(() -> passwordRecoveryService.startReset("student01", session))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Thiếu cấu hình MAIL_PASSWORD.");
     }
 
     @Test
@@ -125,6 +156,7 @@ class PasswordRecoveryServiceTest {
         private String lastTo;
         private String lastOtp;
         private boolean throwOnSend;
+        private List<String> missingKeys = List.of();
 
         private FakeEmailService() {
             super(null, null);
@@ -132,7 +164,12 @@ class PasswordRecoveryServiceTest {
 
         @Override
         public boolean isConfigured() {
-            return true;
+            return missingKeys.isEmpty();
+        }
+
+        @Override
+        List<String> missingMailConfigurationKeys() {
+            return missingKeys;
         }
 
         @Override
@@ -142,6 +179,10 @@ class PasswordRecoveryServiceTest {
             }
             this.lastTo = toEmail;
             this.lastOtp = otpCode;
+        }
+
+        private void setMissingKeys(String... keys) {
+            this.missingKeys = List.of(keys);
         }
     }
 

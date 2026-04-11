@@ -23,11 +23,21 @@ public class NotificationService {
     @Transactional
     public Notification create(Integer studentId, String title, String message, String type) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên ID: " + studentId));
+                .orElseThrow(() -> new IllegalArgumentException("Khong tim thay sinh vien ID: " + studentId));
+        return create(student, title, message, type);
+    }
+
+    @Transactional
+    public Notification create(Student student, String title, String message, String type) {
+        if (student == null || student.getStudentId() == null) {
+            throw new IllegalArgumentException("Khong tim thay sinh vien de tao thong bao.");
+        }
+
+        Student managedStudent = studentRepository.getReferenceById(student.getStudentId());
         NotificationTextSupport.NotificationText normalized = notificationTextSupport.normalize(type, title, message);
 
         Notification notification = new Notification();
-        notification.setStudent(student);
+        notification.setStudent(managedStudent);
         notification.setTitle(normalized.title());
         notification.setMessage(normalized.message());
         notification.setType(normalized.type());
@@ -52,7 +62,7 @@ public class NotificationService {
     @Transactional
     public void markRead(Integer notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy thông báo."));
+                .orElseThrow(() -> new IllegalArgumentException("Khong tim thay thong bao."));
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
