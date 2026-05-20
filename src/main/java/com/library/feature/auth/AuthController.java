@@ -106,10 +106,10 @@ public class AuthController {
     }
 
     @GetMapping("/")
-    public String root(Authentication authentication, RedirectAttributes redirectAttributes) {
+    public String root(Authentication authentication) {
         if (authentication == null) {
             return "redirect:/login";
         }
-        return loginSuccess(authentication, redirectAttributes);
+        return "redirect:/login/success";
     }
 }

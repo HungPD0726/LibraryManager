@@ -12,6 +12,7 @@ import com.library.feature.catalog.BookForm;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,9 +22,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin/books")
@@ -34,6 +37,7 @@ public class BookController {
     private final CategoryService categoryService;
     private final PublisherService publisherService;
     private final AuthorService authorService;
+    private final OpenLibraryCoverService openLibraryCoverService;
 
     @GetMapping
     public String list(@RequestParam(defaultValue = "0") int page,
@@ -55,6 +59,13 @@ public class BookController {
     public String createForm(Model model) {
         prepareForm(model, new BookForm(), null);
         return "admin/book/create";
+    }
+
+    @GetMapping(value = "/cover-suggestions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public List<OpenLibraryCoverService.CoverSuggestion> coverSuggestions(@RequestParam String title,
+                                                                          @RequestParam(required = false) String author) {
+        return openLibraryCoverService.suggestCovers(title, author);
     }
 
     @PostMapping("/create")

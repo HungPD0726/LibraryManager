@@ -1,13 +1,10 @@
 package com.library.feature.borrow;
 
-import com.library.domain.model.Borrow;
 import com.library.domain.model.BorrowItem;
 import com.library.domain.model.Staff;
 import com.library.feature.catalog.BookService;
-import com.library.feature.notification.NotificationService;
 import com.library.feature.staff.StaffService;
 import com.library.feature.student.StudentService;
-import com.library.shared.constant.NotificationType;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.library.domain.model.Borrow;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,6 @@ public class BorrowController {
     private final BookService bookService;
     private final StudentService studentService;
     private final StaffService staffService;
-    private final NotificationService notificationService;
 
     @GetMapping
     public String list(@RequestParam(defaultValue = "0") int page,
@@ -84,39 +82,21 @@ public class BorrowController {
 
     @PostMapping("/return/{id}")
     public String returnBorrow(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        Borrow borrow = borrowLifecycleService.returnBorrow(id);
-        if (borrow.getStudent() != null) {
-            notificationService.create(borrow.getStudent().getStudentId(),
-                    "Sách đã được trả",
-                    "Đơn mượn #" + id + " đã được xác nhận trả thành công.",
-                    NotificationType.BORROW_RETURNED);
-        }
+        borrowLifecycleService.returnBorrow(id);
         redirectAttributes.addFlashAttribute("msg", "Đã xác nhận trả sách.");
         return "redirect:/admin/borrows";
     }
 
     @PostMapping("/approve/{id}")
     public String approve(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        Borrow borrow = borrowLifecycleService.approveBorrow(id);
-        if (borrow.getStudent() != null) {
-            notificationService.create(borrow.getStudent().getStudentId(),
-                    "Yêu cầu mượn được duyệt",
-                    "Đơn mượn #" + id + " đã được duyệt. Vui lòng đến thư viện để nhận sách.",
-                    NotificationType.BORROW_APPROVED);
-        }
+        borrowLifecycleService.approveBorrow(id);
         redirectAttributes.addFlashAttribute("msg", "Đã duyệt yêu cầu mượn.");
         return "redirect:/admin/borrows";
     }
 
     @PostMapping("/reject/{id}")
     public String reject(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        Borrow borrow = borrowLifecycleService.rejectBorrow(id);
-        if (borrow.getStudent() != null) {
-            notificationService.create(borrow.getStudent().getStudentId(),
-                    "Yêu cầu mượn bị từ chối",
-                    "Đơn mượn #" + id + " đã bị từ chối.",
-                    NotificationType.BORROW_REJECTED);
-        }
+        borrowLifecycleService.rejectBorrow(id);
         redirectAttributes.addFlashAttribute("msg", "Đã từ chối yêu cầu mượn.");
         return "redirect:/admin/borrows";
     }

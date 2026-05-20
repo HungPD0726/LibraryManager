@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bindRippleEffect();
     bindScrollProgress();
     bindNumberCounters();
+    bindImageFallbacks();
 });
 
 function bindSidebarToggle() {
@@ -347,5 +348,26 @@ function bindNumberCounters() {
         };
 
         window.requestAnimationFrame(updateCount);
+    });
+}
+
+function bindImageFallbacks() {
+    document.querySelectorAll("img[data-image-fallback]").forEach((image) => {
+        image.addEventListener("error", () => {
+            const fallback = image.dataset.imageFallback;
+            if (!fallback) {
+                return;
+            }
+
+            const absoluteFallback = new URL(fallback, window.location.href).href;
+            if (image.src !== absoluteFallback) {
+                image.src = absoluteFallback;
+            }
+            image.classList.add("is-fallback-image");
+        });
+
+        if (image.complete && image.naturalWidth === 0) {
+            image.dispatchEvent(new Event("error"));
+        }
     });
 }

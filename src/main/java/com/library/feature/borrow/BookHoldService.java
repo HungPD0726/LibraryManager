@@ -9,6 +9,7 @@ import com.library.domain.repository.BookHoldRepository;
 import com.library.domain.repository.BookRepository;
 import com.library.domain.repository.StudentRepository;
 import com.library.feature.notification.NotificationService;
+import com.library.shared.constant.HoldStatus;
 import com.library.shared.constant.NotificationType;
 import com.library.shared.realtime.AdminLiveUpdateService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BookHoldService {
 
-    static final Set<String> ACTIVE_STATUSES = Set.of("Waiting", "Notified");
-    static final String FULFILLED_STATUS = "Fulfilled";
+    static final Set<String> ACTIVE_STATUSES = Set.of(HoldStatus.WAITING, HoldStatus.NOTIFIED);
+    static final String FULFILLED_STATUS = HoldStatus.FULFILLED;
     private static final int AUTO_BORROW_DUE_DAYS = 14;
 
     private final BookHoldRepository bookHoldRepository;
@@ -51,21 +52,21 @@ public class BookHoldService {
     @Transactional
     public BookHold placeHold(Integer studentId, Integer bookId, String note) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sinh viÃªn."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sinh viên."));
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sÃ¡ch."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách."));
 
         if (book.getAvailable() != null && book.getAvailable() > 0) {
-            throw new IllegalArgumentException("SÃ¡ch Ä‘ang cÃ²n sáºµn, báº¡n cÃ³ thá»ƒ mÆ°á»£n trá»±c tiáº¿p.");
+            throw new IllegalArgumentException("Sách đang còn sẵn, bạn có thể mượn trực tiếp.");
         }
         if (bookHoldRepository.existsByStudentStudentIdAndBookBookIdAndStatusIn(studentId, bookId, ACTIVE_STATUSES)) {
-            throw new IllegalArgumentException("Báº¡n Ä‘Ã£ cÃ³ yÃªu cáº§u giá»¯ chá»— Ä‘ang hoáº¡t Ä‘á»™ng cho sÃ¡ch nÃ y.");
+            throw new IllegalArgumentException("Bạn đã có yêu cầu giữ chỗ đang hoạt động cho sách này.");
         }
 
         BookHold hold = new BookHold();
         hold.setStudent(student);
         hold.setBook(book);
-        hold.setStatus("Waiting");
+        hold.setStatus(HoldStatus.WAITING);
         hold.setNote(note);
         hold.setHoldDate(LocalDateTime.now());
         return bookHoldRepository.save(hold);
@@ -74,16 +75,16 @@ public class BookHoldService {
     @Transactional
     public void cancelHold(Integer studentId, Integer holdId) {
         BookHold hold = bookHoldRepository.findById(holdId)
-                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y yÃªu cáº§u giá»¯ chá»—."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu giữ chỗ."));
 
         if (!hold.getStudent().getStudentId().equals(studentId)) {
-            throw new IllegalArgumentException("Báº¡n khÃ´ng cÃ³ quyá»n há»§y yÃªu cáº§u nÃ y.");
+            throw new IllegalArgumentException("Bạn không có quyền hủy yêu cầu này.");
         }
         if (!ACTIVE_STATUSES.contains(hold.getStatus())) {
-            throw new IllegalArgumentException("YÃªu cáº§u nÃ y khÃ´ng cÃ²n á»Ÿ tráº¡ng thÃ¡i cÃ³ thá»ƒ há»§y.");
+            throw new IllegalArgumentException("Yêu cầu này không còn ở trạng thái có thể hủy.");
         }
 
-        hold.setStatus("Cancelled");
+        hold.setStatus(HoldStatus.CANCELLED);
         hold.setExpireDate(LocalDateTime.now());
         bookHoldRepository.save(hold);
     }
@@ -140,7 +141,7 @@ public class BookHoldService {
 
     private void markHoldFulfilled(BookHold hold) {
         LocalDateTime now = LocalDateTime.now();
-        hold.setStatus(FULFILLED_STATUS);
+        hold.setStatus(HoldStatus.FULFILLED);
         hold.setNotifiedDate(hold.getNotifiedDate() != null ? hold.getNotifiedDate() : now);
         hold.setExpireDate(now);
         bookHoldRepository.save(hold);
@@ -149,9 +150,9 @@ public class BookHoldService {
     private void sendHoldFulfilledNotification(BookHold hold, Borrow autoBorrow, Book book) {
         notificationService.create(
                 hold.getStudent().getStudentId(),
-                "Giá»¯ chá»— Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½",
-                "SÃ¡ch " + book.getBookName() + " Ä‘Ã£ Ä‘Æ°á»£c chuyá»ƒn thÃ nh phiáº¿u mÆ°á»£n #"
-                        + autoBorrow.getBorrowId() + " cho báº¡n.",
+                "Giữ chỗ đã được xử lý",
+                "Sách " + book.getBookName() + " đã được chuyển thành phiếu mượn #"
+                        + autoBorrow.getBorrowId() + " cho bạn.",
                 NotificationType.HOLD_FULFILLED
         );
     }
@@ -161,7 +162,7 @@ public class BookHoldService {
             return returnedItem.getBook();
         }
         return bookRepository.findById(returnedItem.getBookId())
-                .orElseThrow(() -> new IllegalArgumentException("KhÃ´ng tÃ¬m tháº¥y sÃ¡ch."));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sách."));
     }
 
     private HoldRowView toView(BookHold hold) {

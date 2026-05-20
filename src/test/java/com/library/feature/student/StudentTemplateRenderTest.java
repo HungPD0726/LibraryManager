@@ -69,6 +69,8 @@ class StudentTemplateRenderTest {
                 .contains("/libraryManager/js/app.js")
                 .contains("/libraryManager/uploads/avatars/minh.png")
                 .contains("Sapiens")
+                .contains("data-image-fallback=\"https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library\"")
+                .contains("loading=\"lazy\"")
                 .contains("120,000.00 VND")
                 .contains("Sách có thể mượn hoặc đặt giữ chỗ ngay")
                 .contains("Cổng sinh viên")
@@ -263,6 +265,7 @@ class StudentTemplateRenderTest {
 
         assertThat(html)
                 .contains("Atomic Habits")
+                .contains("data-image-fallback=\"https://placehold.co/400x520/e3f7f5/0f3d3b?text=Library\"")
                 .contains("199,000.00 VND")
                 .contains("2 lượt đánh giá")
                 .contains("Rất đáng đọc")

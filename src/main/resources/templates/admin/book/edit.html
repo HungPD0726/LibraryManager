@@ -20,18 +20,45 @@
     </div>
 
     <section class="panel">
-        <form th:action="@{/admin/books/edit/{id}(id=${book.bookId})}" th:object="${form}" method="post" class="stack-form">
+        <form th:action="@{/admin/books/edit/{id}(id=${book.bookId})}"
+              th:object="${form}"
+              method="post"
+              class="stack-form"
+              data-cover-picker
+              th:attr="data-cover-suggestions-url=@{/admin/books/cover-suggestions}"
+              data-cover-fallback-url="https://placehold.co/240x320/e2f3f2/0f3d3b?text=Book">
             <div class="field-row">
                 <label class="field grow">
                     <span>Tên sách</span>
-                    <input type="text" th:field="*{bookName}">
+                    <input type="text" th:field="*{bookName}" data-cover-title-input>
                     <small class="field-error" th:if="${#fields.hasErrors('bookName')}" th:errors="*{bookName}"></small>
                 </label>
-                <label class="field">
-                    <span>Ảnh bìa (URL)</span>
-                    <input type="text" th:field="*{imageUrl}">
-                </label>
+                <div class="cover-admin-box">
+                    <div class="cover-admin-main">
+                        <label class="field grow">
+                            <span>Ảnh bìa (URL)</span>
+                            <input type="text" th:field="*{imageUrl}" placeholder="https://..." data-cover-url-input>
+                        </label>
+                        <button type="button" class="btn btn-outline btn-sm cover-search-button" data-cover-search>
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            Tìm bìa
+                        </button>
+                    </div>
+                    <div class="cover-admin-preview">
+                        <img class="cover-preview-image"
+                             th:src="${!#strings.isEmpty(form.imageUrl) ? form.imageUrl : 'https://placehold.co/240x320/e2f3f2/0f3d3b?text=Book'}"
+                             data-cover-preview
+                             data-image-fallback="https://placehold.co/240x320/e2f3f2/0f3d3b?text=Book"
+                             alt="Xem trước ảnh bìa"
+                             loading="lazy"
+                             decoding="async"
+                             referrerpolicy="no-referrer">
+                        <small data-cover-status aria-live="polite">Chọn ảnh từ Open Library hoặc dán URL thủ công.</small>
+                    </div>
+                </div>
             </div>
+
+            <div class="cover-suggestion-panel" data-cover-suggestions hidden></div>
 
             <div class="field-row field-row-3">
                 <label class="field">
@@ -71,7 +98,7 @@
 
             <label class="field">
                 <span>Tác giả</span>
-                <select th:field="*{authorIds}" multiple class="multiselect">
+                <select th:field="*{authorIds}" multiple class="multiselect" data-cover-author-select>
                     <option th:each="author : ${authors}" th:value="${author.authorId}" th:text="${author.authorName}"></option>
                 </select>
             </label>
@@ -98,5 +125,9 @@
         </form>
     </section>
 </section>
+
+<th:block layout:fragment="pageScripts">
+    <script th:src="@{/js/pages/admin-book-cover.js}"></script>
+</th:block>
 </body>
 </html>

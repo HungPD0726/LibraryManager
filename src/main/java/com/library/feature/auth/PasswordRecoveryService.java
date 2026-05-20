@@ -84,6 +84,7 @@ public class PasswordRecoveryService {
         otpSessionService.markVerified(session);
     }
 
+    @org.springframework.transaction.annotation.Transactional
     public void resetPassword(String password, String confirmPassword, HttpSession session) {
         ensureVerified(session);
         passwordPolicyValidator.validate(password, confirmPassword);

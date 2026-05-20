@@ -1,10 +1,12 @@
 package com.library.feature.dashboard;
 
+import com.library.domain.model.Book;
 import com.library.domain.model.Borrow;
 import com.library.domain.model.Fine;
 import com.library.domain.model.Publisher;
 import com.library.domain.model.Staff;
 import com.library.domain.model.Student;
+import com.library.feature.catalog.BookForm;
 import com.library.feature.catalog.PublisherForm;
 import com.library.feature.order.OrderItemView;
 import com.library.feature.order.OrderRowView;
@@ -80,6 +82,70 @@ class AdminTemplateRenderTest {
                 .doesNotContain("Ã")
                 .doesNotContain("Â")
                 .doesNotContain("/libraryManager/css/parts/student.css");
+    }
+
+    @Test
+    void bookCreate_shouldRenderOpenLibraryCoverPicker() {
+        Map<String, Object> model = new HashMap<>();
+        model.put("form", new BookForm());
+        model.put("book", null);
+        model.put("categories", List.of());
+        model.put("publishers", List.of());
+        model.put("authors", List.of());
+
+        String html = ThymeleafRenderSupport.render(
+                "admin/book/create",
+                "/admin/books/create",
+                model,
+                "admin01",
+                "ROLE_ADMIN"
+        );
+
+        assertThat(html)
+                .contains("data-cover-picker")
+                .contains("data-cover-suggestions-url=\"/libraryManager/admin/books/cover-suggestions\"")
+                .contains("data-cover-title-input")
+                .contains("data-cover-url-input")
+                .contains("data-cover-preview")
+                .contains("data-cover-suggestions")
+                .contains("Tìm bìa")
+                .contains("/libraryManager/js/pages/admin-book-cover.js")
+                .doesNotContain("Ãƒ")
+                .doesNotContain("Ã‚");
+    }
+
+    @Test
+    void bookEdit_shouldRenderCurrentCoverPreviewAndPickerScript() {
+        Book book = new Book();
+        book.setBookId(12);
+        book.setBookName("Dune");
+
+        BookForm form = new BookForm();
+        form.setBookName("Dune");
+        form.setImageUrl("https://covers.openlibrary.org/b/id/8100927-L.jpg?default=false");
+
+        Map<String, Object> model = new HashMap<>();
+        model.put("form", form);
+        model.put("book", book);
+        model.put("categories", List.of());
+        model.put("publishers", List.of());
+        model.put("authors", List.of());
+
+        String html = ThymeleafRenderSupport.render(
+                "admin/book/edit",
+                "/admin/books/edit/12",
+                model,
+                "admin01",
+                "ROLE_ADMIN"
+        );
+
+        assertThat(html)
+                .contains("data-cover-picker")
+                .contains("https://covers.openlibrary.org/b/id/8100927-L.jpg?default=false")
+                .contains("data-image-fallback=\"https://placehold.co/240x320/e2f3f2/0f3d3b?text=Book\"")
+                .contains("/libraryManager/js/pages/admin-book-cover.js")
+                .doesNotContain("Ãƒ")
+                .doesNotContain("Ã‚");
     }
 
     @Test

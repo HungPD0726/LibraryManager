@@ -34,16 +34,19 @@ class BorrowLifecycleServiceTest {
     private BorrowLifecycleService borrowLifecycleService;
     private TrackingBorrowInventoryService borrowInventoryService;
     private TrackingBookHoldService bookHoldService;
+    private RecordingNotificationService notificationService;
 
     @BeforeEach
     void setUp() {
         borrowInventoryService = new TrackingBorrowInventoryService();
         bookHoldService = new TrackingBookHoldService();
+        notificationService = new RecordingNotificationService();
         borrowLifecycleService = new BorrowLifecycleService(
                 borrowRepository,
                 borrowItemRepository,
                 borrowInventoryService,
-                bookHoldService
+                bookHoldService,
+                notificationService
         );
     }
 

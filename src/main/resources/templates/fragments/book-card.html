@@ -5,7 +5,13 @@
 <div th:fragment="book-card(book)">
     <article class="book-card animate-slide-up">
         <div class="book-cover-wrap">
-            <img class="book-cover" th:src="${book.imageUrl() != null ? book.imageUrl() : 'https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library'}" alt="Book cover">
+            <img class="book-cover"
+                 th:src="${!#strings.isEmpty(book.imageUrl()) ? book.imageUrl() : 'https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library'}"
+                 data-image-fallback="https://placehold.co/320x420/e3f7f5/0f3d3b?text=Library"
+                 alt="Book cover"
+                 loading="lazy"
+                 decoding="async"
+                 referrerpolicy="no-referrer">
             <div class="book-cover-overlay">
                 <a th:href="@{/home/book(id=${book.bookId()})}" class="btn btn-outline btn-sm book-cover-cta">
                     <i class="fa-solid fa-eye"></i>

@@ -54,7 +54,13 @@
                     <td th:text="${book.bookId}">1</td>
                     <td>
                         <div class="entity-cell">
-                            <img class="thumb" th:src="${book.imageUrl != null ? book.imageUrl : 'https://placehold.co/64x88/e2f3f2/0f3d3b?text=Book'}" alt="Book cover">
+                            <img class="thumb"
+                                 th:src="${!#strings.isEmpty(book.imageUrl) ? book.imageUrl : 'https://placehold.co/64x88/e2f3f2/0f3d3b?text=Book'}"
+                                 data-image-fallback="https://placehold.co/64x88/e2f3f2/0f3d3b?text=Book"
+                                 alt="Book cover"
+                                 loading="lazy"
+                                 decoding="async"
+                                 referrerpolicy="no-referrer">
                             <div>
                                 <strong th:text="${book.bookName}">Tên sách</strong>
                                 <small th:text="${book.imageUrl != null ? 'Có ảnh bìa' : 'Chưa có ảnh bìa'}">meta</small>

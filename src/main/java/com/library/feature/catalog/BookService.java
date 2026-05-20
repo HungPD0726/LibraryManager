@@ -13,10 +13,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -125,6 +127,10 @@ public class BookService {
         return bookPriceRepository.findCurrentByBookId(bookId);
     }
 
+    /**
+     * Trả về Price hiện tại của sách.
+     * Dùng flatMap để tránh double query — lấy luôn Price thông qua BookPrice.
+     */
     @Transactional(readOnly = true)
     public Price getCurrentPriceValue(Integer bookId) {
         return getCurrentPrice(bookId)
@@ -139,8 +145,8 @@ public class BookService {
             Price currentPrice = priceRepository.findById(bookPrice.getPriceId()).orElse(null);
 
             if (currentPrice != null && (currentPrice.getAmount().compareTo(priceAmount) != 0
-                    || !safeEquals(currentPrice.getCurrency(), currency)
-                    || !safeEquals(currentPrice.getNote(), note))) {
+                    || !Objects.equals(currentPrice.getCurrency(), currency)
+                    || !Objects.equals(currentPrice.getNote(), note))) {
 
                 if (LocalDate.now().equals(bookPrice.getStartDate())) {
                     currentPrice.setAmount(priceAmount);
@@ -170,17 +176,7 @@ public class BookService {
         bookPriceRepository.save(link);
     }
 
-    private boolean safeEquals(String left, String right) {
-        if (left == null) {
-            return right == null;
-        }
-        return left.equals(right);
-    }
-
     private String blankToNull(String value) {
-        if (value == null || value.trim().isEmpty()) {
-            return null;
-        }
-        return value.trim();
+        return StringUtils.hasText(value) ? value.trim() : null;
     }
 }
